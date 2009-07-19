@@ -1,0 +1,36 @@
+
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" name="Bevel Filter" 
+	xmlns:head="layout.*"  xmlns:components="components.*" xmlns:filters="filters.*">
+	<mx:Script>
+		<![CDATA[
+		    public function get Filters():Array{
+		    	return [bevelFilter.Filter, blurFilter.Filter, dropShadowFilter.Filter, glowFilter.Filter];
+		    	//return [glowFilter.Filter];
+		    }
+		    
+			private function onChange():void{
+				this.dispatchEvent( new Event("dataChange") );				
+			}
+		]]>
+	</mx:Script>
+		<mx:VBox height="100%" width="100%" styleName="glassPods"  >
+			<head:GlassHeaders headerTitle="FILTER CONTROLS"/>
+			<mx:TabBar dataProvider="{myViewstack}" width="100%">
+			</mx:TabBar>
+			<mx:ViewStack width="100%" height="100%" id="myViewstack"  selectedIndex="0" creationPolicy="all">
+			  <filters:bevelFilter id="bevelFilter" label="bevel" dataChange="onChange()"/>
+			  <filters:blurFilter id="blurFilter" label="blur" dataChange="onChange()"/>
+			  <filters:dropShadowFilter id="dropShadowFilter" label="shadow" dataChange="onChange()"/>
+			  <filters:glowFilter id="glowFilter" label="glow" dataChange="onChange()"/>
+			</mx:ViewStack>			
+		</mx:VBox>
+	
+	<mx:Metadata>
+        [Event("dataChange")]
+    </mx:Metadata>	
+</mx:VBox>
+
+
+
+
+
