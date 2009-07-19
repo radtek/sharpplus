@@ -1,0 +1,105 @@
+
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" name="Bevel Filter"  
+	xmlns:head="layout.*"  xmlns:components="components.*" xmlns:filters="flash.filters.*">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			private var typeArray:Array = [{label:"inner", data:"inner"},
+						{label:"outer", data:"outer"},
+						 {label:"full", data:"full"}];
+						 
+			 public function get Filter():BevelFilter {
+        		var f:BevelFilter = new BevelFilter(
+        			myBevelDistance.value, 
+        			myBevelAngle.value, 
+        			myHighlightColor.selectedColor, 
+        			myHighlightAlpha.value, 
+        			myShadowColor.selectedColor, 
+        			myShadowAlpha.value, 
+        			myBlurX.value, 
+        			myBlurY.value, 
+        			myStrength.value, 
+        			myQuality.value, 
+        			myType.selectedItem.data,
+        			myBevelKnockout.styleValue);
+        	    return f;
+     		}
+     		
+     		private function onChange():void{
+     			//
+     			this.dispatchEvent( new Event("dataChange") );
+     		}
+
+		]]>
+	</mx:Script>
+<mx:HBox width="100%" height="100%"  >
+	<!-- 
+	//********************//
+	//   STYLE CONTROLS   //
+	//********************//
+	-->
+	
+	<mx:VBox height="100%" width="100%" styleName="glassPods"  >
+		
+		<mx:Canvas width="100%" height="100%" horizontalScrollPolicy="off" verticalScrollBarStyleName="fseVerticalScrollBar">
+	
+		<mx:VBox x="10" width="340">
+			<mx:Form paddingLeft="9" width="100%">
+				<components:textSliders 
+					sliderLabel="Distance" min="0" max="255" value="4" id="myBevelDistance" dataChange="onChange()"/>
+				<components:colorPicker  dataProvider="{new Array}"
+										pickerLabel="Highlight Color" selectedColor="0xFFFFFF" id="myHighlightColor"
+										dataChange="onChange()"  />									
+				<components:textSliders 
+					sliderLabel="Angle" min="0" max="360" value="45" id="myBevelAngle" snapInt="1" dataChange="onChange()" />	
+					
+				<components:textSliders 
+					sliderLabel="Highlight Alpha" min="0" max=".5" value="1" snapInt=".01" id="myHighlightAlpha" dataChange="onChange()"/>	
+				
+				<components:colorPicker dataProvider="{new Array}"
+						pickerLabel="Shadow Color" selectedColor="0x000000" id="myShadowColor" dataChange="onChange()"  />
+				
+				<components:textSliders 
+					sliderLabel="Shadow Alpha" min="0" max=".3" value="1" snapInt=".01" id="myShadowAlpha" dataChange="onChange()"/>
+			
+				<components:textSliders 
+					sliderLabel="Blur X" min="0" max="255.0" value="10" snapInt=".1" id="myBlurX" dataChange="onChange()"/>
+					
+				<components:textSliders 
+					sliderLabel="Blur Y" min="0" max="255.0" value="10" snapInt=".1" id="myBlurY" dataChange="onChange()"/>
+				
+				<components:textSliders 
+					sliderLabel="Strength" min="0" max="255.0" value="1" snapInt="1" id="myStrength" dataChange="onChange()"/>
+				
+				<components:textSliders 
+					sliderLabel="Quality" min="0" max="15" value="1" snapInt="1" id="myQuality" dataChange="onChange()"/>
+				<mx:FormItem label="Type">
+					<mx:ComboBox id="myType" rowCount="3" dataProvider="{typeArray}" change="onChange()" />
+				</mx:FormItem>
+				<components:trueFalsePicker pickerLabel="Knockout" stateLabel="Enabled" id="myBevelKnockout"
+					styleValue="false" dataChange="onChange()" />							
+			</mx:Form>
+			
+			<mx:Box height="20" />
+		
+			<mx:Spacer height="100%" />
+		
+		</mx:VBox>
+		</mx:Canvas>
+		<mx:Box width="100%" paddingRight="5" paddingBottom="5" horizontalAlign="right">
+
+		</mx:Box>
+	</mx:VBox>
+		
+	
+</mx:HBox>
+	
+	<mx:Metadata>
+        [Event("dataChange")]
+    </mx:Metadata>	
+</mx:VBox>
+
+
+
+
+
