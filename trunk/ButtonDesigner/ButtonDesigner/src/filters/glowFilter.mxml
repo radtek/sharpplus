@@ -1,0 +1,97 @@
+
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" name="Glow Filter" paddingBottom="5"
+	xmlns:head="layout.*"  xmlns:components="components.*" xmlns:filters="flash.filters.*">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			private var typeArray:Array = [{label:"inner", data:"inner"},
+						{label:"outer", data:"outer"},
+						 {label:"full", data:"full"}];
+			
+			 public function get Filter():GlowFilter{
+        		var f:GlowFilter = new GlowFilter(
+        			myColor.selectedColor,
+        			myAlpha.value,
+        			myBlurX.value, 
+        			myBlurY.value, 
+        			myStrength.value, 
+        			myQuality.value, 
+        			myInner.styleValue,
+        			myBevelKnockout.styleValue);
+			 	
+			 	return f;
+			 }			 
+			 public function onChange():void {
+				this.dispatchEvent( new Event("dataChange") );			 	
+		     }
+
+		]]>
+	</mx:Script>
+<mx:HBox width="100%" height="100%"  >
+	<!-- 
+	//********************//
+	//   STYLE CONTROLS   //
+	//********************//
+	-->
+	
+	<mx:VBox height="100%" width="100%" styleName="glassPods"  >
+		
+		<mx:Canvas width="100%" height="100%" horizontalScrollPolicy="off" verticalScrollBarStyleName="fseVerticalScrollBar">
+	
+		<mx:VBox x="10" width="340">
+			
+			<mx:Form paddingLeft="9" width="100%">
+				
+				
+				<components:colorPicker dataProvider="{new Array}"
+						pickerLabel="Color" selectedColor="0xFFFFFF" id="myColor"
+						dataChange="onChange()"  />
+						
+				<components:textSliders 
+					sliderLabel="Alpha" min="0" max="1" value="1" snapInt=".01" id="myAlpha" dataChange="onChange()"/>	
+				
+				<components:textSliders 
+					sliderLabel="Blur X" min="0" max="255.0" value="6" snapInt=".1" id="myBlurX" dataChange="onChange()"/>
+					
+				<components:textSliders 
+					sliderLabel="Blur Y" min="0" max="255.0" value="6" snapInt=".1" id="myBlurY" dataChange="onChange()"/>
+				
+				<components:textSliders 
+					sliderLabel="Strength" min="0" max="255.0" value="1" snapInt="1" id="myStrength" dataChange="onChange()"/>
+				
+				<components:textSliders 
+					sliderLabel="Quality" min="0" max="15" value="1" snapInt="1" id="myQuality" dataChange="onChange()"/>
+				
+				<components:trueFalsePicker pickerLabel="Knockout" stateLabel="Enabled" id="myBevelKnockout"
+					styleValue="false" dataChange="onChange()" />
+				
+				<components:trueFalsePicker pickerLabel="Inner" stateLabel="Enabled" id="myInner"
+					styleValue="false" dataChange="onChange()" />
+				
+			</mx:Form>
+			
+			<mx:Box height="20" />
+		
+			<mx:Spacer height="100%" />
+		
+		</mx:VBox>
+		</mx:Canvas>
+		<mx:Box width="100%" paddingRight="5" paddingBottom="5" horizontalAlign="right">
+
+		</mx:Box>
+	</mx:VBox>
+		
+
+	
+</mx:HBox>
+
+	<mx:Metadata>
+        [Event("dataChange")]
+    </mx:Metadata>	
+	
+</mx:VBox>
+
+
+
+
+
