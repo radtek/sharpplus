@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.5 (20050201): "Sqlite.g" -> "SqliteLexer.cpp"$ */
+/* $ANTLR 2.7.7 (20060906): "Sqlite.g" -> "SqliteLexer.cpp"$ */
 
 	#include "StdAfx.h"
 
@@ -38,100 +38,113 @@ SqliteLexer::SqliteLexer(const LexerSharedInputState& state)
 #endif
 void SqliteLexer::initLiterals()
 {
-	literals["index"] = 124;
 	literals["full"] = 104;
-	literals["exclusive"] = 95;
-	literals["cross"] = 70;
-	literals["union"] = 240;
+	literals["immediate"] = 122;
+	literals["update"] = 242;
 	literals["escape"] = 93;
-	literals["right"] = 217;
 	literals["conflict"] = 67;
-	literals["collate"] = 64;
 	literals["temp"] = 231;
-	literals["values"] = 251;
+	literals["having"] = 110;
+	literals["current_time"] = 72;
 	literals["deferred"] = 82;
 	literals["references"] = 211;
+	literals["outer"] = 185;
 	literals["for"] = 101;
 	literals["glob"] = 105;
+	literals["check"] = 63;
 	literals["else"] = 92;
+	literals["current_date"] = 71;
 	literals["is"] = 131;
-	literals["instead"] = 128;
 	literals["insert"] = 127;
+	literals["cascade"] = 60;
 	literals["of"] = 180;
+	literals["after"] = 32;
 	literals["and"] = 36;
-	literals["inner"] = 126;
+	literals["begin"] = 51;
 	literals["as"] = 37;
-	literals["isnull"] = 132;
 	literals["database"] = 80;
-	literals["autoincrement"] = 40;
-	literals["distinct"] = 87;
+	literals["isnull"] = 132;
 	literals["key"] = 150;
-	literals["desc"] = 85;
 	literals["current_timestamp"] = 73;
+	literals["desc"] = 85;
+	literals["limit"] = 153;
 	literals["exists"] = 96;
 	literals["like"] = 152;
-	literals["deferrable"] = 83;
-	literals["before"] = 50;
+	literals["attach"] = 39;
 	literals["left"] = 151;
-	literals["vacuum"] = 250;
+	literals["foreign"] = 102;
+	literals["unique"] = 241;
+	literals["pragma"] = 191;
 	literals["between"] = 52;
+	literals["abort"] = 30;
 	literals["intersect"] = 129;
 	literals["view"] = 252;
 	literals["each"] = 91;
+	literals["raise"] = 210;
 	literals["not"] = 171;
 	literals["natural"] = 170;
 	literals["all"] = 33;
 	literals["in"] = 123;
-	literals["raise"] = 210;
 	literals["except"] = 94;
 	literals["column"] = 65;
-	literals["abort"] = 30;
+	literals["vacuum"] = 250;
 	literals["transaction"] = 235;
 	literals["virtual"] = 253;
 	literals["detach"] = 86;
-	literals["pragma"] = 191;
-	literals["unique"] = 241;
 	literals["restrict"] = 216;
 	literals["delete"] = 84;
-	literals["null"] = 173;
-	literals["when"] = 260;
 	literals["join"] = 140;
-	literals["foreign"] = 102;
+	literals["when"] = 260;
+	literals["null"] = 173;
 	literals["explain"] = 97;
+	literals["before"] = 50;
+	literals["deferrable"] = 83;
 	literals["regexp"] = 212;
-	literals["attach"] = 39;
-	literals["limit"] = 153;
-	literals["begin"] = 51;
-	literals["after"] = 32;
-	literals["cascade"] = 60;
+	literals["distinct"] = 87;
+	literals["autoincrement"] = 40;
+	literals["inner"] = 126;
 	literals["to"] = 234;
 	literals["into"] = 130;
-	literals["current_date"] = 71;
+	literals["instead"] = 128;
 	literals["case"] = 61;
-	literals["check"] = 63;
-	literals["outer"] = 185;
 	literals["primary"] = 192;
-	literals["fail"] = 100;
 	literals["rename"] = 214;
+	literals["fail"] = 100;
 	literals["plan"] = 190;
-	literals["current_time"] = 72;
-	literals["having"] = 110;
+	literals["values"] = 251;
+	literals["collate"] = 64;
+	literals["right"] = 217;
 	literals["notnull"] = 172;
+	literals["union"] = 240;
 	literals["then"] = 233;
 	literals["set"] = 221;
-	literals["update"] = 242;
+	literals["cross"] = 70;
 	literals["or"] = 183;
 	literals["if"] = 120;
+	literals["exclusive"] = 95;
 	literals["by"] = 53;
-	literals["immediate"] = 122;
+	literals["index"] = 124;
 	literals["ignore"] = 121;
 	literals["add"] = 31;
+	literals["table"] = 230;
+	literals["indexed"] = 262;
+	literals["match"] = 160;
+	literals["group"] = 106;
 	literals["from"] = 103;
+	literals["rollback"] = 218;
+	literals["replace"] = 215;
+	literals["release"] = 264;
 	literals["savepoint"] = 263;
+	literals["default"] = 81;
 	literals["drop"] = 88;
-	literals["query"] = 200;
+	literals["alter"] = 34;
+	literals["where"] = 261;
+	literals["reindex"] = 213;
+	literals["constraint"] = 68;
+	literals["order"] = 184;
 	literals["end"] = 90;
 	literals["commit"] = 66;
+	literals["initially"] = 125;
 	literals["temporary"] = 232;
 	literals["on"] = 182;
 	literals["using"] = 243;
@@ -139,24 +152,11 @@ void SqliteLexer::initLiterals()
 	literals["row"] = 219;
 	literals["analyze"] = 35;
 	literals["select"] = 220;
-	literals["initially"] = 125;
 	literals["offset"] = 181;
-	literals["order"] = 184;
-	literals["constraint"] = 68;
-	literals["reindex"] = 213;
+	literals["query"] = 200;
 	literals["cast"] = 62;
-	literals["where"] = 261;
-	literals["alter"] = 34;
 	literals["asc"] = 38;
-	literals["default"] = 81;
-	literals["release"] = 264;
-	literals["replace"] = 215;
 	literals["trigger"] = 236;
-	literals["rollback"] = 218;
-	literals["group"] = 106;
-	literals["match"] = 160;
-	literals["indexed"] = 262;
-	literals["table"] = 230;
 }
 
 RefToken SqliteLexer::nextToken()
@@ -675,6 +675,14 @@ void SqliteLexer::mEQ(bool _createToken) {
 	string::size_type _saveIndex;
 	
 	match(L'=' /* charlit */ );
+	{
+	if ((LA(1) == 0x3d /* '=' */ )) {
+		match(L'=' /* charlit */ );
+	}
+	else {
+	}
+	
+	}
 	if ( _createToken && _token==nullToken && _ttype!=Token::SKIP ) {
 	   _token = makeToken(_ttype);
 	   _token->setText(text.substr(_begin, text.length()-_begin));
@@ -895,11 +903,11 @@ void SqliteLexer::mSTRING_LITERAL1(bool _createToken) {
 			matchNot(L'`' /* charlit */ );
 		}
 		else {
-			goto _loop38;
+			goto _loop39;
 		}
 		
 	}
-	_loop38:;
+	_loop39:;
 	} // ( ... )*
 	match(L'`' /* charlit */ );
 	_ttype = STRING;
@@ -932,11 +940,11 @@ void SqliteLexer::mSTRING_LITERAL2(bool _createToken) {
 			matchNot(L'\'' /* charlit */ );
 		}
 		else {
-			goto _loop42;
+			goto _loop43;
 		}
 		
 	}
-	_loop42:;
+	_loop43:;
 	} // ( ... )*
 	match(L'\'' /* charlit */ );
 	_ttype = STRING;
@@ -969,11 +977,11 @@ void SqliteLexer::mSTRING_LITERAL3(bool _createToken) {
 			matchNot(L'\"' /* charlit */ );
 		}
 		else {
-			goto _loop46;
+			goto _loop47;
 		}
 		
 	}
-	_loop46:;
+	_loop47:;
 	} // ( ... )*
 	match(L'\"' /* charlit */ );
 	_ttype = STRING;
@@ -998,18 +1006,18 @@ void SqliteLexer::mNUMBERIC(bool _createToken) {
 		{
 		if (((LA(1) >= 0x30 /* '0' */  && LA(1) <= 0x39 /* '9' */ ))) {
 			{ // ( ... )+
-			int _cnt50=0;
+			int _cnt51=0;
 			for (;;) {
 				if (((LA(1) >= 0x30 /* '0' */  && LA(1) <= 0x39 /* '9' */ ))) {
 					matchRange(L'0',L'9');
 				}
 				else {
-					if ( _cnt50>=1 ) { goto _loop50; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
+					if ( _cnt51>=1 ) { goto _loop51; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
 				}
 				
-				_cnt50++;
+				_cnt51++;
 			}
-			_loop50:;
+			_loop51:;
 			}  // ( ... )+
 			{
 			if ((LA(1) == 0x45 /* 'E' */  || LA(1) == 0x65 /* 'e' */ )) {
@@ -1063,18 +1071,18 @@ void SqliteLexer::mNUMBERIC(bool _createToken) {
 				}
 				}
 				{ // ( ... )+
-				int _cnt55=0;
+				int _cnt56=0;
 				for (;;) {
 					if (((LA(1) >= 0x30 /* '0' */  && LA(1) <= 0x39 /* '9' */ ))) {
 						matchRange(L'0',L'9');
 					}
 					else {
-						if ( _cnt55>=1 ) { goto _loop55; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
+						if ( _cnt56>=1 ) { goto _loop56; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
 					}
 					
-					_cnt55++;
+					_cnt56++;
 				}
-				_loop55:;
+				_loop56:;
 				}  // ( ... )+
 			}
 			else {
@@ -1102,18 +1110,18 @@ void SqliteLexer::mNUMBERIC(bool _createToken) {
 	{
 		{
 		{ // ( ... )+
-		int _cnt58=0;
+		int _cnt59=0;
 		for (;;) {
 			if (((LA(1) >= 0x30 /* '0' */  && LA(1) <= 0x39 /* '9' */ ))) {
 				matchRange(L'0',L'9');
 			}
 			else {
-				if ( _cnt58>=1 ) { goto _loop58; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
+				if ( _cnt59>=1 ) { goto _loop59; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
 			}
 			
-			_cnt58++;
+			_cnt59++;
 		}
-		_loop58:;
+		_loop59:;
 		}  // ( ... )+
 		_ttype = INTEGER;
 		}
@@ -1126,11 +1134,11 @@ void SqliteLexer::mNUMBERIC(bool _createToken) {
 					matchRange(L'0',L'9');
 				}
 				else {
-					goto _loop61;
+					goto _loop62;
 				}
 				
 			}
-			_loop61:;
+			_loop62:;
 			} // ( ... )*
 			_ttype = FLOAT;
 		}
@@ -1191,18 +1199,18 @@ void SqliteLexer::mNUMBERIC(bool _createToken) {
 			}
 			}
 			{ // ( ... )+
-			int _cnt67=0;
+			int _cnt68=0;
 			for (;;) {
 				if (((LA(1) >= 0x30 /* '0' */  && LA(1) <= 0x39 /* '9' */ ))) {
 					matchRange(L'0',L'9');
 				}
 				else {
-					if ( _cnt67>=1 ) { goto _loop67; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
+					if ( _cnt68>=1 ) { goto _loop68; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
 				}
 				
-				_cnt67++;
+				_cnt68++;
 			}
-			_loop67:;
+			_loop68:;
 			}  // ( ... )+
 			}
 			_ttype = FLOAT;
@@ -1238,11 +1246,11 @@ void SqliteLexer::mID_1(bool _createToken) {
 			matchNot(L']' /* charlit */ );
 		}
 		else {
-			goto _loop70;
+			goto _loop71;
 		}
 		
 	}
-	_loop70:;
+	_loop71:;
 	} // ( ... )*
 	match(L']' /* charlit */ );
 	_ttype = ID;
@@ -1263,18 +1271,18 @@ void SqliteLexer::mVARIABLE_1(bool _createToken) {
 	{
 	if (((LA(1) >= 0x30 /* '0' */  && LA(1) <= 0x39 /* '9' */ ))) {
 		{ // ( ... )+
-		int _cnt74=0;
+		int _cnt75=0;
 		for (;;) {
 			if (((LA(1) >= 0x30 /* '0' */  && LA(1) <= 0x39 /* '9' */ ))) {
 				matchRange(L'0',L'9');
 			}
 			else {
-				if ( _cnt74>=1 ) { goto _loop74; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
+				if ( _cnt75>=1 ) { goto _loop75; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
 			}
 			
-			_cnt74++;
+			_cnt75++;
 		}
-		_loop74:;
+		_loop75:;
 		}  // ( ... )+
 	}
 	else {
@@ -1314,7 +1322,7 @@ void SqliteLexer::mVARIABLE_2(bool _createToken) {
 	}
 	}
 	{ // ( ... )+
-	int _cnt78=0;
+	int _cnt79=0;
 	for (;;) {
 		switch ( LA(1)) {
 		case 0x30 /* '0' */ :
@@ -1341,12 +1349,12 @@ void SqliteLexer::mVARIABLE_2(bool _createToken) {
 				mSIMPLE_LETTER(false);
 			}
 		else {
-			if ( _cnt78>=1 ) { goto _loop78; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
+			if ( _cnt79>=1 ) { goto _loop79; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
 		}
 		}
-		_cnt78++;
+		_cnt79++;
 	}
-	_loop78:;
+	_loop79:;
 	}  // ( ... )+
 	_ttype = VARIABLE;
 	if ( _createToken && _token==nullToken && _ttype!=Token::SKIP ) {
@@ -1486,7 +1494,7 @@ void SqliteLexer::mBLOB(bool _createToken) {
 	}
 	}
 	{ // ( ... )+
-	int _cnt83=0;
+	int _cnt84=0;
 	for (;;) {
 		switch ( LA(1)) {
 		case 0x30 /* '0' */ :
@@ -1525,12 +1533,12 @@ void SqliteLexer::mBLOB(bool _createToken) {
 		}
 		default:
 		{
-			if ( _cnt83>=1 ) { goto _loop83; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
+			if ( _cnt84>=1 ) { goto _loop84; } else {throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());}
 		}
 		}
-		_cnt83++;
+		_cnt84++;
 	}
-	_loop83:;
+	_loop84:;
 	}  // ( ... )+
 	if ( _createToken && _token==nullToken && _ttype!=Token::SKIP ) {
 	   _token = makeToken(_ttype);
@@ -1573,11 +1581,11 @@ void SqliteLexer::mID_2(bool _createToken) {
 				mSIMPLE_LETTER(false);
 			}
 		else {
-			goto _loop86;
+			goto _loop87;
 		}
 		}
 	}
-	_loop86:;
+	_loop87:;
 	} // ( ... )*
 	_ttype = testLiteralsTable(ID);
 	if ( _createToken && _token==nullToken && _ttype!=Token::SKIP ) {

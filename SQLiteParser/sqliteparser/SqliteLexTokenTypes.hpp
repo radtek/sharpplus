@@ -1,7 +1,7 @@
 #ifndef INC_SqliteLexTokenTypes_hpp_
 #define INC_SqliteLexTokenTypes_hpp_
 
-/* $ANTLR 2.7.5 (20050201): "Sqlite.g" -> "SqliteLexTokenTypes.hpp"$ */
+/* $ANTLR 2.7.7 (20060906): "Sqlite.g" -> "SqliteLexTokenTypes.hpp"$ */
 
 #ifndef CUSTOM_API
 # define CUSTOM_API

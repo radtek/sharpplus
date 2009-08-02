@@ -115,6 +115,9 @@ void sql_type_test() {
 		typ=SqliteParserHelper::GetSqlType("alter table t1 rename to t2 ");
 		BOOST_CHECK(typ==sst_RenameTable);
 
+		typ=SqliteParserHelper::GetSqlType("SELECT * FROM a WHERE b == c");
+		BOOST_CHECK(typ==sst_Select);
+
 		//GetLastTokenType
 		int nType=SqliteParserHelper::GetLastTokenType("--abc \n");
 		BOOST_CHECK(nType==SqliteLexTokenTypes::COMMENT);
