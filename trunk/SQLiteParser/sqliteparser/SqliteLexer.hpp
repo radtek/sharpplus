@@ -2,7 +2,7 @@
 #define INC_SqliteLexer_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.5 (20050201): "Sqlite.g" -> "SqliteLexer.hpp"$ */
+/* $ANTLR 2.7.7 (20060906): "Sqlite.g" -> "SqliteLexer.hpp"$ */
 #include <antlr/CommonToken.hpp>
 #include <antlr/InputBuffer.hpp>
 #include <antlr/BitSet.hpp>

@@ -214,7 +214,7 @@ EQ
 options {
   paraphrase = "=";
 }
-:   '='
+:   '=' ('=')? 
    ;
 
 LE
