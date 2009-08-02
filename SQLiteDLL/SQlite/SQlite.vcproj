@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="shift_jis"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="SQlite"
 	ProjectGUID="{20F12AF6-A75F-4114-82A0-4E070BE95555}"
 	RootNamespace="SQlite"
@@ -255,6 +255,10 @@
 			</File>
 			<File
 				RelativePath=".\func.c"
+				>
+			</File>
+			<File
+				RelativePath=".\genfkey.c"
 				>
 			</File>
 			<File
