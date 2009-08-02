@@ -239,6 +239,10 @@ typedef sqlite_uint64 sqlite3_uint64;
 */
 int sqlite3_close(sqlite3 *);
 
+int sqlite3_genfkey(sqlite3 *,const char *zDb);
+//int sqlite3_genfkey(sqlite3 *,const char *zDb);
+
+
 /*
 ** The type for a callback function.
 ** This is legacy and deprecated.  It is included for historical

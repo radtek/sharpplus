@@ -155,3 +155,4 @@ sqlite3_backup_remaining
 sqlite3_backup_pagecount
 sqlite3_key
 sqlite3_rekey
+sqlite3_genfkey
