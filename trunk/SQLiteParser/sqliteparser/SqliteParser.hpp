@@ -152,7 +152,6 @@ public:
 	public: string  dbnm();
 	public: string  drop_name();
 	public: string  tableview_name();
-	public: void simple_table_name();
 	public: void create_stmt();
 	public: void pragma_stmt();
 	public: string  drop_stmt();
@@ -241,6 +240,7 @@ public:
 	public: void trigger_cmd_list();
 	public: void trigger_action_check();
 	public: void trigger_cmd();
+	public: void tridxby();
 	public: void column_list(
 		CreateTriggerStruct& tStruct
 	);
