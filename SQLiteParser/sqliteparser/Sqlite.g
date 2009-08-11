@@ -790,20 +790,6 @@ tableview_name returns [string szName]
      } 
 ;
 
-simple_table_name
-{
-   RefToken e;
-   m_tmpstate=ss_FromTable;   
-}
-:
-   {e=LT(1);}nm
-   {
-	if (e->getLine()==iRow && e->getColumn()<=iColumn && e->getColumn()>=(iColumn-e->getText().length()))
-		m_sqlstate=ss_FromTable; 
-	m_tmpstate=ss_Unknown;          
-   } 
-;
-
 sql_schema_stmt:
         create_stmt
 	  | pragma_stmt
@@ -1564,10 +1550,14 @@ m_tmpstate=ss_Unknown;
 trigger_cmd_list:(trigger_cmd SEMI)+
 ;
 
-trigger_cmd:   "update" (orconf)? simple_table_name "set" setlist (where_opt)?
-             | insert_cmd "into" simple_table_name (inscollist_opt)? ("values" LP itemlist RP | select_stmt)
-             | "delete" "from" simple_table_name (where_opt)? 
+trigger_cmd:   "update" (orconf)? table_name (tridxby)? "set" setlist (where_opt)?
+             | insert_cmd "into" table_name (inscollist_opt)? ("values" LP itemlist RP | select_stmt)
+             | "delete" "from" table_name (tridxby)? (where_opt)? 
              | select_stmt
+;
+
+tridxby:   "indexed" "by" nm
+         | "not" "indexed"
 ;
 
 trigger_event [CreateTriggerStruct& tStruct]:
