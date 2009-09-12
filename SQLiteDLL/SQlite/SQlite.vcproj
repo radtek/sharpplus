@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="shift_jis"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="SQlite"
 	ProjectGUID="{20F12AF6-A75F-4114-82A0-4E070BE95555}"
 	RootNamespace="SQlite"
@@ -118,7 +118,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;C:\Users\chinshou\Documents\Visual Studio 2005\Projects\SQlite\icu\include\&quot;"
-				PreprocessorDefinitions="WIN32;SQLITE_CORE;SQLITE_ENABLE_FTS3;SQLITE_ENABLE_RTREE;SQLITE_ENABLE_ICU;SQLITE_ENABLE_FUNCEXT;SQLITE_ENABLE_UPDATE_DELETE_LIMIT;SQLITE_ENABLE_FTS3_PARENTHESIS;SQLITE_HAS_CODEC;NDEBUG;_WINDOWS;_USRDLL;SQLITE_EXPORTS"
+				PreprocessorDefinitions="WIN32;SQLITE_CORE;SQLITE_ENABLE_FTS3;SQLITE_ENABLE_RTREE;SQLITE_ENABLE_ICU;SQLITE_ENABLE_FUNCEXT;SQLITE_ENABLE_STAT2;SQLITE_ENABLE_UPDATE_DELETE_LIMIT;SQLITE_ENABLE_FTS3_PARENTHESIS;SQLITE_HAS_CODEC;NDEBUG;_WINDOWS;_USRDLL;SQLITE_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
