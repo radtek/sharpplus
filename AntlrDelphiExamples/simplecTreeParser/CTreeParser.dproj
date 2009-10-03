@@ -89,9 +89,6 @@
 			<DelphiCompile Include="CTreeParser.dpr">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
-			<DCCReference Include="SimpleCLexer.pas"/>
-			<DCCReference Include="SimpleCParser.pas"/>
-			<DCCReference Include="SimpleCWalker.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

@@ -5,6 +5,7 @@ program CTreeParser;
 uses
   SysUtils,
   Antlr,
+  AntlrTree,
   SimpleCLexer in 'SimpleCLexer.pas',
   SimpleCParser in 'SimpleCParser.pas',
   SimpleCWalker in 'SimpleCWalker.pas';

@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 Poly.g 2009-07-23 21:44:30
+// $ANTLR 3.2 10 03, 2009 17:07:46 Poly.g 2009-10-03 17:15:06
 unit PolyLexer;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
 type
     TPolyLexer = class(TAntlrLexer)

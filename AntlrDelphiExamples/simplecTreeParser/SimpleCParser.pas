@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 SimpleC.g 2009-07-23 21:45:54
+// $ANTLR 3.2 10 03, 2009 17:07:46 SimpleC.g 2009-10-03 17:18:18
 unit SimpleCParser;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
     const LT=18;
     const T__26=26;
@@ -116,7 +116,7 @@ type
 
     public
         type ISimpleCParser_prog_return=interface(IParserRuleReturnScope)
-        ['{474C7E2B-0A9A-4280-A1C6-38F43B255B8E}']
+        ['{9AEAED5B-0388-4105-8055-34B7A7CD4FD5}']
         end;   
         type prog_return =class( TParserRuleReturnScope , ISimpleCParser_prog_return)
         private
@@ -133,7 +133,7 @@ type
 
     public
         type ISimpleCParser_declaration_return=interface(IParserRuleReturnScope)
-        ['{AD2ED5B6-0C09-472D-BCB7-4E3D793FA276}']
+        ['{1122B5D1-FE9C-4E36-A4A4-7C0B2E623411}']
         end;   
         type declaration_return =class( TParserRuleReturnScope , ISimpleCParser_declaration_return)
         private
@@ -150,7 +150,7 @@ type
 
     public
         type ISimpleCParser_variable_return=interface(IParserRuleReturnScope)
-        ['{B9A70397-6752-40C3-9609-AD5476F971FD}']
+        ['{34BBE39C-F3CF-4A02-8D73-BBCF5DC50955}']
         end;   
         type variable_return =class( TParserRuleReturnScope , ISimpleCParser_variable_return)
         private
@@ -167,7 +167,7 @@ type
 
     public
         type ISimpleCParser_declarator_return=interface(IParserRuleReturnScope)
-        ['{87641BA9-9589-46D1-B8DA-CEE339919E4C}']
+        ['{633D9D2F-0560-4DCB-951B-DF2EB5B91407}']
         end;   
         type declarator_return =class( TParserRuleReturnScope , ISimpleCParser_declarator_return)
         private
@@ -184,7 +184,7 @@ type
 
     public
         type ISimpleCParser_functionHeader_return=interface(IParserRuleReturnScope)
-        ['{AF98BC10-6F69-4F66-A1BD-0136C2982728}']
+        ['{E571E61E-4396-4673-8A22-3F2771D2A78B}']
         end;   
         type functionHeader_return =class( TParserRuleReturnScope , ISimpleCParser_functionHeader_return)
         private
@@ -201,7 +201,7 @@ type
 
     public
         type ISimpleCParser_formalParameter_return=interface(IParserRuleReturnScope)
-        ['{2387C2A9-33DF-4504-B70A-65BB1DD646D0}']
+        ['{FC6D7E48-0716-4C94-B9E6-583FABF755BF}']
         end;   
         type formalParameter_return =class( TParserRuleReturnScope , ISimpleCParser_formalParameter_return)
         private
@@ -218,7 +218,7 @@ type
 
     public
         type ISimpleCParser_dtype_return=interface(IParserRuleReturnScope)
-        ['{FC87FCC8-FD51-481D-8C6E-D357FDA0391A}']
+        ['{C63E6580-BA17-4680-B37B-C2E286407C88}']
         end;   
         type dtype_return =class( TParserRuleReturnScope , ISimpleCParser_dtype_return)
         private
@@ -235,7 +235,7 @@ type
 
     public
         type ISimpleCParser_block_return=interface(IParserRuleReturnScope)
-        ['{936AADC0-8307-4F46-8C34-27C568DA6E03}']
+        ['{FE9AD9C0-B45B-4A6E-BEB8-58BD52D96C14}']
         end;   
         type block_return =class( TParserRuleReturnScope , ISimpleCParser_block_return)
         private
@@ -252,7 +252,7 @@ type
 
     public
         type ISimpleCParser_stat_return=interface(IParserRuleReturnScope)
-        ['{72D0AA49-270B-499B-A107-255EE0EA0000}']
+        ['{5CEFCA33-828E-439F-94FF-F6E2952EE651}']
         end;   
         type stat_return =class( TParserRuleReturnScope , ISimpleCParser_stat_return)
         private
@@ -269,7 +269,7 @@ type
 
     public
         type ISimpleCParser_forStat_return=interface(IParserRuleReturnScope)
-        ['{CFFEE87D-2D90-4F75-B7FF-3255498D73DE}']
+        ['{BE1B1AF5-3B1E-4234-966D-58C6593BCA4C}']
         end;   
         type forStat_return =class( TParserRuleReturnScope , ISimpleCParser_forStat_return)
         private
@@ -286,7 +286,7 @@ type
 
     public
         type ISimpleCParser_assignStat_return=interface(IParserRuleReturnScope)
-        ['{5DE230CD-DA3A-4EF1-8749-8888B8EEFD70}']
+        ['{1874023F-8F19-4D95-A75B-B6CA72C376E3}']
         end;   
         type assignStat_return =class( TParserRuleReturnScope , ISimpleCParser_assignStat_return)
         private
@@ -303,7 +303,7 @@ type
 
     public
         type ISimpleCParser_expr_return=interface(IParserRuleReturnScope)
-        ['{82065B99-3A9F-4438-B054-06CBE51DF6E8}']
+        ['{CD89F20E-A790-40E5-A4E6-E0863D91EDF2}']
         end;   
         type expr_return =class( TParserRuleReturnScope , ISimpleCParser_expr_return)
         private
@@ -320,7 +320,7 @@ type
 
     public
         type ISimpleCParser_condExpr_return=interface(IParserRuleReturnScope)
-        ['{460F1CAD-698B-48B1-A41A-11D1A11878D7}']
+        ['{BCEFA19D-0C69-4335-A945-D4ADDDA9F7D8}']
         end;   
         type condExpr_return =class( TParserRuleReturnScope , ISimpleCParser_condExpr_return)
         private
@@ -337,7 +337,7 @@ type
 
     public
         type ISimpleCParser_aexpr_return=interface(IParserRuleReturnScope)
-        ['{8A5C5C55-CA33-4984-AA26-54B4A2E5ABAE}']
+        ['{BC8FC75F-4451-413F-8476-70B13C256142}']
         end;   
         type aexpr_return =class( TParserRuleReturnScope , ISimpleCParser_aexpr_return)
         private
@@ -354,7 +354,7 @@ type
 
     public
         type ISimpleCParser_atom_return=interface(IParserRuleReturnScope)
-        ['{D7141231-F848-493A-890A-F8727F7BBEE3}']
+        ['{0C1E3799-C990-4919-B69E-D2E5768B9675}']
         end;   
         type atom_return =class( TParserRuleReturnScope , ISimpleCParser_atom_return)
         private
@@ -1137,7 +1137,7 @@ begin
 
 
         // AST REWRITE
-        // elements: ID, formalParameter, dtype
+        // elements: dtype, formalParameter, ID
         // token labels: 
         // rule labels: retval
         // token list labels: 
@@ -1255,7 +1255,7 @@ begin
 
 
         // AST REWRITE
-        // elements: dtype, declarator
+        // elements: declarator, dtype
         // token labels: 
         // rule labels: retval
         // token list labels: 
@@ -1891,7 +1891,7 @@ begin
 
 
         // AST REWRITE
-        // elements: next, start, block, DFOR, expr
+        // elements: DFOR, next, start, block, expr
         // token labels: 
         // rule labels: retval, start, next
         // token list labels: 
@@ -2010,7 +2010,7 @@ begin
 
 
         // AST REWRITE
-        // elements: expr, EQ, ID
+        // elements: ID, expr, EQ
         // token labels: 
         // rule labels: retval
         // token list labels: 

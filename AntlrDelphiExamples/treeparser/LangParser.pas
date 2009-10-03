@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 Lang.g 2009-07-23 21:46:37
+// $ANTLR 3.2 10 03, 2009 17:07:46 Lang.g 2009-10-03 17:20:09
 unit LangParser;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
     const WS=9;
     const FLOATTYPE=7;
@@ -49,7 +49,7 @@ type
 
     public
         type ILangParser_start_return=interface(IParserRuleReturnScope)
-        ['{6932976F-839B-4E02-B010-614F95CBC41D}']
+        ['{9953EA4B-AA78-4FC2-98E3-F48788899E2E}']
         end;   
         type start_return =class( TParserRuleReturnScope , ILangParser_start_return)
         private
@@ -66,7 +66,7 @@ type
 
     public
         type ILangParser_decl_return=interface(IParserRuleReturnScope)
-        ['{4104EFAA-1C4E-464E-A237-3FB5B21AABA1}']
+        ['{60CAF5A4-8C12-41AF-A017-DD0E779517D9}']
         end;   
         type decl_return =class( TParserRuleReturnScope , ILangParser_decl_return)
         private
@@ -83,7 +83,7 @@ type
 
     public
         type ILangParser_dtype_return=interface(IParserRuleReturnScope)
-        ['{999A371E-A990-417A-801A-75FBAADA3C5C}']
+        ['{FC8E513A-5AC0-4487-97D1-ECFA5E71FBD3}']
         end;   
         type dtype_return =class( TParserRuleReturnScope , ILangParser_dtype_return)
         private

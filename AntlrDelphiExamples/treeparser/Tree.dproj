@@ -89,9 +89,6 @@
 			<DelphiCompile Include="Tree.dpr">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
-			<DCCReference Include="LangDumpDecl.pas"/>
-			<DCCReference Include="LangLexer.pas"/>
-			<DCCReference Include="LangParser.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
