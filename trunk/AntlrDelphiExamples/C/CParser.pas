@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 C.g 2009-07-23 21:35:31
+// $ANTLR 3.2 10 03, 2009 17:07:46 C.g 2009-10-03 18:35:55
 unit CParser;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
     const T__29=29;
     const T__28=28;
@@ -2028,7 +2028,7 @@ begin
 
     translation_unit_StartIndex := input.index();
 
-      (TSymbols_scope(Symbols_stack.peek())).types := TJclStrHashSet.Create;
+      (TSymbols_scope(Symbols_stack.peek())).types := TJclStrHashSet.Create(16);
 
     try 
       try
@@ -2200,7 +2200,7 @@ begin
 
     function_definition_StartIndex := input.index();
 
-      (TSymbols_scope(Symbols_stack.peek())).types := TJclStrHashSet.Create;
+      (TSymbols_scope(Symbols_stack.peek())).types := TJclStrHashSet.Create(16);
 
     try 
       try
@@ -3135,7 +3135,7 @@ begin
 
     struct_or_union_specifier_StartIndex := input.index();
 
-      (TSymbols_scope(Symbols_stack.peek())).types := TJclStrHashSet.Create;
+      (TSymbols_scope(Symbols_stack.peek())).types := TJclStrHashSet.Create(16);
 
     try 
       try
@@ -8279,7 +8279,7 @@ begin
 
     compound_statement_StartIndex := input.index();
 
-      (TSymbols_scope(Symbols_stack.peek())).types := TJclStrHashSet.Create;
+      (TSymbols_scope(Symbols_stack.peek())).types := TJclStrHashSet.Create(16);
 
     try 
       try
@@ -8652,7 +8652,7 @@ begin
 
                 if ( ((_LA[68,0]=92)) ) then 
                 begin
-                  _LA[68,2] := input.LA(2);
+                  _LA[68,1] := input.LA(2);
 
                   if ( (true) ) then 
                   begin
@@ -10728,7 +10728,7 @@ begin
 		        _index['2_13'] := input.index();
 		        input.rewind();
 		        s := -1;
-		        if ( ((synpred4_C()or ((synpred4_C()) and ((isTypeName(input.LT(1).getText())))))) ) then 
+		        if ( ((((synpred4_C()) and ((isTypeName(input.LT(1).getText()))))or synpred4_C())) ) then 
 		        begin 
 		          s := 16;
 		        end
@@ -18712,7 +18712,7 @@ var
 begin
   for i := Symbols_stack.size()-1 downto 0  do
   begin
-    scope := TSymbols_scope(Symbols_stack.get(i));
+    scope := TSymbols_scope(Symbols_stack[i]);
     if ( scope.types.contains(name) ) then
     begin
 	Result:=true;
