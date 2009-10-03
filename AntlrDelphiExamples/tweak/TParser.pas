@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 T.g 2009-07-23 21:49:25
+// $ANTLR 3.2 10 03, 2009 17:07:46 T.g 2009-10-03 17:22:06
 unit TParser;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
     const WS=6;
     const T__15=15;
@@ -24,25 +24,25 @@ type
   TTParser = class(TAntlrParser)
   public
     tokenNames:TStrings;
-    FOLLOW_method_in_prog47:IBitSet;
-    FOLLOW_7_in_method82:IBitSet;
-    FOLLOW_ID_in_method84:IBitSet;
-    FOLLOW_8_in_method86:IBitSet;
-    FOLLOW_9_in_method88:IBitSet;
-    FOLLOW_body_in_method90:IBitSet;
-    FOLLOW_10_in_body131:IBitSet;
-    FOLLOW_stat_in_body133:IBitSet;
-    FOLLOW_11_in_body136:IBitSet;
-    FOLLOW_ID_in_stat160:IBitSet;
-    FOLLOW_12_in_stat162:IBitSet;
-    FOLLOW_expr_in_stat164:IBitSet;
-    FOLLOW_13_in_stat166:IBitSet;
-    FOLLOW_mul_in_expr183:IBitSet;
-    FOLLOW_14_in_expr186:IBitSet;
-    FOLLOW_mul_in_expr188:IBitSet;
-    FOLLOW_atom_in_mul206:IBitSet;
-    FOLLOW_15_in_mul209:IBitSet;
-    FOLLOW_atom_in_mul211:IBitSet;
+    FOLLOW_method_in_prog46:IBitSet;
+    FOLLOW_7_in_method81:IBitSet;
+    FOLLOW_ID_in_method83:IBitSet;
+    FOLLOW_8_in_method85:IBitSet;
+    FOLLOW_9_in_method87:IBitSet;
+    FOLLOW_body_in_method89:IBitSet;
+    FOLLOW_10_in_body130:IBitSet;
+    FOLLOW_stat_in_body132:IBitSet;
+    FOLLOW_11_in_body135:IBitSet;
+    FOLLOW_ID_in_stat159:IBitSet;
+    FOLLOW_12_in_stat161:IBitSet;
+    FOLLOW_expr_in_stat163:IBitSet;
+    FOLLOW_13_in_stat165:IBitSet;
+    FOLLOW_mul_in_expr182:IBitSet;
+    FOLLOW_14_in_expr185:IBitSet;
+    FOLLOW_mul_in_expr187:IBitSet;
+    FOLLOW_atom_in_mul205:IBitSet;
+    FOLLOW_15_in_mul208:IBitSet;
+    FOLLOW_atom_in_mul210:IBitSet;
     FOLLOW_set_in_atom0:IBitSet;
     
 
@@ -66,13 +66,13 @@ type
 
 
     // $ANTLR start "prog"
-    // T.g:23:1: prog : (m= method )+ ;
+    // T.g:15:1: prog : (m= method )+ ;
     function prog():Integer;
     // $ANTLR end prog
 
     public
         type ITParser_method_return=interface(IParserRuleReturnScope)
-        ['{1A953825-4DD1-4EA1-86EC-C137A715ECD6}']
+        ['{CCA5D991-A061-4995-858B-21EED4B08D66}']
 
                   function gets:String;
                   procedure sets(AValue:String);
@@ -92,7 +92,7 @@ type
         end;
 
     // $ANTLR start "method"
-    // T.g:37:1: method returns [String s] : m= ''method'' ID ''('' '')'' body ;
+    // T.g:29:1: method returns [String s] : m= ''method'' ID ''('' '')'' body ;
     function method():ITParser_method_return{IParserRuleReturnScope};
     // $ANTLR end method
 
@@ -107,31 +107,31 @@ type
 
 
     // $ANTLR start "body"
-    // T.g:44:1: body : lcurly= ''{'' ( stat )* ''}'' ;
+    // T.g:36:1: body : lcurly= ''{'' ( stat )* ''}'' ;
     function body():Integer;
     // $ANTLR end body
 
 
     // $ANTLR start "stat"
-    // T.g:67:1: stat : ID ''='' expr '';'' ;
+    // T.g:59:1: stat : ID ''='' expr '';'' ;
     function stat():Integer;
     // $ANTLR end stat
 
 
     // $ANTLR start "expr"
-    // T.g:70:1: expr : mul ( ''+'' mul )* ;
+    // T.g:62:1: expr : mul ( ''+'' mul )* ;
     function expr():Integer;
     // $ANTLR end expr
 
 
     // $ANTLR start "mul"
-    // T.g:73:1: mul : atom ( ''*'' atom )* ;
+    // T.g:65:1: mul : atom ( ''*'' atom )* ;
     function mul():Integer;
     // $ANTLR end mul
 
 
     // $ANTLR start "atom"
-    // T.g:76:1: atom : ( ID | INT );
+    // T.g:68:1: atom : ( ID | INT );
     function atom():Integer;
     // $ANTLR end atom
 
@@ -187,25 +187,25 @@ end;
 
 procedure TTParser.InitBitsets;
 begin
-  FOLLOW_method_in_prog47 := TAntlrBitSet.CreateWithBits([$0000000000000082]);
-  FOLLOW_7_in_method82 := TAntlrBitSet.CreateWithBits([$0000000000000010]);
-  FOLLOW_ID_in_method84 := TAntlrBitSet.CreateWithBits([$0000000000000100]);
-  FOLLOW_8_in_method86 := TAntlrBitSet.CreateWithBits([$0000000000000200]);
-  FOLLOW_9_in_method88 := TAntlrBitSet.CreateWithBits([$0000000000000400]);
-  FOLLOW_body_in_method90 := TAntlrBitSet.CreateWithBits([$0000000000000002]);
-  FOLLOW_10_in_body131 := TAntlrBitSet.CreateWithBits([$0000000000000810]);
-  FOLLOW_stat_in_body133 := TAntlrBitSet.CreateWithBits([$0000000000000810]);
-  FOLLOW_11_in_body136 := TAntlrBitSet.CreateWithBits([$0000000000000002]);
-  FOLLOW_ID_in_stat160 := TAntlrBitSet.CreateWithBits([$0000000000001000]);
-  FOLLOW_12_in_stat162 := TAntlrBitSet.CreateWithBits([$0000000000000030]);
-  FOLLOW_expr_in_stat164 := TAntlrBitSet.CreateWithBits([$0000000000002000]);
-  FOLLOW_13_in_stat166 := TAntlrBitSet.CreateWithBits([$0000000000000002]);
-  FOLLOW_mul_in_expr183 := TAntlrBitSet.CreateWithBits([$0000000000004002]);
-  FOLLOW_14_in_expr186 := TAntlrBitSet.CreateWithBits([$0000000000000030]);
-  FOLLOW_mul_in_expr188 := TAntlrBitSet.CreateWithBits([$0000000000004002]);
-  FOLLOW_atom_in_mul206 := TAntlrBitSet.CreateWithBits([$0000000000008002]);
-  FOLLOW_15_in_mul209 := TAntlrBitSet.CreateWithBits([$0000000000000030]);
-  FOLLOW_atom_in_mul211 := TAntlrBitSet.CreateWithBits([$0000000000008002]);
+  FOLLOW_method_in_prog46 := TAntlrBitSet.CreateWithBits([$0000000000000082]);
+  FOLLOW_7_in_method81 := TAntlrBitSet.CreateWithBits([$0000000000000010]);
+  FOLLOW_ID_in_method83 := TAntlrBitSet.CreateWithBits([$0000000000000100]);
+  FOLLOW_8_in_method85 := TAntlrBitSet.CreateWithBits([$0000000000000200]);
+  FOLLOW_9_in_method87 := TAntlrBitSet.CreateWithBits([$0000000000000400]);
+  FOLLOW_body_in_method89 := TAntlrBitSet.CreateWithBits([$0000000000000002]);
+  FOLLOW_10_in_body130 := TAntlrBitSet.CreateWithBits([$0000000000000810]);
+  FOLLOW_stat_in_body132 := TAntlrBitSet.CreateWithBits([$0000000000000810]);
+  FOLLOW_11_in_body135 := TAntlrBitSet.CreateWithBits([$0000000000000002]);
+  FOLLOW_ID_in_stat159 := TAntlrBitSet.CreateWithBits([$0000000000001000]);
+  FOLLOW_12_in_stat161 := TAntlrBitSet.CreateWithBits([$0000000000000030]);
+  FOLLOW_expr_in_stat163 := TAntlrBitSet.CreateWithBits([$0000000000002000]);
+  FOLLOW_13_in_stat165 := TAntlrBitSet.CreateWithBits([$0000000000000002]);
+  FOLLOW_mul_in_expr182 := TAntlrBitSet.CreateWithBits([$0000000000004002]);
+  FOLLOW_14_in_expr185 := TAntlrBitSet.CreateWithBits([$0000000000000030]);
+  FOLLOW_mul_in_expr187 := TAntlrBitSet.CreateWithBits([$0000000000004002]);
+  FOLLOW_atom_in_mul205 := TAntlrBitSet.CreateWithBits([$0000000000008002]);
+  FOLLOW_15_in_mul208 := TAntlrBitSet.CreateWithBits([$0000000000000030]);
+  FOLLOW_atom_in_mul210 := TAntlrBitSet.CreateWithBits([$0000000000008002]);
   FOLLOW_set_in_atom0 := TAntlrBitSet.CreateWithBits([$0000000000000002]);
     
 end;
@@ -223,7 +223,7 @@ begin
 end;
 
 // $ANTLR start "prog"
-// T.g:23:1: prog : (m= method )+ ;
+// T.g:15:1: prog : (m= method )+ ;
 function TTParser.prog():Integer;
 var
   _alt:array [0..255] of Integer;
@@ -247,10 +247,10 @@ begin
 
     try 
       try
-        // ruleBlockSingleAlt:T.g:28:5: ( (m= method )+ )
-        // T.g:28:9: (m= method )+
+        // ruleBlockSingleAlt:T.g:20:5: ( (m= method )+ )
+        // T.g:20:9: (m= method )+
         begin
-        // positiveClosureBlock:T.g:28:10: (m= method )+
+        // positiveClosureBlock:T.g:20:10: (m= method )+
         _cnt[1]:=0;
         repeat 
             _alt[1]:=2;
@@ -268,9 +268,9 @@ begin
             case (_alt[1]) of 
         	 1 :
         	    begin
-        	    // T.g:28:10: m= method
+        	    // T.g:20:10: m= method
         	    begin
-        	    pushFollow(FOLLOW_method_in_prog47);
+        	    pushFollow(FOLLOW_method_in_prog46);
         	    m:=method();
 
         	    state._fsp:=state._fsp-1;
@@ -321,7 +321,7 @@ end;
 
 
 // $ANTLR start "method"
-// T.g:37:1: method returns [String s] : m= ''method'' ID ''('' '')'' body ;
+// T.g:29:1: method returns [String s] : m= ''method'' ID ''('' '')'' body ;
 function TTParser.method():ITParser_method_return{IParserRuleReturnScope};
 var
   _alt:array [0..255] of Integer;
@@ -344,18 +344,18 @@ begin
 
     try 
       try
-        // ruleBlockSingleAlt:T.g:38:5: (m= ''method'' ID ''('' '')'' body )
-        // T.g:38:9: m= ''method'' ID ''('' '')'' body
+        // ruleBlockSingleAlt:T.g:30:5: (m= ''method'' ID ''('' '')'' body )
+        // T.g:30:9: m= ''method'' ID ''('' '')'' body
         begin
-        m:=match(input,7,FOLLOW_7_in_method82) as IToken; 
+        m:=match(input,7,FOLLOW_7_in_method81) as IToken; 
 
-        match(input,ID,FOLLOW_ID_in_method84); 
+        match(input,ID,FOLLOW_ID_in_method83); 
 
-        match(input,8,FOLLOW_8_in_method86); 
+        match(input,8,FOLLOW_8_in_method85); 
 
-        match(input,9,FOLLOW_9_in_method88); 
+        match(input,9,FOLLOW_9_in_method87); 
 
-        pushFollow(FOLLOW_body_in_method90);
+        pushFollow(FOLLOW_body_in_method89);
         body();
 
         state._fsp:=state._fsp-1;
@@ -379,7 +379,7 @@ begin
     end;
     Result:=retval//method_return(retval.getobject);;
 end;// $ANTLR start "body"
-// T.g:44:1: body : lcurly= ''{'' ( stat )* ''}'' ;
+// T.g:36:1: body : lcurly= ''{'' ( stat )* ''}'' ;
 function TTParser.body():Integer;
 var
   _alt:array [0..255] of Integer;
@@ -398,16 +398,16 @@ var
 begin
     body_stack.push(Tbody_scope.Create);
 
-        (Tbody_scope(body_stack.peek())).decls := TJclHashSet.Create(false);
+        (Tbody_scope(body_stack.peek())).decls := TJclHashSet.Create(16, false);
 
     try 
       try
-        // ruleBlockSingleAlt:T.g:56:5: (lcurly= ''{'' ( stat )* ''}'' )
-        // T.g:56:9: lcurly= ''{'' ( stat )* ''}''
+        // ruleBlockSingleAlt:T.g:48:5: (lcurly= ''{'' ( stat )* ''}'' )
+        // T.g:48:9: lcurly= ''{'' ( stat )* ''}''
         begin
-        lcurly:=match(input,10,FOLLOW_10_in_body131) as IToken; 
+        lcurly:=match(input,10,FOLLOW_10_in_body130) as IToken; 
 
-        // closureBlock:T.g:56:20: ( stat )*
+        // closureBlock:T.g:48:20: ( stat )*
         repeat 
             _alt[2]:=2;
             _LA[2,0] := input.LA(1);
@@ -422,9 +422,9 @@ begin
             case (_alt[2]) of
         	 1 :
         	    begin
-        	    // T.g:56:20: stat
+        	    // T.g:48:20: stat
         	    begin
-        	    pushFollow(FOLLOW_stat_in_body133);
+        	    pushFollow(FOLLOW_stat_in_body132);
         	    stat();
 
         	    state._fsp:=state._fsp-1;
@@ -438,7 +438,7 @@ begin
             end;
          until (false);
 
-        match(input,11,FOLLOW_11_in_body136); 
+        match(input,11,FOLLOW_11_in_body135); 
 
 
                 // dump declarations for all identifiers seen in statement list
@@ -462,7 +462,7 @@ begin
         body_stack.pop().Free;
     end;
 end;// $ANTLR start "stat"
-// T.g:67:1: stat : ID ''='' expr '';'' ;
+// T.g:59:1: stat : ID ''='' expr '';'' ;
 function TTParser.stat():Integer;
 var
   _alt:array [0..255] of Integer;
@@ -481,19 +481,19 @@ var
 begin
     try 
       try
-        // ruleBlockSingleAlt:T.g:67:5: ( ID ''='' expr '';'' )
-        // T.g:67:9: ID ''='' expr '';''
+        // ruleBlockSingleAlt:T.g:59:5: ( ID ''='' expr '';'' )
+        // T.g:59:9: ID ''='' expr '';''
         begin
-        ID1:=match(input,ID,FOLLOW_ID_in_stat160) as IToken; 
+        ID1:=match(input,ID,FOLLOW_ID_in_stat159) as IToken; 
 
-        match(input,12,FOLLOW_12_in_stat162); 
+        match(input,12,FOLLOW_12_in_stat161); 
 
-        pushFollow(FOLLOW_expr_in_stat164);
+        pushFollow(FOLLOW_expr_in_stat163);
         expr();
 
         state._fsp:=state._fsp-1;
 
-        match(input,13,FOLLOW_13_in_stat166); 
+        match(input,13,FOLLOW_13_in_stat165); 
 
         (Tbody_scope(body_stack.peek())).decls.add(TObject((IIF(Assigned(ID1), ID1.getText(), ''))));
 
@@ -509,7 +509,7 @@ begin
     finally 
     end;
 end;// $ANTLR start "expr"
-// T.g:70:1: expr : mul ( ''+'' mul )* ;
+// T.g:62:1: expr : mul ( ''+'' mul )* ;
 function TTParser.expr():Integer;
 var
   _alt:array [0..255] of Integer;
@@ -526,15 +526,15 @@ var
 begin
     try 
       try
-        // ruleBlockSingleAlt:T.g:70:5: ( mul ( ''+'' mul )* )
-        // T.g:70:9: mul ( ''+'' mul )*
+        // ruleBlockSingleAlt:T.g:62:5: ( mul ( ''+'' mul )* )
+        // T.g:62:9: mul ( ''+'' mul )*
         begin
-        pushFollow(FOLLOW_mul_in_expr183);
+        pushFollow(FOLLOW_mul_in_expr182);
         mul();
 
         state._fsp:=state._fsp-1;
 
-        // closureBlock:T.g:70:13: ( ''+'' mul )*
+        // closureBlock:T.g:62:13: ( ''+'' mul )*
         repeat 
             _alt[3]:=2;
             _LA[3,0] := input.LA(1);
@@ -549,11 +549,11 @@ begin
             case (_alt[3]) of
         	 1 :
         	    begin
-        	    // T.g:70:14: ''+'' mul
+        	    // T.g:62:14: ''+'' mul
         	    begin
-        	    match(input,14,FOLLOW_14_in_expr186); 
+        	    match(input,14,FOLLOW_14_in_expr185); 
 
-        	    pushFollow(FOLLOW_mul_in_expr188);
+        	    pushFollow(FOLLOW_mul_in_expr187);
         	    mul();
 
         	    state._fsp:=state._fsp-1;
@@ -580,7 +580,7 @@ begin
     finally 
     end;
 end;// $ANTLR start "mul"
-// T.g:73:1: mul : atom ( ''*'' atom )* ;
+// T.g:65:1: mul : atom ( ''*'' atom )* ;
 function TTParser.mul():Integer;
 var
   _alt:array [0..255] of Integer;
@@ -597,15 +597,15 @@ var
 begin
     try 
       try
-        // ruleBlockSingleAlt:T.g:73:5: ( atom ( ''*'' atom )* )
-        // T.g:73:9: atom ( ''*'' atom )*
+        // ruleBlockSingleAlt:T.g:65:5: ( atom ( ''*'' atom )* )
+        // T.g:65:9: atom ( ''*'' atom )*
         begin
-        pushFollow(FOLLOW_atom_in_mul206);
+        pushFollow(FOLLOW_atom_in_mul205);
         atom();
 
         state._fsp:=state._fsp-1;
 
-        // closureBlock:T.g:73:14: ( ''*'' atom )*
+        // closureBlock:T.g:65:14: ( ''*'' atom )*
         repeat 
             _alt[4]:=2;
             _LA[4,0] := input.LA(1);
@@ -620,11 +620,11 @@ begin
             case (_alt[4]) of
         	 1 :
         	    begin
-        	    // T.g:73:15: ''*'' atom
+        	    // T.g:65:15: ''*'' atom
         	    begin
-        	    match(input,15,FOLLOW_15_in_mul209); 
+        	    match(input,15,FOLLOW_15_in_mul208); 
 
-        	    pushFollow(FOLLOW_atom_in_mul211);
+        	    pushFollow(FOLLOW_atom_in_mul210);
         	    atom();
 
         	    state._fsp:=state._fsp-1;
@@ -651,7 +651,7 @@ begin
     finally 
     end;
 end;// $ANTLR start "atom"
-// T.g:76:1: atom : ( ID | INT );
+// T.g:68:1: atom : ( ID | INT );
 function TTParser.atom():Integer;
 var
   _alt:array [0..255] of Integer;
@@ -668,7 +668,7 @@ var
 begin
     try 
       try
-        // ruleBlockSingleAlt:T.g:76:5: ( ID | INT )
+        // ruleBlockSingleAlt:T.g:68:5: ( ID | INT )
         // T.g:
         begin
         if ( ((input.LA(1)>=ID) and (input.LA(1)<=INT)) ) then

@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 T.g 2009-07-23 21:49:25
+// $ANTLR 3.2 10 03, 2009 17:07:46 T.g 2009-10-03 17:22:07
 unit TLexer;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
 type
     TTLexer = class(TAntlrLexer)
@@ -347,10 +347,10 @@ begin
     try 
         _type := ID;
         _channel := 0;
-        // ruleBlockSingleAlt:T.g:80:5: ( ( ''a'' .. ''z'' | ''A'' .. ''Z'' )+ )
-        // T.g:80:9: ( ''a'' .. ''z'' | ''A'' .. ''Z'' )+
+        // ruleBlockSingleAlt:T.g:72:5: ( ( ''a'' .. ''z'' | ''A'' .. ''Z'' )+ )
+        // T.g:72:9: ( ''a'' .. ''z'' | ''A'' .. ''Z'' )+
         begin
-        // positiveClosureBlock:T.g:80:9: ( ''a'' .. ''z'' | ''A'' .. ''Z'' )+
+        // positiveClosureBlock:T.g:72:9: ( ''a'' .. ''z'' | ''A'' .. ''Z'' )+
         _cnt[1]:=0;
         repeat 
             _alt[1]:=2;
@@ -415,10 +415,10 @@ begin
     try 
         _type := INT;
         _channel := 0;
-        // ruleBlockSingleAlt:T.g:82:5: ( ( ''0'' .. ''9'' )+ )
-        // T.g:82:9: ( ''0'' .. ''9'' )+
+        // ruleBlockSingleAlt:T.g:74:5: ( ( ''0'' .. ''9'' )+ )
+        // T.g:74:9: ( ''0'' .. ''9'' )+
         begin
-        // positiveClosureBlock:T.g:82:9: ( ''0'' .. ''9'' )+
+        // positiveClosureBlock:T.g:74:9: ( ''0'' .. ''9'' )+
         _cnt[2]:=0;
         repeat 
             _alt[2]:=2;
@@ -437,7 +437,7 @@ begin
             case (_alt[2]) of 
         	 1 :
         	    begin
-        	    // T.g:82:10: ''0'' .. ''9''
+        	    // T.g:74:10: ''0'' .. ''9''
         	    begin
         	    matchRange($0030,$0039); 
 
@@ -474,10 +474,10 @@ begin
     try 
         _type := WS;
         _channel := 0;
-        // ruleBlockSingleAlt:T.g:84:5: ( ( '' '' | ''\t'' | ''\r'' | ''\n'' )+ )
-        // T.g:84:9: ( '' '' | ''\t'' | ''\r'' | ''\n'' )+
+        // ruleBlockSingleAlt:T.g:76:5: ( ( '' '' | ''\t'' | ''\r'' | ''\n'' )+ )
+        // T.g:76:9: ( '' '' | ''\t'' | ''\r'' | ''\n'' )+
         begin
-        // positiveClosureBlock:T.g:84:9: ( '' '' | ''\t'' | ''\r'' | ''\n'' )+
+        // positiveClosureBlock:T.g:76:9: ( '' '' | ''\t'' | ''\r'' | ''\n'' )+
         _cnt[3]:=0;
         repeat 
             _alt[3]:=2;

@@ -1,12 +1,4 @@
-{** Convert the simple input to be java code; wrap in a class,
- *  convert method with "public void", add decls.  This shows how to insert
- *  extra text into a stream of tokens and how to replace a token
- *  with some text.  Calling toString() on the TokenRewriteStream
- *  in Main will print out the original input stream.
- *
- *  Note that you can do the instructions in any order as the
- *  rewrite instructions just get queued up and executed upon toString().
- *}
+
 grammar T;
 
 options {
@@ -51,7 +43,7 @@ scope {
     IJclIterator it;
 }
 @init {
-    $body::decls := TJclHashSet.Create(true);
+    $body::decls := TJclHashSet.Create(16,false);
 }
     :   lcurly='{' stat* '}'
         {
