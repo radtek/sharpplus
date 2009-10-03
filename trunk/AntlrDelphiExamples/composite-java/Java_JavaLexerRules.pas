@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 JavaLexerRules.g 2009-07-23 21:37:54
+// $ANTLR 3.2 10 03, 2009 16:05:49 JavaLexerRules.g 2009-10-03 16:52:12
 unit Java_JavaLexerRules;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
 type
     TJava_JavaLexerRules = class(TAntlrLexer)

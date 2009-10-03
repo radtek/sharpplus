@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 Java.g 2009-07-23 21:37:51
+// $ANTLR 3.2 10 03, 2009 16:05:49 Java.g 2009-10-03 16:52:09
 unit JavaParser;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
     const T__29=29;
     const T__28=28;
@@ -122,11 +122,11 @@ type
   TJavaParser = class(TAntlrParser)
   public
     tokenNames:TStrings;
-    FOLLOW_annotations_in_compilationUnit51:IBitSet;
-    FOLLOW_packageDeclaration_in_compilationUnit56:IBitSet;
-    FOLLOW_importDeclaration_in_compilationUnit67:IBitSet;
-    FOLLOW_typeDeclaration_in_compilationUnit78:IBitSet;
-    FOLLOW_annotations_in_synpred1_Java51:IBitSet;
+    FOLLOW_annotations_in_compilationUnit49:IBitSet;
+    FOLLOW_packageDeclaration_in_compilationUnit54:IBitSet;
+    FOLLOW_importDeclaration_in_compilationUnit65:IBitSet;
+    FOLLOW_typeDeclaration_in_compilationUnit76:IBitSet;
+    FOLLOW_annotations_in_synpred1_Java49:IBitSet;
     
 
     // delegates
@@ -153,7 +153,7 @@ type
 
 
     // $ANTLR start "compilationUnit"
-    // Java.g:17:1: compilationUnit : ( annotations )? ( packageDeclaration )? ( importDeclaration )* ( typeDeclaration )* ;
+    // Java.g:10:1: compilationUnit : ( annotations )? ( packageDeclaration )? ( importDeclaration )* ( typeDeclaration )* ;
     function compilationUnit():Integer;
     // $ANTLR end compilationUnit
 
@@ -162,264 +162,264 @@ type
     // $ANTLR end synpred1_Java
 
     // Delegated rules
-    function forVarControl():Integer;
-    //  { gJavaStat.forVarControl(); }
-    function enumBodyDeclarations():Integer;
-    //  { gJavaDecl.enumBodyDeclarations(); }
-    function annotation():Integer;
-    //  { gJavaAnnotations.annotation(); }
-    function elementValue():Integer;
-    //  { gJavaAnnotations.elementValue(); }
-    function interfaceBody():Integer;
-    //  { gJavaDecl.interfaceBody(); }
-    function typeArgument():Integer;
-    //  { gJavaDecl.typeArgument(); }
-    function explicitGenericInvocationSuffix():Integer;
-    //  { gJavaExpr.explicitGenericInvocationSuffix(); }
-    function inclusiveOrExpression():Integer;
-    //  { gJavaExpr.inclusiveOrExpression(); }
-    function annotationName():Integer;
-    //  { gJavaAnnotations.annotationName(); }
-    function arguments():Integer;
-    //  { gJavaExpr.arguments(); }
-    function assignmentOperator():Integer;
-    //  { gJavaExpr.assignmentOperator(); }
-    function normalInterfaceDeclaration():Integer;
-    //  { gJavaDecl.normalInterfaceDeclaration(); }
-    function constantDeclaratorsRest():Integer;
-    //  { gJavaDecl.constantDeclaratorsRest(); }
-    function andExpression():Integer;
-    //  { gJavaExpr.andExpression(); }
-    function classCreatorRest():Integer;
-    //  { gJavaExpr.classCreatorRest(); }
+    function unaryExpressionNotPlusMinus():Integer;
+    //  { gJavaExpr.unaryExpressionNotPlusMinus(); }
+    function enumBody():Integer;
+    //  { gJavaDecl.enumBody(); }
     function elementValuePairs():Integer;
     //  { gJavaAnnotations.elementValuePairs(); }
-    function genericMethodOrConstructorRest():Integer;
-    //  { gJavaDecl.genericMethodOrConstructorRest(); }
-    function bound():Integer;
-    //  { gJavaDecl.bound(); }
-    function methodBody():Integer;
-    //  { gJavaStat.methodBody(); }
-    function voidMethodDeclaratorRest():Integer;
-    //  { gJavaDecl.voidMethodDeclaratorRest(); }
-    function constantDeclarator():Integer;
-    //  { gJavaDecl.constantDeclarator(); }
+    function variableModifier():Integer;
+    //  { gJavaDecl.variableModifier(); }
+    function arrayCreatorRest():Integer;
+    //  { gJavaExpr.arrayCreatorRest(); }
     function selector():Integer;
     //  { gJavaExpr.selector(); }
     function conditionalAndExpression():Integer;
     //  { gJavaExpr.conditionalAndExpression(); }
-    function forControl():Integer;
-    //  { gJavaStat.forControl(); }
-    function typeArguments():Integer;
-    //  { gJavaDecl.typeArguments(); }
-    function enumConstantName():Integer;
-    //  { gJavaDecl.enumConstantName(); }
-    function variableDeclarators():Integer;
-    //  { gJavaDecl.variableDeclarators(); }
-    function variableDeclaratorId():Integer;
-    //  { gJavaDecl.variableDeclaratorId(); }
-    function unaryExpression():Integer;
-    //  { gJavaExpr.unaryExpression(); }
-    function annotationMethodRest():Integer;
-    //  { gJavaAnnotations.annotationMethodRest(); }
-    function forInit():Integer;
-    //  { gJavaStat.forInit(); }
-    function expressionList():Integer;
-    //  { gJavaExpr.expressionList(); }
-    function constructorDeclaratorRest():Integer;
-    //  { gJavaDecl.constructorDeclaratorRest(); }
-    function annotationTypeElementDeclaration():Integer;
-    //  { gJavaAnnotations.annotationTypeElementDeclaration(); }
-    function explicitGenericInvocation():Integer;
-    //  { gJavaExpr.explicitGenericInvocation(); }
-    function primary():Integer;
-    //  { gJavaExpr.primary(); }
-    function classBodyDeclaration():Integer;
-    //  { gJavaDecl.classBodyDeclaration(); }
-    function classOrInterfaceDeclaration():Integer;
-    //  { gJavaDecl.classOrInterfaceDeclaration(); }
-    function primitiveType():Integer;
-    //  { gJavaDecl.primitiveType(); }
-    function typeName():Integer;
-    //  { gJavaDecl.typeName(); }
-    function packageDeclaration():Integer;
-    //  { gJavaDecl.packageDeclaration(); }
-    function superSuffix():Integer;
-    //  { gJavaExpr.superSuffix(); }
-    function constantExpression():Integer;
-    //  { gJavaExpr.constantExpression(); }
-    function switchLabel():Integer;
-    //  { gJavaStat.switchLabel(); }
-    function relationalExpression():Integer;
-    //  { gJavaExpr.relationalExpression(); }
-    function expression():Integer;
-    //  { gJavaExpr.expression(); }
-    function booleanLiteral():Integer;
-    //  { gJavaExpr.booleanLiteral(); }
-    function typeList():Integer;
-    //  { gJavaDecl.typeList(); }
-    function block():Integer;
-    //  { gJavaStat.block(); }
-    function modifier():Integer;
-    //  { gJavaDecl.modifier(); }
-    function instanceOfExpression():Integer;
-    //  { gJavaExpr.instanceOfExpression(); }
-    function createdName():Integer;
-    //  { gJavaExpr.createdName(); }
-    function interfaceMethodOrFieldDecl():Integer;
-    //  { gJavaDecl.interfaceMethodOrFieldDecl(); }
-    function elementValueArrayInitializer():Integer;
-    //  { gJavaAnnotations.elementValueArrayInitializer(); }
-    function voidInterfaceMethodDeclaratorRest():Integer;
-    //  { gJavaDecl.voidInterfaceMethodDeclaratorRest(); }
-    function innerCreator():Integer;
-    //  { gJavaExpr.innerCreator(); }
-    function statementExpression():Integer;
-    //  { gJavaExpr.statementExpression(); }
-    function variableModifier():Integer;
-    //  { gJavaDecl.variableModifier(); }
-    function integerLiteral():Integer;
-    //  { gJavaExpr.integerLiteral(); }
-    function conditionalExpression():Integer;
-    //  { gJavaExpr.conditionalExpression(); }
-    function typeParameters():Integer;
-    //  { gJavaDecl.typeParameters(); }
-    function castExpression():Integer;
-    //  { gJavaExpr.castExpression(); }
-    function interfaceGenericMethodDecl():Integer;
-    //  { gJavaDecl.interfaceGenericMethodDecl(); }
-    function annotationMethodOrConstantRest():Integer;
-    //  { gJavaAnnotations.annotationMethodOrConstantRest(); }
-    function shiftExpression():Integer;
-    //  { gJavaExpr.shiftExpression(); }
-    function annotations():Integer;
-    //  { gJavaAnnotations.annotations(); }
-    function catchClause():Integer;
-    //  { gJavaStat.catchClause(); }
-    function enumConstant():Integer;
-    //  { gJavaDecl.enumConstant(); }
-    function statement():Integer;
-    //  { gJavaStat.statement(); }
-    function dtype():Integer;
-    //  { gJavaDecl.dtype(); }
-    function interfaceMemberDecl():Integer;
-    //  { gJavaDecl.interfaceMemberDecl(); }
-    function annotationConstantRest():Integer;
-    //  { gJavaAnnotations.annotationConstantRest(); }
-    function multiplicativeExpression():Integer;
-    //  { gJavaExpr.multiplicativeExpression(); }
-    function unaryExpressionNotPlusMinus():Integer;
-    //  { gJavaExpr.unaryExpressionNotPlusMinus(); }
-    function classDeclaration():Integer;
-    //  { gJavaDecl.classDeclaration(); }
-    function interfaceMethodDeclaratorRest():Integer;
-    //  { gJavaDecl.interfaceMethodDeclaratorRest(); }
-    function genericMethodOrConstructorDecl():Integer;
-    //  { gJavaDecl.genericMethodOrConstructorDecl(); }
-    function relationalOp():Integer;
-    //  { gJavaExpr.relationalOp(); }
-    function creator():Integer;
-    //  { gJavaExpr.creator(); }
-    function classBody():Integer;
-    //  { gJavaDecl.classBody(); }
-    function annotationTypeBody():Integer;
-    //  { gJavaAnnotations.annotationTypeBody(); }
-    function variableDeclaratorRest():Integer;
-    //  { gJavaDecl.variableDeclaratorRest(); }
-    function formalParameters():Integer;
-    //  { gJavaDecl.formalParameters(); }
-    function typeDeclaration():Integer;
-    //  { gJavaDecl.typeDeclaration(); }
-    function qualifiedName():Integer;
-    //  { gJavaDecl.qualifiedName(); }
-    function enumBody():Integer;
-    //  { gJavaDecl.enumBody(); }
-    function parExpression():Integer;
-    //  { gJavaExpr.parExpression(); }
-    function methodDeclaratorRest():Integer;
-    //  { gJavaDecl.methodDeclaratorRest(); }
-    function enumDeclaration():Integer;
-    //  { gJavaDecl.enumDeclaration(); }
-    function equalityExpression():Integer;
-    //  { gJavaExpr.equalityExpression(); }
-    function constantDeclaratorRest():Integer;
-    //  { gJavaDecl.constantDeclaratorRest(); }
-    function literal():Integer;
-    //  { gJavaExpr.literal(); }
-    function qualifiedNameList():Integer;
-    //  { gJavaDecl.qualifiedNameList(); }
-    function defaultValue():Integer;
-    //  { gJavaAnnotations.defaultValue(); }
-    function switchBlockStatementGroup():Integer;
-    //  { gJavaStat.switchBlockStatementGroup(); }
-    function normalClassDeclaration():Integer;
-    //  { gJavaDecl.normalClassDeclaration(); }
-    function enumConstants():Integer;
-    //  { gJavaDecl.enumConstants(); }
-    function annotationTypeElementRest():Integer;
-    //  { gJavaAnnotations.annotationTypeElementRest(); }
-    function shiftOp():Integer;
-    //  { gJavaExpr.shiftOp(); }
-    function memberDecl():Integer;
-    //  { gJavaDecl.memberDecl(); }
-    function catches():Integer;
-    //  { gJavaStat.catches(); }
-    function elementValuePair():Integer;
-    //  { gJavaAnnotations.elementValuePair(); }
-    function interfaceBodyDeclaration():Integer;
-    //  { gJavaDecl.interfaceBodyDeclaration(); }
-    function additiveExpression():Integer;
-    //  { gJavaExpr.additiveExpression(); }
-    function conditionalOrExpression():Integer;
-    //  { gJavaExpr.conditionalOrExpression(); }
-    function fieldDeclaration():Integer;
-    //  { gJavaDecl.fieldDeclaration(); }
-    function nonWildcardTypeArguments():Integer;
-    //  { gJavaExpr.nonWildcardTypeArguments(); }
-    function annotationTypeElementDeclarations():Integer;
-    //  { gJavaAnnotations.annotationTypeElementDeclarations(); }
-    function formalParameter():Integer;
-    //  { gJavaStat.formalParameter(); }
-    function formalParameterDecls():Integer;
-    //  { gJavaDecl.formalParameterDecls(); }
-    function blockStatement():Integer;
-    //  { gJavaStat.blockStatement(); }
-    function forUpdate():Integer;
-    //  { gJavaStat.forUpdate(); }
-    function variableInitializer():Integer;
-    //  { gJavaDecl.variableInitializer(); }
     function arrayInitializer():Integer;
     //  { gJavaDecl.arrayInitializer(); }
-    function exclusiveOrExpression():Integer;
-    //  { gJavaExpr.exclusiveOrExpression(); }
-    function formalParameterDeclsRest():Integer;
-    //  { gJavaDecl.formalParameterDeclsRest(); }
-    function annotationTypeDeclaration():Integer;
-    //  { gJavaAnnotations.annotationTypeDeclaration(); }
-    function variableDeclarator():Integer;
-    //  { gJavaDecl.variableDeclarator(); }
-    function packageOrTypeName():Integer;
-    //  { gJavaDecl.packageOrTypeName(); }
+    function constantDeclaratorRest():Integer;
+    //  { gJavaDecl.constantDeclaratorRest(); }
+    function localVariableDeclaration():Integer;
+    //  { gJavaStat.localVariableDeclaration(); }
+    function methodDeclaration():Integer;
+    //  { gJavaDecl.methodDeclaration(); }
+    function formalParameterDecls():Integer;
+    //  { gJavaDecl.formalParameterDecls(); }
+    function typeList():Integer;
+    //  { gJavaDecl.typeList(); }
+    function interfaceMethodDeclaratorRest():Integer;
+    //  { gJavaDecl.interfaceMethodDeclaratorRest(); }
+    function voidMethodDeclaratorRest():Integer;
+    //  { gJavaDecl.voidMethodDeclaratorRest(); }
+    function constantDeclarator():Integer;
+    //  { gJavaDecl.constantDeclarator(); }
+    function interfaceDeclaration():Integer;
+    //  { gJavaDecl.interfaceDeclaration(); }
+    function classBody():Integer;
+    //  { gJavaDecl.classBody(); }
+    function modifier():Integer;
+    //  { gJavaDecl.modifier(); }
+    function shiftExpression():Integer;
+    //  { gJavaExpr.shiftExpression(); }
+    function createdName():Integer;
+    //  { gJavaExpr.createdName(); }
+    function dtype():Integer;
+    //  { gJavaDecl.dtype(); }
+    function multiplicativeExpression():Integer;
+    //  { gJavaExpr.multiplicativeExpression(); }
     function importDeclaration():Integer;
     //  { gJavaDecl.importDeclaration(); }
-    function arrayCreatorRest():Integer;
-    //  { gJavaExpr.arrayCreatorRest(); }
+    function annotationTypeElementRest():Integer;
+    //  { gJavaAnnotations.annotationTypeElementRest(); }
+    function methodDeclaratorRest():Integer;
+    //  { gJavaDecl.methodDeclaratorRest(); }
+    function elementValueArrayInitializer():Integer;
+    //  { gJavaAnnotations.elementValueArrayInitializer(); }
+    function typeName():Integer;
+    //  { gJavaDecl.typeName(); }
+    function expressionList():Integer;
+    //  { gJavaExpr.expressionList(); }
+    function innerCreator():Integer;
+    //  { gJavaExpr.innerCreator(); }
+    function forControl():Integer;
+    //  { gJavaStat.forControl(); }
+    function enumDeclaration():Integer;
+    //  { gJavaDecl.enumDeclaration(); }
+    function packageDeclaration():Integer;
+    //  { gJavaDecl.packageDeclaration(); }
+    function annotation():Integer;
+    //  { gJavaAnnotations.annotation(); }
+    function integerLiteral():Integer;
+    //  { gJavaExpr.integerLiteral(); }
+    function unaryExpression():Integer;
+    //  { gJavaExpr.unaryExpression(); }
+    function qualifiedNameList():Integer;
+    //  { gJavaDecl.qualifiedNameList(); }
+    function classDeclaration():Integer;
+    //  { gJavaDecl.classDeclaration(); }
+    function variableDeclaratorId():Integer;
+    //  { gJavaDecl.variableDeclaratorId(); }
+    function conditionalExpression():Integer;
+    //  { gJavaExpr.conditionalExpression(); }
+    function andExpression():Integer;
+    //  { gJavaExpr.andExpression(); }
+    function defaultValue():Integer;
+    //  { gJavaAnnotations.defaultValue(); }
+    function block():Integer;
+    //  { gJavaStat.block(); }
+    function exclusiveOrExpression():Integer;
+    //  { gJavaExpr.exclusiveOrExpression(); }
     function identifierSuffix():Integer;
     //  { gJavaExpr.identifierSuffix(); }
     function interfaceMethodOrFieldRest():Integer;
     //  { gJavaDecl.interfaceMethodOrFieldRest(); }
-    function typeParameter():Integer;
-    //  { gJavaDecl.typeParameter(); }
-    function methodDeclaration():Integer;
-    //  { gJavaDecl.methodDeclaration(); }
-    function moreStatementExpressions():Integer;
-    //  { gJavaStat.moreStatementExpressions(); }
-    function interfaceDeclaration():Integer;
-    //  { gJavaDecl.interfaceDeclaration(); }
-    function localVariableDeclaration():Integer;
-    //  { gJavaStat.localVariableDeclaration(); }
+    function catchClause():Integer;
+    //  { gJavaStat.catchClause(); }
+    function classOrInterfaceDeclaration():Integer;
+    //  { gJavaDecl.classOrInterfaceDeclaration(); }
+    function switchBlockStatementGroup():Integer;
+    //  { gJavaStat.switchBlockStatementGroup(); }
+    function formalParameters():Integer;
+    //  { gJavaDecl.formalParameters(); }
+    function expression():Integer;
+    //  { gJavaExpr.expression(); }
+    function castExpression():Integer;
+    //  { gJavaExpr.castExpression(); }
+    function arguments():Integer;
+    //  { gJavaExpr.arguments(); }
+    function constantDeclaratorsRest():Integer;
+    //  { gJavaDecl.constantDeclaratorsRest(); }
+    function normalInterfaceDeclaration():Integer;
+    //  { gJavaDecl.normalInterfaceDeclaration(); }
+    function interfaceMemberDecl():Integer;
+    //  { gJavaDecl.interfaceMemberDecl(); }
+    function catches():Integer;
+    //  { gJavaStat.catches(); }
+    function equalityExpression():Integer;
+    //  { gJavaExpr.equalityExpression(); }
+    function interfaceBodyDeclaration():Integer;
+    //  { gJavaDecl.interfaceBodyDeclaration(); }
+    function statement():Integer;
+    //  { gJavaStat.statement(); }
+    function blockStatement():Integer;
+    //  { gJavaStat.blockStatement(); }
+    function relationalExpression():Integer;
+    //  { gJavaExpr.relationalExpression(); }
+    function variableInitializer():Integer;
+    //  { gJavaDecl.variableInitializer(); }
+    function enumBodyDeclarations():Integer;
+    //  { gJavaDecl.enumBodyDeclarations(); }
     function switchBlockStatementGroups():Integer;
     //  { gJavaStat.switchBlockStatementGroups(); }
+    function creator():Integer;
+    //  { gJavaExpr.creator(); }
+    function qualifiedName():Integer;
+    //  { gJavaDecl.qualifiedName(); }
+    function constructorDeclaratorRest():Integer;
+    //  { gJavaDecl.constructorDeclaratorRest(); }
+    function superSuffix():Integer;
+    //  { gJavaExpr.superSuffix(); }
+    function forUpdate():Integer;
+    //  { gJavaStat.forUpdate(); }
+    function normalClassDeclaration():Integer;
+    //  { gJavaDecl.normalClassDeclaration(); }
+    function literal():Integer;
+    //  { gJavaExpr.literal(); }
+    function forVarControl():Integer;
+    //  { gJavaStat.forVarControl(); }
+    function bound():Integer;
+    //  { gJavaDecl.bound(); }
+    function constantExpression():Integer;
+    //  { gJavaExpr.constantExpression(); }
+    function typeDeclaration():Integer;
+    //  { gJavaDecl.typeDeclaration(); }
+    function annotationTypeDeclaration():Integer;
+    //  { gJavaAnnotations.annotationTypeDeclaration(); }
+    function nonWildcardTypeArguments():Integer;
+    //  { gJavaExpr.nonWildcardTypeArguments(); }
+    function genericMethodOrConstructorDecl():Integer;
+    //  { gJavaDecl.genericMethodOrConstructorDecl(); }
+    function formalParameter():Integer;
+    //  { gJavaStat.formalParameter(); }
+    function packageOrTypeName():Integer;
+    //  { gJavaDecl.packageOrTypeName(); }
+    function relationalOp():Integer;
+    //  { gJavaExpr.relationalOp(); }
+    function formalParameterDeclsRest():Integer;
+    //  { gJavaDecl.formalParameterDeclsRest(); }
+    function interfaceBody():Integer;
+    //  { gJavaDecl.interfaceBody(); }
+    function annotationMethodRest():Integer;
+    //  { gJavaAnnotations.annotationMethodRest(); }
+    function annotationName():Integer;
+    //  { gJavaAnnotations.annotationName(); }
+    function typeArguments():Integer;
+    //  { gJavaDecl.typeArguments(); }
+    function annotations():Integer;
+    //  { gJavaAnnotations.annotations(); }
+    function inclusiveOrExpression():Integer;
+    //  { gJavaExpr.inclusiveOrExpression(); }
+    function elementValue():Integer;
+    //  { gJavaAnnotations.elementValue(); }
+    function moreStatementExpressions():Integer;
+    //  { gJavaStat.moreStatementExpressions(); }
+    function annotationConstantRest():Integer;
+    //  { gJavaAnnotations.annotationConstantRest(); }
+    function explicitGenericInvocationSuffix():Integer;
+    //  { gJavaExpr.explicitGenericInvocationSuffix(); }
+    function additiveExpression():Integer;
+    //  { gJavaExpr.additiveExpression(); }
+    function classBodyDeclaration():Integer;
+    //  { gJavaDecl.classBodyDeclaration(); }
+    function booleanLiteral():Integer;
+    //  { gJavaExpr.booleanLiteral(); }
+    function variableDeclaratorRest():Integer;
+    //  { gJavaDecl.variableDeclaratorRest(); }
+    function primary():Integer;
+    //  { gJavaExpr.primary(); }
+    function annotationTypeBody():Integer;
+    //  { gJavaAnnotations.annotationTypeBody(); }
+    function annotationTypeElementDeclarations():Integer;
+    //  { gJavaAnnotations.annotationTypeElementDeclarations(); }
+    function annotationTypeElementDeclaration():Integer;
+    //  { gJavaAnnotations.annotationTypeElementDeclaration(); }
+    function genericMethodOrConstructorRest():Integer;
+    //  { gJavaDecl.genericMethodOrConstructorRest(); }
+    function classCreatorRest():Integer;
+    //  { gJavaExpr.classCreatorRest(); }
+    function instanceOfExpression():Integer;
+    //  { gJavaExpr.instanceOfExpression(); }
+    function voidInterfaceMethodDeclaratorRest():Integer;
+    //  { gJavaDecl.voidInterfaceMethodDeclaratorRest(); }
+    function annotationMethodOrConstantRest():Integer;
+    //  { gJavaAnnotations.annotationMethodOrConstantRest(); }
+    function interfaceGenericMethodDecl():Integer;
+    //  { gJavaDecl.interfaceGenericMethodDecl(); }
+    function interfaceMethodOrFieldDecl():Integer;
+    //  { gJavaDecl.interfaceMethodOrFieldDecl(); }
+    function elementValuePair():Integer;
+    //  { gJavaAnnotations.elementValuePair(); }
+    function primitiveType():Integer;
+    //  { gJavaDecl.primitiveType(); }
+    function parExpression():Integer;
+    //  { gJavaExpr.parExpression(); }
+    function explicitGenericInvocation():Integer;
+    //  { gJavaExpr.explicitGenericInvocation(); }
+    function fieldDeclaration():Integer;
+    //  { gJavaDecl.fieldDeclaration(); }
+    function variableDeclarator():Integer;
+    //  { gJavaDecl.variableDeclarator(); }
+    function typeParameter():Integer;
+    //  { gJavaDecl.typeParameter(); }
+    function forInit():Integer;
+    //  { gJavaStat.forInit(); }
+    function enumConstant():Integer;
+    //  { gJavaDecl.enumConstant(); }
+    function assignmentOperator():Integer;
+    //  { gJavaExpr.assignmentOperator(); }
+    function enumConstantName():Integer;
+    //  { gJavaDecl.enumConstantName(); }
+    function enumConstants():Integer;
+    //  { gJavaDecl.enumConstants(); }
+    function methodBody():Integer;
+    //  { gJavaStat.methodBody(); }
+    function conditionalOrExpression():Integer;
+    //  { gJavaExpr.conditionalOrExpression(); }
+    function variableDeclarators():Integer;
+    //  { gJavaDecl.variableDeclarators(); }
+    function memberDecl():Integer;
+    //  { gJavaDecl.memberDecl(); }
+    function switchLabel():Integer;
+    //  { gJavaStat.switchLabel(); }
+    function shiftOp():Integer;
+    //  { gJavaExpr.shiftOp(); }
+    function statementExpression():Integer;
+    //  { gJavaExpr.statementExpression(); }
+    function typeParameters():Integer;
+    //  { gJavaDecl.typeParameters(); }
+    function typeArgument():Integer;
+    //  { gJavaDecl.typeArgument(); }
 
     function synpred1_Java():Boolean;
   protected
@@ -573,89 +573,25 @@ gJavaStat := TJava_JavaStat.CreateWithStream(input, state, self);
 end;
 
     // Delegated rules
-function TJavaParser.forVarControl():Integer;
+function TJavaParser.unaryExpressionNotPlusMinus():Integer;
 begin
-TJava_JavaStat(gJavaStat).forVarControl(); 
+TJava_JavaExpr(gJavaExpr).unaryExpressionNotPlusMinus(); 
 end;
-function TJavaParser.enumBodyDeclarations():Integer;
+function TJavaParser.enumBody():Integer;
 begin
-TJava_JavaDecl(gJavaDecl).enumBodyDeclarations(); 
-end;
-function TJavaParser.annotation():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).annotation(); 
-end;
-function TJavaParser.elementValue():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).elementValue(); 
-end;
-function TJavaParser.interfaceBody():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).interfaceBody(); 
-end;
-function TJavaParser.typeArgument():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).typeArgument(); 
-end;
-function TJavaParser.explicitGenericInvocationSuffix():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).explicitGenericInvocationSuffix(); 
-end;
-function TJavaParser.inclusiveOrExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).inclusiveOrExpression(); 
-end;
-function TJavaParser.annotationName():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).annotationName(); 
-end;
-function TJavaParser.arguments():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).arguments(); 
-end;
-function TJavaParser.assignmentOperator():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).assignmentOperator(); 
-end;
-function TJavaParser.normalInterfaceDeclaration():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).normalInterfaceDeclaration(); 
-end;
-function TJavaParser.constantDeclaratorsRest():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).constantDeclaratorsRest(); 
-end;
-function TJavaParser.andExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).andExpression(); 
-end;
-function TJavaParser.classCreatorRest():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).classCreatorRest(); 
+TJava_JavaDecl(gJavaDecl).enumBody(); 
 end;
 function TJavaParser.elementValuePairs():Integer;
 begin
 TJava_JavaAnnotations(gJavaAnnotations).elementValuePairs(); 
 end;
-function TJavaParser.genericMethodOrConstructorRest():Integer;
+function TJavaParser.variableModifier():Integer;
 begin
-TJava_JavaDecl(gJavaDecl).genericMethodOrConstructorRest(); 
+TJava_JavaDecl(gJavaDecl).variableModifier(); 
 end;
-function TJavaParser.bound():Integer;
+function TJavaParser.arrayCreatorRest():Integer;
 begin
-TJava_JavaDecl(gJavaDecl).bound(); 
-end;
-function TJavaParser.methodBody():Integer;
-begin
-TJava_JavaStat(gJavaStat).methodBody(); 
-end;
-function TJavaParser.voidMethodDeclaratorRest():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).voidMethodDeclaratorRest(); 
-end;
-function TJavaParser.constantDeclarator():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).constantDeclarator(); 
+TJava_JavaExpr(gJavaExpr).arrayCreatorRest(); 
 end;
 function TJavaParser.selector():Integer;
 begin
@@ -665,397 +601,153 @@ function TJavaParser.conditionalAndExpression():Integer;
 begin
 TJava_JavaExpr(gJavaExpr).conditionalAndExpression(); 
 end;
-function TJavaParser.forControl():Integer;
+function TJavaParser.arrayInitializer():Integer;
 begin
-TJava_JavaStat(gJavaStat).forControl(); 
-end;
-function TJavaParser.typeArguments():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).typeArguments(); 
-end;
-function TJavaParser.enumConstantName():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).enumConstantName(); 
-end;
-function TJavaParser.variableDeclarators():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).variableDeclarators(); 
-end;
-function TJavaParser.variableDeclaratorId():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).variableDeclaratorId(); 
-end;
-function TJavaParser.unaryExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).unaryExpression(); 
-end;
-function TJavaParser.annotationMethodRest():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).annotationMethodRest(); 
-end;
-function TJavaParser.forInit():Integer;
-begin
-TJava_JavaStat(gJavaStat).forInit(); 
-end;
-function TJavaParser.expressionList():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).expressionList(); 
-end;
-function TJavaParser.constructorDeclaratorRest():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).constructorDeclaratorRest(); 
-end;
-function TJavaParser.annotationTypeElementDeclaration():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).annotationTypeElementDeclaration(); 
-end;
-function TJavaParser.explicitGenericInvocation():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).explicitGenericInvocation(); 
-end;
-function TJavaParser.primary():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).primary(); 
-end;
-function TJavaParser.classBodyDeclaration():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).classBodyDeclaration(); 
-end;
-function TJavaParser.classOrInterfaceDeclaration():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).classOrInterfaceDeclaration(); 
-end;
-function TJavaParser.primitiveType():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).primitiveType(); 
-end;
-function TJavaParser.typeName():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).typeName(); 
-end;
-function TJavaParser.packageDeclaration():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).packageDeclaration(); 
-end;
-function TJavaParser.superSuffix():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).superSuffix(); 
-end;
-function TJavaParser.constantExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).constantExpression(); 
-end;
-function TJavaParser.switchLabel():Integer;
-begin
-TJava_JavaStat(gJavaStat).switchLabel(); 
-end;
-function TJavaParser.relationalExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).relationalExpression(); 
-end;
-function TJavaParser.expression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).expression(); 
-end;
-function TJavaParser.booleanLiteral():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).booleanLiteral(); 
-end;
-function TJavaParser.typeList():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).typeList(); 
-end;
-function TJavaParser.block():Integer;
-begin
-TJava_JavaStat(gJavaStat).block(); 
-end;
-function TJavaParser.modifier():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).modifier(); 
-end;
-function TJavaParser.instanceOfExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).instanceOfExpression(); 
-end;
-function TJavaParser.createdName():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).createdName(); 
-end;
-function TJavaParser.interfaceMethodOrFieldDecl():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).interfaceMethodOrFieldDecl(); 
-end;
-function TJavaParser.elementValueArrayInitializer():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).elementValueArrayInitializer(); 
-end;
-function TJavaParser.voidInterfaceMethodDeclaratorRest():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).voidInterfaceMethodDeclaratorRest(); 
-end;
-function TJavaParser.innerCreator():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).innerCreator(); 
-end;
-function TJavaParser.statementExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).statementExpression(); 
-end;
-function TJavaParser.variableModifier():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).variableModifier(); 
-end;
-function TJavaParser.integerLiteral():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).integerLiteral(); 
-end;
-function TJavaParser.conditionalExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).conditionalExpression(); 
-end;
-function TJavaParser.typeParameters():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).typeParameters(); 
-end;
-function TJavaParser.castExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).castExpression(); 
-end;
-function TJavaParser.interfaceGenericMethodDecl():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).interfaceGenericMethodDecl(); 
-end;
-function TJavaParser.annotationMethodOrConstantRest():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).annotationMethodOrConstantRest(); 
-end;
-function TJavaParser.shiftExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).shiftExpression(); 
-end;
-function TJavaParser.annotations():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).annotations(); 
-end;
-function TJavaParser.catchClause():Integer;
-begin
-TJava_JavaStat(gJavaStat).catchClause(); 
-end;
-function TJavaParser.enumConstant():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).enumConstant(); 
-end;
-function TJavaParser.statement():Integer;
-begin
-TJava_JavaStat(gJavaStat).statement(); 
-end;
-function TJavaParser.dtype():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).dtype(); 
-end;
-function TJavaParser.interfaceMemberDecl():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).interfaceMemberDecl(); 
-end;
-function TJavaParser.annotationConstantRest():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).annotationConstantRest(); 
-end;
-function TJavaParser.multiplicativeExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).multiplicativeExpression(); 
-end;
-function TJavaParser.unaryExpressionNotPlusMinus():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).unaryExpressionNotPlusMinus(); 
-end;
-function TJavaParser.classDeclaration():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).classDeclaration(); 
-end;
-function TJavaParser.interfaceMethodDeclaratorRest():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).interfaceMethodDeclaratorRest(); 
-end;
-function TJavaParser.genericMethodOrConstructorDecl():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).genericMethodOrConstructorDecl(); 
-end;
-function TJavaParser.relationalOp():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).relationalOp(); 
-end;
-function TJavaParser.creator():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).creator(); 
-end;
-function TJavaParser.classBody():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).classBody(); 
-end;
-function TJavaParser.annotationTypeBody():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).annotationTypeBody(); 
-end;
-function TJavaParser.variableDeclaratorRest():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).variableDeclaratorRest(); 
-end;
-function TJavaParser.formalParameters():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).formalParameters(); 
-end;
-function TJavaParser.typeDeclaration():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).typeDeclaration(); 
-end;
-function TJavaParser.qualifiedName():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).qualifiedName(); 
-end;
-function TJavaParser.enumBody():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).enumBody(); 
-end;
-function TJavaParser.parExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).parExpression(); 
-end;
-function TJavaParser.methodDeclaratorRest():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).methodDeclaratorRest(); 
-end;
-function TJavaParser.enumDeclaration():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).enumDeclaration(); 
-end;
-function TJavaParser.equalityExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).equalityExpression(); 
+TJava_JavaDecl(gJavaDecl).arrayInitializer(); 
 end;
 function TJavaParser.constantDeclaratorRest():Integer;
 begin
 TJava_JavaDecl(gJavaDecl).constantDeclaratorRest(); 
 end;
-function TJavaParser.literal():Integer;
+function TJavaParser.localVariableDeclaration():Integer;
 begin
-TJava_JavaExpr(gJavaExpr).literal(); 
+TJava_JavaStat(gJavaStat).localVariableDeclaration(); 
 end;
-function TJavaParser.qualifiedNameList():Integer;
+function TJavaParser.methodDeclaration():Integer;
 begin
-TJava_JavaDecl(gJavaDecl).qualifiedNameList(); 
-end;
-function TJavaParser.defaultValue():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).defaultValue(); 
-end;
-function TJavaParser.switchBlockStatementGroup():Integer;
-begin
-TJava_JavaStat(gJavaStat).switchBlockStatementGroup(); 
-end;
-function TJavaParser.normalClassDeclaration():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).normalClassDeclaration(); 
-end;
-function TJavaParser.enumConstants():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).enumConstants(); 
-end;
-function TJavaParser.annotationTypeElementRest():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).annotationTypeElementRest(); 
-end;
-function TJavaParser.shiftOp():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).shiftOp(); 
-end;
-function TJavaParser.memberDecl():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).memberDecl(); 
-end;
-function TJavaParser.catches():Integer;
-begin
-TJava_JavaStat(gJavaStat).catches(); 
-end;
-function TJavaParser.elementValuePair():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).elementValuePair(); 
-end;
-function TJavaParser.interfaceBodyDeclaration():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).interfaceBodyDeclaration(); 
-end;
-function TJavaParser.additiveExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).additiveExpression(); 
-end;
-function TJavaParser.conditionalOrExpression():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).conditionalOrExpression(); 
-end;
-function TJavaParser.fieldDeclaration():Integer;
-begin
-TJava_JavaDecl(gJavaDecl).fieldDeclaration(); 
-end;
-function TJavaParser.nonWildcardTypeArguments():Integer;
-begin
-TJava_JavaExpr(gJavaExpr).nonWildcardTypeArguments(); 
-end;
-function TJavaParser.annotationTypeElementDeclarations():Integer;
-begin
-TJava_JavaAnnotations(gJavaAnnotations).annotationTypeElementDeclarations(); 
-end;
-function TJavaParser.formalParameter():Integer;
-begin
-TJava_JavaStat(gJavaStat).formalParameter(); 
+TJava_JavaDecl(gJavaDecl).methodDeclaration(); 
 end;
 function TJavaParser.formalParameterDecls():Integer;
 begin
 TJava_JavaDecl(gJavaDecl).formalParameterDecls(); 
 end;
-function TJavaParser.blockStatement():Integer;
+function TJavaParser.typeList():Integer;
 begin
-TJava_JavaStat(gJavaStat).blockStatement(); 
+TJava_JavaDecl(gJavaDecl).typeList(); 
 end;
-function TJavaParser.forUpdate():Integer;
+function TJavaParser.interfaceMethodDeclaratorRest():Integer;
 begin
-TJava_JavaStat(gJavaStat).forUpdate(); 
+TJava_JavaDecl(gJavaDecl).interfaceMethodDeclaratorRest(); 
 end;
-function TJavaParser.variableInitializer():Integer;
+function TJavaParser.voidMethodDeclaratorRest():Integer;
 begin
-TJava_JavaDecl(gJavaDecl).variableInitializer(); 
+TJava_JavaDecl(gJavaDecl).voidMethodDeclaratorRest(); 
 end;
-function TJavaParser.arrayInitializer():Integer;
+function TJavaParser.constantDeclarator():Integer;
 begin
-TJava_JavaDecl(gJavaDecl).arrayInitializer(); 
+TJava_JavaDecl(gJavaDecl).constantDeclarator(); 
 end;
-function TJavaParser.exclusiveOrExpression():Integer;
+function TJavaParser.interfaceDeclaration():Integer;
 begin
-TJava_JavaExpr(gJavaExpr).exclusiveOrExpression(); 
+TJava_JavaDecl(gJavaDecl).interfaceDeclaration(); 
 end;
-function TJavaParser.formalParameterDeclsRest():Integer;
+function TJavaParser.classBody():Integer;
 begin
-TJava_JavaDecl(gJavaDecl).formalParameterDeclsRest(); 
+TJava_JavaDecl(gJavaDecl).classBody(); 
 end;
-function TJavaParser.annotationTypeDeclaration():Integer;
+function TJavaParser.modifier():Integer;
 begin
-TJava_JavaAnnotations(gJavaAnnotations).annotationTypeDeclaration(); 
+TJava_JavaDecl(gJavaDecl).modifier(); 
 end;
-function TJavaParser.variableDeclarator():Integer;
+function TJavaParser.shiftExpression():Integer;
 begin
-TJava_JavaDecl(gJavaDecl).variableDeclarator(); 
+TJava_JavaExpr(gJavaExpr).shiftExpression(); 
 end;
-function TJavaParser.packageOrTypeName():Integer;
+function TJavaParser.createdName():Integer;
 begin
-TJava_JavaDecl(gJavaDecl).packageOrTypeName(); 
+TJava_JavaExpr(gJavaExpr).createdName(); 
+end;
+function TJavaParser.dtype():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).dtype(); 
+end;
+function TJavaParser.multiplicativeExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).multiplicativeExpression(); 
 end;
 function TJavaParser.importDeclaration():Integer;
 begin
 TJava_JavaDecl(gJavaDecl).importDeclaration(); 
 end;
-function TJavaParser.arrayCreatorRest():Integer;
+function TJavaParser.annotationTypeElementRest():Integer;
 begin
-TJava_JavaExpr(gJavaExpr).arrayCreatorRest(); 
+TJava_JavaAnnotations(gJavaAnnotations).annotationTypeElementRest(); 
+end;
+function TJavaParser.methodDeclaratorRest():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).methodDeclaratorRest(); 
+end;
+function TJavaParser.elementValueArrayInitializer():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).elementValueArrayInitializer(); 
+end;
+function TJavaParser.typeName():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).typeName(); 
+end;
+function TJavaParser.expressionList():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).expressionList(); 
+end;
+function TJavaParser.innerCreator():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).innerCreator(); 
+end;
+function TJavaParser.forControl():Integer;
+begin
+TJava_JavaStat(gJavaStat).forControl(); 
+end;
+function TJavaParser.enumDeclaration():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).enumDeclaration(); 
+end;
+function TJavaParser.packageDeclaration():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).packageDeclaration(); 
+end;
+function TJavaParser.annotation():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).annotation(); 
+end;
+function TJavaParser.integerLiteral():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).integerLiteral(); 
+end;
+function TJavaParser.unaryExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).unaryExpression(); 
+end;
+function TJavaParser.qualifiedNameList():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).qualifiedNameList(); 
+end;
+function TJavaParser.classDeclaration():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).classDeclaration(); 
+end;
+function TJavaParser.variableDeclaratorId():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).variableDeclaratorId(); 
+end;
+function TJavaParser.conditionalExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).conditionalExpression(); 
+end;
+function TJavaParser.andExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).andExpression(); 
+end;
+function TJavaParser.defaultValue():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).defaultValue(); 
+end;
+function TJavaParser.block():Integer;
+begin
+TJava_JavaStat(gJavaStat).block(); 
+end;
+function TJavaParser.exclusiveOrExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).exclusiveOrExpression(); 
 end;
 function TJavaParser.identifierSuffix():Integer;
 begin
@@ -1065,38 +757,346 @@ function TJavaParser.interfaceMethodOrFieldRest():Integer;
 begin
 TJava_JavaDecl(gJavaDecl).interfaceMethodOrFieldRest(); 
 end;
-function TJavaParser.typeParameter():Integer;
+function TJavaParser.catchClause():Integer;
 begin
-TJava_JavaDecl(gJavaDecl).typeParameter(); 
+TJava_JavaStat(gJavaStat).catchClause(); 
 end;
-function TJavaParser.methodDeclaration():Integer;
+function TJavaParser.classOrInterfaceDeclaration():Integer;
 begin
-TJava_JavaDecl(gJavaDecl).methodDeclaration(); 
+TJava_JavaDecl(gJavaDecl).classOrInterfaceDeclaration(); 
 end;
-function TJavaParser.moreStatementExpressions():Integer;
+function TJavaParser.switchBlockStatementGroup():Integer;
 begin
-TJava_JavaStat(gJavaStat).moreStatementExpressions(); 
+TJava_JavaStat(gJavaStat).switchBlockStatementGroup(); 
 end;
-function TJavaParser.interfaceDeclaration():Integer;
+function TJavaParser.formalParameters():Integer;
 begin
-TJava_JavaDecl(gJavaDecl).interfaceDeclaration(); 
+TJava_JavaDecl(gJavaDecl).formalParameters(); 
 end;
-function TJavaParser.localVariableDeclaration():Integer;
+function TJavaParser.expression():Integer;
 begin
-TJava_JavaStat(gJavaStat).localVariableDeclaration(); 
+TJava_JavaExpr(gJavaExpr).expression(); 
+end;
+function TJavaParser.castExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).castExpression(); 
+end;
+function TJavaParser.arguments():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).arguments(); 
+end;
+function TJavaParser.constantDeclaratorsRest():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).constantDeclaratorsRest(); 
+end;
+function TJavaParser.normalInterfaceDeclaration():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).normalInterfaceDeclaration(); 
+end;
+function TJavaParser.interfaceMemberDecl():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).interfaceMemberDecl(); 
+end;
+function TJavaParser.catches():Integer;
+begin
+TJava_JavaStat(gJavaStat).catches(); 
+end;
+function TJavaParser.equalityExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).equalityExpression(); 
+end;
+function TJavaParser.interfaceBodyDeclaration():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).interfaceBodyDeclaration(); 
+end;
+function TJavaParser.statement():Integer;
+begin
+TJava_JavaStat(gJavaStat).statement(); 
+end;
+function TJavaParser.blockStatement():Integer;
+begin
+TJava_JavaStat(gJavaStat).blockStatement(); 
+end;
+function TJavaParser.relationalExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).relationalExpression(); 
+end;
+function TJavaParser.variableInitializer():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).variableInitializer(); 
+end;
+function TJavaParser.enumBodyDeclarations():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).enumBodyDeclarations(); 
 end;
 function TJavaParser.switchBlockStatementGroups():Integer;
 begin
 TJava_JavaStat(gJavaStat).switchBlockStatementGroups(); 
 end;
+function TJavaParser.creator():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).creator(); 
+end;
+function TJavaParser.qualifiedName():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).qualifiedName(); 
+end;
+function TJavaParser.constructorDeclaratorRest():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).constructorDeclaratorRest(); 
+end;
+function TJavaParser.superSuffix():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).superSuffix(); 
+end;
+function TJavaParser.forUpdate():Integer;
+begin
+TJava_JavaStat(gJavaStat).forUpdate(); 
+end;
+function TJavaParser.normalClassDeclaration():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).normalClassDeclaration(); 
+end;
+function TJavaParser.literal():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).literal(); 
+end;
+function TJavaParser.forVarControl():Integer;
+begin
+TJava_JavaStat(gJavaStat).forVarControl(); 
+end;
+function TJavaParser.bound():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).bound(); 
+end;
+function TJavaParser.constantExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).constantExpression(); 
+end;
+function TJavaParser.typeDeclaration():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).typeDeclaration(); 
+end;
+function TJavaParser.annotationTypeDeclaration():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).annotationTypeDeclaration(); 
+end;
+function TJavaParser.nonWildcardTypeArguments():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).nonWildcardTypeArguments(); 
+end;
+function TJavaParser.genericMethodOrConstructorDecl():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).genericMethodOrConstructorDecl(); 
+end;
+function TJavaParser.formalParameter():Integer;
+begin
+TJava_JavaStat(gJavaStat).formalParameter(); 
+end;
+function TJavaParser.packageOrTypeName():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).packageOrTypeName(); 
+end;
+function TJavaParser.relationalOp():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).relationalOp(); 
+end;
+function TJavaParser.formalParameterDeclsRest():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).formalParameterDeclsRest(); 
+end;
+function TJavaParser.interfaceBody():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).interfaceBody(); 
+end;
+function TJavaParser.annotationMethodRest():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).annotationMethodRest(); 
+end;
+function TJavaParser.annotationName():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).annotationName(); 
+end;
+function TJavaParser.typeArguments():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).typeArguments(); 
+end;
+function TJavaParser.annotations():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).annotations(); 
+end;
+function TJavaParser.inclusiveOrExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).inclusiveOrExpression(); 
+end;
+function TJavaParser.elementValue():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).elementValue(); 
+end;
+function TJavaParser.moreStatementExpressions():Integer;
+begin
+TJava_JavaStat(gJavaStat).moreStatementExpressions(); 
+end;
+function TJavaParser.annotationConstantRest():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).annotationConstantRest(); 
+end;
+function TJavaParser.explicitGenericInvocationSuffix():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).explicitGenericInvocationSuffix(); 
+end;
+function TJavaParser.additiveExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).additiveExpression(); 
+end;
+function TJavaParser.classBodyDeclaration():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).classBodyDeclaration(); 
+end;
+function TJavaParser.booleanLiteral():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).booleanLiteral(); 
+end;
+function TJavaParser.variableDeclaratorRest():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).variableDeclaratorRest(); 
+end;
+function TJavaParser.primary():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).primary(); 
+end;
+function TJavaParser.annotationTypeBody():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).annotationTypeBody(); 
+end;
+function TJavaParser.annotationTypeElementDeclarations():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).annotationTypeElementDeclarations(); 
+end;
+function TJavaParser.annotationTypeElementDeclaration():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).annotationTypeElementDeclaration(); 
+end;
+function TJavaParser.genericMethodOrConstructorRest():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).genericMethodOrConstructorRest(); 
+end;
+function TJavaParser.classCreatorRest():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).classCreatorRest(); 
+end;
+function TJavaParser.instanceOfExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).instanceOfExpression(); 
+end;
+function TJavaParser.voidInterfaceMethodDeclaratorRest():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).voidInterfaceMethodDeclaratorRest(); 
+end;
+function TJavaParser.annotationMethodOrConstantRest():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).annotationMethodOrConstantRest(); 
+end;
+function TJavaParser.interfaceGenericMethodDecl():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).interfaceGenericMethodDecl(); 
+end;
+function TJavaParser.interfaceMethodOrFieldDecl():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).interfaceMethodOrFieldDecl(); 
+end;
+function TJavaParser.elementValuePair():Integer;
+begin
+TJava_JavaAnnotations(gJavaAnnotations).elementValuePair(); 
+end;
+function TJavaParser.primitiveType():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).primitiveType(); 
+end;
+function TJavaParser.parExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).parExpression(); 
+end;
+function TJavaParser.explicitGenericInvocation():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).explicitGenericInvocation(); 
+end;
+function TJavaParser.fieldDeclaration():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).fieldDeclaration(); 
+end;
+function TJavaParser.variableDeclarator():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).variableDeclarator(); 
+end;
+function TJavaParser.typeParameter():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).typeParameter(); 
+end;
+function TJavaParser.forInit():Integer;
+begin
+TJava_JavaStat(gJavaStat).forInit(); 
+end;
+function TJavaParser.enumConstant():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).enumConstant(); 
+end;
+function TJavaParser.assignmentOperator():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).assignmentOperator(); 
+end;
+function TJavaParser.enumConstantName():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).enumConstantName(); 
+end;
+function TJavaParser.enumConstants():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).enumConstants(); 
+end;
+function TJavaParser.methodBody():Integer;
+begin
+TJava_JavaStat(gJavaStat).methodBody(); 
+end;
+function TJavaParser.conditionalOrExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).conditionalOrExpression(); 
+end;
+function TJavaParser.variableDeclarators():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).variableDeclarators(); 
+end;
+function TJavaParser.memberDecl():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).memberDecl(); 
+end;
+function TJavaParser.switchLabel():Integer;
+begin
+TJava_JavaStat(gJavaStat).switchLabel(); 
+end;
+function TJavaParser.shiftOp():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).shiftOp(); 
+end;
+function TJavaParser.statementExpression():Integer;
+begin
+TJava_JavaExpr(gJavaExpr).statementExpression(); 
+end;
+function TJavaParser.typeParameters():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).typeParameters(); 
+end;
+function TJavaParser.typeArgument():Integer;
+begin
+TJava_JavaDecl(gJavaDecl).typeArgument(); 
+end;
 
 procedure TJavaParser.InitBitsets;
 begin
-  FOLLOW_annotations_in_compilationUnit51 := TAntlrBitSet.CreateWithBits([$007FE0804F000022,$0000000000000010]);
-  FOLLOW_packageDeclaration_in_compilationUnit56 := TAntlrBitSet.CreateWithBits([$007FE0804E000022,$0000000000000010]);
-  FOLLOW_importDeclaration_in_compilationUnit67 := TAntlrBitSet.CreateWithBits([$007FE0804E000022,$0000000000000010]);
-  FOLLOW_typeDeclaration_in_compilationUnit78 := TAntlrBitSet.CreateWithBits([$007FE0804A000022,$0000000000000010]);
-  FOLLOW_annotations_in_synpred1_Java51 := TAntlrBitSet.CreateWithBits([$0000000000000002]);
+  FOLLOW_annotations_in_compilationUnit49 := TAntlrBitSet.CreateWithBits([$007FE0804F000022,$0000000000000010]);
+  FOLLOW_packageDeclaration_in_compilationUnit54 := TAntlrBitSet.CreateWithBits([$007FE0804E000022,$0000000000000010]);
+  FOLLOW_importDeclaration_in_compilationUnit65 := TAntlrBitSet.CreateWithBits([$007FE0804E000022,$0000000000000010]);
+  FOLLOW_typeDeclaration_in_compilationUnit76 := TAntlrBitSet.CreateWithBits([$007FE0804A000022,$0000000000000010]);
+  FOLLOW_annotations_in_synpred1_Java49 := TAntlrBitSet.CreateWithBits([$0000000000000002]);
     
 end;
 
@@ -1117,7 +1117,7 @@ begin
 end;
 
 // $ANTLR start "compilationUnit"
-// Java.g:17:1: compilationUnit : ( annotations )? ( packageDeclaration )? ( importDeclaration )* ( typeDeclaration )* ;
+// Java.g:10:1: compilationUnit : ( annotations )? ( packageDeclaration )? ( importDeclaration )* ( typeDeclaration )* ;
 function TJavaParser.compilationUnit():Integer;
 var
   _alt:array [0..255] of Integer;
@@ -1141,10 +1141,10 @@ begin
           Result:= 0; 
           Exit;
         end;
-        // ruleBlockSingleAlt:Java.g:18:2: ( ( annotations )? ( packageDeclaration )? ( importDeclaration )* ( typeDeclaration )* )
-        // Java.g:18:4: ( annotations )? ( packageDeclaration )? ( importDeclaration )* ( typeDeclaration )*
+        // ruleBlockSingleAlt:Java.g:11:2: ( ( annotations )? ( packageDeclaration )? ( importDeclaration )* ( typeDeclaration )* )
+        // Java.g:11:4: ( annotations )? ( packageDeclaration )? ( importDeclaration )* ( typeDeclaration )*
         begin
-        // block:Java.g:18:4: ( annotations )?
+        // block:Java.g:11:4: ( annotations )?
         _alt[1]:=2;
         _LA[1,0] := input.LA(1);
 
@@ -1170,7 +1170,7 @@ begin
                 begin
                 // Java.g:0:0: annotations
                 begin
-                pushFollow(FOLLOW_annotations_in_compilationUnit51);
+                pushFollow(FOLLOW_annotations_in_compilationUnit49);
                 annotations();
 
                 state._fsp:=state._fsp-1;
@@ -1184,7 +1184,7 @@ begin
 
         end;
 
-        // block:Java.g:19:3: ( packageDeclaration )?
+        // block:Java.g:12:3: ( packageDeclaration )?
         _alt[2]:=2;
         _LA[2,0] := input.LA(1);
 
@@ -1198,7 +1198,7 @@ begin
                 begin
                 // Java.g:0:0: packageDeclaration
                 begin
-                pushFollow(FOLLOW_packageDeclaration_in_compilationUnit56);
+                pushFollow(FOLLOW_packageDeclaration_in_compilationUnit54);
                 packageDeclaration();
 
                 state._fsp:=state._fsp-1;
@@ -1212,7 +1212,7 @@ begin
 
         end;
 
-        // closureBlock:Java.g:20:9: ( importDeclaration )*
+        // closureBlock:Java.g:13:9: ( importDeclaration )*
         repeat 
             _alt[3]:=2;
             _LA[3,0] := input.LA(1);
@@ -1229,7 +1229,7 @@ begin
         	    begin
         	    // Java.g:0:0: importDeclaration
         	    begin
-        	    pushFollow(FOLLOW_importDeclaration_in_compilationUnit67);
+        	    pushFollow(FOLLOW_importDeclaration_in_compilationUnit65);
         	    importDeclaration();
 
         	    state._fsp:=state._fsp-1;
@@ -1246,7 +1246,7 @@ begin
             end;
          until (false);
 
-        // closureBlock:Java.g:21:9: ( typeDeclaration )*
+        // closureBlock:Java.g:14:9: ( typeDeclaration )*
         repeat 
             _alt[4]:=2;
             _LA[4,0] := input.LA(1);
@@ -1264,7 +1264,7 @@ begin
         	    begin
         	    // Java.g:0:0: typeDeclaration
         	    begin
-        	    pushFollow(FOLLOW_typeDeclaration_in_compilationUnit78);
+        	    pushFollow(FOLLOW_typeDeclaration_in_compilationUnit76);
         	    typeDeclaration();
 
         	    state._fsp:=state._fsp-1;
@@ -1302,10 +1302,10 @@ function TJavaParser.synpred1_Java_fragment():Integer;
 var
   _alt:array [0..255] of Integer;
 begin   
-    // ruleBlockSingleAlt:Java.g:18:4: ( annotations )
-    // Java.g:18:4: annotations
+    // ruleBlockSingleAlt:Java.g:11:4: ( annotations )
+    // Java.g:11:4: annotations
     begin
-    pushFollow(FOLLOW_annotations_in_synpred1_Java51);
+    pushFollow(FOLLOW_annotations_in_synpred1_Java49);
     annotations();
 
     state._fsp:=state._fsp-1;
