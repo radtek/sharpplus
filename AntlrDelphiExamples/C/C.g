@@ -25,7 +25,7 @@ var
 begin
   for i := Symbols_stack.size()-1 downto 0  do
   begin
-    scope := TSymbols_scope(Symbols_stack.get(i));
+    scope := TSymbols_scope(Symbols_stack[i]);
     if ( scope.types.contains(name) ) then
     begin
 	Result:=true;
@@ -39,7 +39,7 @@ end;
 translation_unit
 scope Symbols; // entire file is a scope
 @init {
-  $Symbols::types := TJclStrHashSet.Create;
+  $Symbols::types := TJclStrHashSet.Create(16);
 }
 	: external_declaration+
 	;
@@ -67,7 +67,7 @@ options {k=1;}
 function_definition
 scope Symbols; // put parameters and locals into same scope for now
 @init {
-  $Symbols::types := TJclStrHashSet.Create;
+  $Symbols::types := TJclStrHashSet.Create(16);
 }
 	:	declaration_specifiers? declarator
 		(	declaration+ compound_statement	// K&R style
@@ -133,7 +133,7 @@ struct_or_union_specifier
 options {k=3;}
 scope Symbols; // structs are scopes
 @init {
-  $Symbols::types := TJclStrHashSet.Create;
+  $Symbols::types := TJclStrHashSet.Create(16);
 }
 	: struct_or_union IDENTIFIER? '{' struct_declaration_list '}'
 	| struct_or_union IDENTIFIER
@@ -415,7 +415,7 @@ labeled_statement
 compound_statement
 scope Symbols; // blocks have a scope of symbols
 @init {
-  $Symbols::types := TJclStrHashSet.Create;
+  $Symbols::types := TJclStrHashSet.Create(16);
 }
 	: '{' declaration* statement_list? '}'
 	;
