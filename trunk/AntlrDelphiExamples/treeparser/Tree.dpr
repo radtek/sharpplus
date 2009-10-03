@@ -5,6 +5,7 @@ program Tree;
 uses
   SysUtils,
   Antlr,
+  AntlrTree,
   LangDumpDecl in 'LangDumpDecl.pas',
   LangLexer in 'LangLexer.pas',
   LangParser in 'LangParser.pas';

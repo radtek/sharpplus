@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 Simplifier.g 2009-07-23 21:44:30
+// $ANTLR 3.2 10 03, 2009 17:07:46 Simplifier.g 2009-10-03 17:15:07
 unit Simplifier;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
     const WS=7;
     const INT=5;
@@ -83,7 +83,7 @@ type
 
     public
         type ISimplifier_poly_return=interface(ITreeRuleReturnScope)
-        ['{3940F4BA-42C8-4DAF-B1C5-B0B0C6144089}']
+        ['{831C9C44-8135-4C0A-99F8-9620D1E0FDD2}']
         end;   
         type poly_return =class( TTreeRuleReturnScope , ISimplifier_poly_return)
         private
@@ -477,7 +477,7 @@ begin
 
 
                 // AST REWRITE
-                // elements: p, 8, INT
+                // elements: p, INT, 8
                 // token labels: 
                 // rule labels: retval, p
                 // token list labels: 
@@ -597,7 +597,7 @@ begin
 
 
                 // AST REWRITE
-                // elements: INT, p, 8
+                // elements: p, 8, INT
                 // token labels: 
                 // rule labels: retval, p
                 // token list labels: 
@@ -684,7 +684,7 @@ begin
 
 
                 // AST REWRITE
-                // elements: p, p, q, q, 8
+                // elements: p, q, p, q, 8
                 // token labels: 
                 // rule labels: retval, q, p
                 // token list labels: 
@@ -781,7 +781,7 @@ begin
 
 
                 // AST REWRITE
-                // elements: poly, MULT, INT, poly
+                // elements: poly, INT, MULT, poly
                 // token labels: 
                 // rule labels: retval
                 // token list labels: 
@@ -871,7 +871,7 @@ begin
 
 
                 // AST REWRITE
-                // elements: ID, INT, INT, ID, 9
+                // elements: 9, INT, ID, INT, ID
                 // token labels: 
                 // rule labels: retval
                 // token list labels: 

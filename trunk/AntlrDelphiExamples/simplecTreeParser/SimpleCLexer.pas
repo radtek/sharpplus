@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 SimpleC.g 2009-07-23 21:45:54
+// $ANTLR 3.2 10 03, 2009 17:07:46 SimpleC.g 2009-10-03 17:18:19
 unit SimpleCLexer;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
 type
     TSimpleCLexer = class(TAntlrLexer)

@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 FuzzyJava.g 2009-07-23 21:40:58
+// $ANTLR 3.2 10 03, 2009 17:07:46 FuzzyJava.g 2009-10-03 17:07:53
 unit FuzzyJava;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
 type
     TFuzzyJava = class(TAntlrLexer)
@@ -261,7 +261,7 @@ var
   _type:Integer;
   _channel:Integer;
   _alt:array [0..255] of Integer;
-  name:IToken;
+  name:ICommonToken;
 
 begin
     try 
@@ -404,7 +404,7 @@ var
   _type:Integer;
   _channel:Integer;
   _alt:array [0..255] of Integer;
-  name:IToken;
+  name:ICommonToken;
 
 begin
     try 
@@ -693,7 +693,7 @@ var
   _type:Integer;
   _channel:Integer;
   _alt:array [0..255] of Integer;
-  name:IToken;
+  name:ICommonToken;
 
 begin
     try 
@@ -1096,7 +1096,7 @@ var
   _type:Integer;
   _channel:Integer;
   _alt:array [0..255] of Integer;
-  name:IToken;
+  name:ICommonToken;
 
 begin
     try 
@@ -1351,7 +1351,7 @@ var
   _type:Integer;
   _channel:Integer;
   _alt:array [0..255] of Integer;
-  name:IToken;
+  name:ICommonToken;
 
 begin
     try 
@@ -2722,31 +2722,31 @@ begin
   feot:=unpackEncodedString('\23\uffff');
   feof:=unpackEncodedString('\23\uffff');
 
-  FMinc:=unpackEncodedString('\1\11\1\0\2\uffff\1\0\7\uffff\2\0\1\uffff'+
-    '\1\0\1\uffff\1\0\1\uffff');
+  FMinc:=unpackEncodedString('\1\11\1\0\5\uffff\1\0\1\uffff\1\0\2\uffff'+
+    '\1\0\2\uffff\1\0\1\uffff\1\0\1\uffff');
 
-  FMaxc:=unpackEncodedString('\1\172\1\0\2\uffff\1\0\7\uffff\2\0\1\uffff'+
-    '\1\0\1\uffff\1\0\1\uffff');
-  faccept:=unpackEncodedString('\2\uffff\1\10\1\11\1\uffff\1\1\1\4\1\5\1'+
-    '\6\1\7\1\13\1\14\2\uffff\1\12\1\uffff\1\2\1\uffff\1\3');
-  fspecial:=unpackEncodedString('\1\uffff\1\0\2\uffff\1\1\7\uffff\1\2\1'+
-    '\3\1\uffff\1\4\1\uffff\1\5\1\uffff');
-  AddTransition(unpackEncodedString('\2\13\2\uffff\1\13\22\uffff\1\13\1'+
-  '\uffff\1\16\4\uffff\1\12\7\uffff\1\1\21\uffff\32\14\4\uffff\1\14\1\uffff'+
-  '\2\14\1\21\2\14\1\15\2\14\1\4\10\14\1\17\1\15\3\14\1\15\3\14'));
+  FMaxc:=unpackEncodedString('\1\172\1\0\5\uffff\1\0\1\uffff\1\0\2\uffff'+
+    '\1\0\2\uffff\1\0\1\uffff\1\0\1\uffff');
+  faccept:=unpackEncodedString('\2\uffff\1\4\1\5\1\6\1\7\1\14\1\uffff\1'+
+    '\1\1\uffff\1\10\1\11\1\uffff\1\12\1\13\1\uffff\1\3\1\uffff\1\2');
+  fspecial:=unpackEncodedString('\1\uffff\1\0\5\uffff\1\1\1\uffff\1\2\2'+
+    '\uffff\1\3\2\uffff\1\4\1\uffff\1\5\1\uffff');
+  AddTransition(unpackEncodedString('\2\6\2\uffff\1\6\22\uffff\1\6\1\uffff'+
+  '\1\15\4\uffff\1\16\7\uffff\1\11\21\uffff\32\14\4\uffff\1\14\1\uffff\2'+
+  '\14\1\17\2\14\1\1\2\14\1\7\10\14\1\21\1\1\3\14\1\1\3\14'));
   AddTransition(unpackEncodedString('\1\uffff'));
-  AddTransition(unpackEncodedString(''));
-  AddTransition(unpackEncodedString(''));
-  AddTransition(unpackEncodedString('\1\uffff'));
-  AddTransition(unpackEncodedString(''));
-  AddTransition(unpackEncodedString(''));
   AddTransition(unpackEncodedString(''));
   AddTransition(unpackEncodedString(''));
   AddTransition(unpackEncodedString(''));
   AddTransition(unpackEncodedString(''));
   AddTransition(unpackEncodedString(''));
   AddTransition(unpackEncodedString('\1\uffff'));
+  AddTransition(unpackEncodedString(''));
   AddTransition(unpackEncodedString('\1\uffff'));
+  AddTransition(unpackEncodedString(''));
+  AddTransition(unpackEncodedString(''));
+  AddTransition(unpackEncodedString('\1\uffff'));
+  AddTransition(unpackEncodedString(''));
   AddTransition(unpackEncodedString(''));
   AddTransition(unpackEncodedString('\1\uffff'));
   AddTransition(unpackEncodedString(''));
@@ -2780,14 +2780,24 @@ begin
 		        _index['38_1'] := input.index();
 		        input.rewind();
 		        s := -1;
-		        if ( (synpred8_FuzzyJava()) ) then 
+		        if ( (synpred4_FuzzyJava()) ) then 
 		        begin 
 		          s := 2;
 		        end
 
-		        else if ( (synpred9_FuzzyJava()) ) then 
+		        else if ( (synpred5_FuzzyJava()) ) then 
 		        begin 
 		          s := 3;
+		        end
+
+		        else if ( (synpred6_FuzzyJava()) ) then 
+		        begin 
+		          s := 4;
+		        end
+
+		        else if ( (synpred7_FuzzyJava()) ) then 
+		        begin 
+		          s := 5;
 		        end
 		        ;
 
@@ -2802,40 +2812,40 @@ begin
 		      end;
 		 1 : 
 		      begin
-		        _LA[38,4] := input.LA(1);
+		        _LA[38,7] := input.LA(1);
 
 		         
-		        _index['38_4'] := input.index();
+		        _index['38_7'] := input.index();
 		        input.rewind();
 		        s := -1;
 		        if ( (synpred1_FuzzyJava()) ) then 
 		        begin 
-		          s := 5;
+		          s := 8;
 		        end
 
 		        else if ( (synpred4_FuzzyJava()) ) then 
 		        begin 
-		          s := 6;
+		          s := 2;
 		        end
 
 		        else if ( (synpred5_FuzzyJava()) ) then 
 		        begin 
-		          s := 7;
+		          s := 3;
 		        end
 
 		        else if ( (synpred6_FuzzyJava()) ) then 
 		        begin 
-		          s := 8;
+		          s := 4;
 		        end
 
 		        else if ( (synpred7_FuzzyJava()) ) then 
 		        begin 
-		          s := 9;
+		          s := 5;
 		        end
 		        ;
 
 		         
-		        input.seek(_index['38_4']);
+		        input.seek(_index['38_7']);
 		        if ( s>=0 ) then
 		        begin
 		          Result:= s;
@@ -2845,30 +2855,25 @@ begin
 		      end;
 		 2 : 
 		      begin
-		        _LA[38,12] := input.LA(1);
+		        _LA[38,9] := input.LA(1);
 
 		         
-		        _index['38_12'] := input.index();
+		        _index['38_9'] := input.index();
 		        input.rewind();
 		        s := -1;
-		        if ( (synpred4_FuzzyJava()) ) then 
+		        if ( (synpred8_FuzzyJava()) ) then 
 		        begin 
-		          s := 6;
+		          s := 10;
 		        end
 
-		        else if ( (synpred5_FuzzyJava()) ) then 
+		        else if ( (synpred9_FuzzyJava()) ) then 
 		        begin 
-		          s := 7;
-		        end
-
-		        else if ( (synpred7_FuzzyJava()) ) then 
-		        begin 
-		          s := 9;
+		          s := 11;
 		        end
 		        ;
 
 		         
-		        input.seek(_index['38_12']);
+		        input.seek(_index['38_9']);
 		        if ( s>=0 ) then
 		        begin
 		          Result:= s;
@@ -2878,35 +2883,30 @@ begin
 		      end;
 		 3 : 
 		      begin
-		        _LA[38,13] := input.LA(1);
+		        _LA[38,12] := input.LA(1);
 
 		         
-		        _index['38_13'] := input.index();
+		        _index['38_12'] := input.index();
 		        input.rewind();
 		        s := -1;
 		        if ( (synpred4_FuzzyJava()) ) then 
 		        begin 
-		          s := 6;
+		          s := 2;
 		        end
 
 		        else if ( (synpred5_FuzzyJava()) ) then 
 		        begin 
-		          s := 7;
-		        end
-
-		        else if ( (synpred6_FuzzyJava()) ) then 
-		        begin 
-		          s := 8;
+		          s := 3;
 		        end
 
 		        else if ( (synpred7_FuzzyJava()) ) then 
 		        begin 
-		          s := 9;
+		          s := 5;
 		        end
 		        ;
 
 		         
-		        input.seek(_index['38_13']);
+		        input.seek(_index['38_12']);
 		        if ( s>=0 ) then
 		        begin
 		          Result:= s;
@@ -2922,24 +2922,24 @@ begin
 		        _index['38_15'] := input.index();
 		        input.rewind();
 		        s := -1;
-		        if ( (synpred2_FuzzyJava()) ) then 
+		        if ( (synpred3_FuzzyJava()) ) then 
 		        begin 
 		          s := 16;
 		        end
 
 		        else if ( (synpred4_FuzzyJava()) ) then 
 		        begin 
-		          s := 6;
+		          s := 2;
 		        end
 
 		        else if ( (synpred5_FuzzyJava()) ) then 
 		        begin 
-		          s := 7;
+		          s := 3;
 		        end
 
 		        else if ( (synpred7_FuzzyJava()) ) then 
 		        begin 
-		          s := 9;
+		          s := 5;
 		        end
 		        ;
 
@@ -2960,24 +2960,24 @@ begin
 		        _index['38_17'] := input.index();
 		        input.rewind();
 		        s := -1;
-		        if ( (synpred3_FuzzyJava()) ) then 
+		        if ( (synpred2_FuzzyJava()) ) then 
 		        begin 
 		          s := 18;
 		        end
 
 		        else if ( (synpred4_FuzzyJava()) ) then 
 		        begin 
-		          s := 6;
+		          s := 2;
 		        end
 
 		        else if ( (synpred5_FuzzyJava()) ) then 
 		        begin 
-		          s := 7;
+		          s := 3;
 		        end
 
 		        else if ( (synpred7_FuzzyJava()) ) then 
 		        begin 
-		          s := 9;
+		          s := 5;
 		        end
 		        ;
 

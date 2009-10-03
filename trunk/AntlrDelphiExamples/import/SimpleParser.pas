@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 Simple.g 2009-07-23 21:42:44
+// $ANTLR 3.2 10 03, 2009 17:07:46 Simple.g 2009-10-03 17:10:19
 unit SimpleParser;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
     const WS=12;
     const T__16=16;

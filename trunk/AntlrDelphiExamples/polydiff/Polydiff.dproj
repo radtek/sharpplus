@@ -89,10 +89,6 @@
 			<DelphiCompile Include="Polydiff.dpr">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
-			<DCCReference Include="PolyDifferentiator.pas"/>
-			<DCCReference Include="PolyLexer.pas"/>
-			<DCCReference Include="PolyParser.pas"/>
-			<DCCReference Include="Simplifier.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

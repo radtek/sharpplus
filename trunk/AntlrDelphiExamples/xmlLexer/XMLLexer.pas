@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 XMLLexer.g 2009-07-23 21:52:51
+// $ANTLR 3.2 10 03, 2009 17:07:46 XMLLexer.g 2009-10-03 17:24:04
 unit XMLLexer;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
 type
     TXMLLexer = class(TAntlrLexer)
@@ -156,10 +156,10 @@ begin
     try 
         _type := DOCUMENT;
         _channel := 0;
-        // ruleBlockSingleAlt:XMLLexer.g:10:5: ( ( XMLDECL )? ( WS )? ( DOCTYPE )? ( WS )? ELEMENT ( WS )? )
-        // XMLLexer.g:10:8: ( XMLDECL )? ( WS )? ( DOCTYPE )? ( WS )? ELEMENT ( WS )?
+        // ruleBlockSingleAlt:XMLLexer.g:9:5: ( ( XMLDECL )? ( WS )? ( DOCTYPE )? ( WS )? ELEMENT ( WS )? )
+        // XMLLexer.g:9:8: ( XMLDECL )? ( WS )? ( DOCTYPE )? ( WS )? ELEMENT ( WS )?
         begin
-        // block:XMLLexer.g:10:8: ( XMLDECL )?
+        // block:XMLLexer.g:9:8: ( XMLDECL )?
         _alt[1]:=2;
         _LA[1,0] := input.LA(1);
 
@@ -177,7 +177,7 @@ begin
         case (_alt[1]) of
              1 :
                 begin
-                // XMLLexer.g:10:8: XMLDECL
+                // XMLLexer.g:9:8: XMLDECL
                 begin
                 mXMLDECL(); 
 
@@ -187,7 +187,7 @@ begin
 
         end;
 
-        // block:XMLLexer.g:10:17: ( WS )?
+        // block:XMLLexer.g:9:17: ( WS )?
         _alt[2]:=2;
         case input.LA(1) of
              $0020: 
@@ -211,7 +211,7 @@ begin
         case (_alt[2]) of
              1 :
                 begin
-                // XMLLexer.g:10:17: WS
+                // XMLLexer.g:9:17: WS
                 begin
                 mWS(); 
 
@@ -221,7 +221,7 @@ begin
 
         end;
 
-        // block:XMLLexer.g:10:21: ( DOCTYPE )?
+        // block:XMLLexer.g:9:21: ( DOCTYPE )?
         _alt[3]:=2;
         _LA[3,0] := input.LA(1);
 
@@ -239,7 +239,7 @@ begin
         case (_alt[3]) of
              1 :
                 begin
-                // XMLLexer.g:10:21: DOCTYPE
+                // XMLLexer.g:9:21: DOCTYPE
                 begin
                 mDOCTYPE(); 
 
@@ -249,7 +249,7 @@ begin
 
         end;
 
-        // block:XMLLexer.g:10:30: ( WS )?
+        // block:XMLLexer.g:9:30: ( WS )?
         _alt[4]:=2;
         _LA[4,0] := input.LA(1);
 
@@ -262,7 +262,7 @@ begin
         case (_alt[4]) of
              1 :
                 begin
-                // XMLLexer.g:10:30: WS
+                // XMLLexer.g:9:30: WS
                 begin
                 mWS(); 
 
@@ -274,7 +274,7 @@ begin
 
         mELEMENT(); 
 
-        // block:XMLLexer.g:10:42: ( WS )?
+        // block:XMLLexer.g:9:42: ( WS )?
         _alt[5]:=2;
         _LA[5,0] := input.LA(1);
 
@@ -287,7 +287,7 @@ begin
         case (_alt[5]) of
              1 :
                 begin
-                // XMLLexer.g:10:42: WS
+                // XMLLexer.g:9:42: WS
                 begin
                 mWS(); 
 
@@ -312,29 +312,29 @@ var
   _type:Integer;
   _channel:Integer;
   _alt:array [0..255] of Integer;
-  rootElementName:IToken;
-  sys1:IToken;
-  pub:IToken;
-  sys2:IToken;
-  dtd:IToken;
+  rootElementName:ICommonToken;
+  sys1:ICommonToken;
+  pub:ICommonToken;
+  sys2:ICommonToken;
+  dtd:ICommonToken;
 
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:14:5: ( ''<!DOCTYPE'' WS rootElementName= GENERIC_ID WS ( ( ''SYSTEM'' WS sys1= VALUE | ''PUBLIC'' WS pub= VALUE WS sys2= VALUE ) ( WS )? )? (dtd= INTERNAL_DTD )? ''>'' )
-        // XMLLexer.g:15:9: ''<!DOCTYPE'' WS rootElementName= GENERIC_ID WS ( ( ''SYSTEM'' WS sys1= VALUE | ''PUBLIC'' WS pub= VALUE WS sys2= VALUE ) ( WS )? )? (dtd= INTERNAL_DTD )? ''>''
+        // ruleBlockSingleAlt:XMLLexer.g:13:5: ( ''<!DOCTYPE'' WS rootElementName= GENERIC_ID WS ( ( ''SYSTEM'' WS sys1= VALUE | ''PUBLIC'' WS pub= VALUE WS sys2= VALUE ) ( WS )? )? (dtd= INTERNAL_DTD )? ''>'' )
+        // XMLLexer.g:14:9: ''<!DOCTYPE'' WS rootElementName= GENERIC_ID WS ( ( ''SYSTEM'' WS sys1= VALUE | ''PUBLIC'' WS pub= VALUE WS sys2= VALUE ) ( WS )? )? (dtd= INTERNAL_DTD )? ''>''
         begin
         match('<!DOCTYPE');
 
 
         mWS(); 
 
-        _Start['rootElementName78'] := getCharIndex();
+        _Start['rootElementName76'] := getCharIndex();
         mGENERIC_ID();
-        rootElementName := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['rootElementName78'], getCharIndex()-1);
+        rootElementName := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['rootElementName76'], getCharIndex()-1);
          Writeln('ROOTELEMENT: '+rootElementName.getText()); 
         mWS(); 
 
-        // block:XMLLexer.g:18:9: ( ( ''SYSTEM'' WS sys1= VALUE | ''PUBLIC'' WS pub= VALUE WS sys2= VALUE ) ( WS )? )?
+        // block:XMLLexer.g:17:9: ( ( ''SYSTEM'' WS sys1= VALUE | ''PUBLIC'' WS pub= VALUE WS sys2= VALUE ) ( WS )? )?
         _alt[8]:=2;
         _LA[8,0] := input.LA(1);
 
@@ -346,9 +346,9 @@ begin
         case (_alt[8]) of
              1 :
                 begin
-                // XMLLexer.g:19:13: ( ''SYSTEM'' WS sys1= VALUE | ''PUBLIC'' WS pub= VALUE WS sys2= VALUE ) ( WS )?
+                // XMLLexer.g:18:13: ( ''SYSTEM'' WS sys1= VALUE | ''PUBLIC'' WS pub= VALUE WS sys2= VALUE ) ( WS )?
                 begin
-                // block:XMLLexer.g:19:13: ( ''SYSTEM'' WS sys1= VALUE | ''PUBLIC'' WS pub= VALUE WS sys2= VALUE )
+                // block:XMLLexer.g:18:13: ( ''SYSTEM'' WS sys1= VALUE | ''PUBLIC'' WS pub= VALUE WS sys2= VALUE )
                 _alt[6]:=2;
                 _LA[6,0] := input.LA(1);
 
@@ -369,37 +369,37 @@ begin
                 case (_alt[6]) of
                      1 :
                         begin
-                        // XMLLexer.g:19:15: ''SYSTEM'' WS sys1= VALUE
+                        // XMLLexer.g:18:15: ''SYSTEM'' WS sys1= VALUE
                         begin
                         match('SYSTEM');
 
 
                         mWS(); 
 
-                        _Start['sys1135'] := getCharIndex();
+                        _Start['sys1133'] := getCharIndex();
                         mVALUE();
-                        sys1 := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['sys1135'], getCharIndex()-1);
+                        sys1 := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['sys1133'], getCharIndex()-1);
                          Writeln('SYSTEM: '+sys1.getText()); 
 
                         end;
                         end;
                      2 :
                         begin
-                        // XMLLexer.g:22:15: ''PUBLIC'' WS pub= VALUE WS sys2= VALUE
+                        // XMLLexer.g:21:15: ''PUBLIC'' WS pub= VALUE WS sys2= VALUE
                         begin
                         match('PUBLIC');
 
 
                         mWS(); 
 
-                        _Start['pub195'] := getCharIndex();
+                        _Start['pub193'] := getCharIndex();
                         mVALUE();
-                        pub := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['pub195'], getCharIndex()-1);
+                        pub := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['pub193'], getCharIndex()-1);
                         mWS(); 
 
-                        _Start['sys2201'] := getCharIndex();
+                        _Start['sys2199'] := getCharIndex();
                         mVALUE();
-                        sys2 := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['sys2201'], getCharIndex()-1);
+                        sys2 := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['sys2199'], getCharIndex()-1);
                          Writeln('PUBLIC: '+pub.getText()); 
                          Writeln('SYSTEM: '+sys2.getText()); 
 
@@ -408,7 +408,7 @@ begin
 
                 end;
 
-                // block:XMLLexer.g:26:13: ( WS )?
+                // block:XMLLexer.g:25:13: ( WS )?
                 _alt[7]:=2;
                 _LA[7,0] := input.LA(1);
 
@@ -421,7 +421,7 @@ begin
                 case (_alt[7]) of
                      1 :
                         begin
-                        // XMLLexer.g:26:15: WS
+                        // XMLLexer.g:25:15: WS
                         begin
                         mWS(); 
 
@@ -437,7 +437,7 @@ begin
 
         end;
 
-        // block:XMLLexer.g:28:9: (dtd= INTERNAL_DTD )?
+        // block:XMLLexer.g:27:9: (dtd= INTERNAL_DTD )?
         _alt[9]:=2;
         _LA[9,0] := input.LA(1);
 
@@ -449,11 +449,11 @@ begin
         case (_alt[9]) of
              1 :
                 begin
-                // XMLLexer.g:28:11: dtd= INTERNAL_DTD
+                // XMLLexer.g:27:11: dtd= INTERNAL_DTD
                 begin
-                _Start['dtd301'] := getCharIndex();
+                _Start['dtd299'] := getCharIndex();
                 mINTERNAL_DTD();
-                dtd := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['dtd301'], getCharIndex()-1);
+                dtd := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['dtd299'], getCharIndex()-1);
                  Writeln('INTERNAL DTD: '+dtd.getText()); 
 
                 end;
@@ -478,12 +478,12 @@ var
   _alt:array [0..255] of Integer;
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:34:23: ( ''['' ( options {greedy=false; } : . )* '']'' )
-        // XMLLexer.g:34:25: ''['' ( options {greedy=false; } : . )* '']''
+        // ruleBlockSingleAlt:XMLLexer.g:33:23: ( ''['' ( options {greedy=false; } : . )* '']'' )
+        // XMLLexer.g:33:25: ''['' ( options {greedy=false; } : . )* '']''
         begin
         match($005B);
 
-        // closureBlock:XMLLexer.g:34:29: ( options {greedy=false; } : . )*
+        // closureBlock:XMLLexer.g:33:29: ( options {greedy=false; } : . )*
         repeat 
             _alt[10]:=2;
             _LA[10,0] := input.LA(1);
@@ -504,7 +504,7 @@ begin
             case (_alt[10]) of
         	 1 :
         	    begin
-        	    // XMLLexer.g:34:56: .
+        	    // XMLLexer.g:33:56: .
         	    begin
         	    matchAny(); 
 
@@ -532,20 +532,20 @@ var
   _type:Integer;
   _channel:Integer;
   _alt:array [0..255] of Integer;
-  target:IToken;
+  target:ICommonToken;
 
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:36:13: ( ''<?'' target= GENERIC_ID ( WS )? ( ATTRIBUTE ( WS )? )* ''?>'' )
-        // XMLLexer.g:37:9: ''<?'' target= GENERIC_ID ( WS )? ( ATTRIBUTE ( WS )? )* ''?>''
+        // ruleBlockSingleAlt:XMLLexer.g:35:13: ( ''<?'' target= GENERIC_ID ( WS )? ( ATTRIBUTE ( WS )? )* ''?>'' )
+        // XMLLexer.g:36:9: ''<?'' target= GENERIC_ID ( WS )? ( ATTRIBUTE ( WS )? )* ''?>''
         begin
         match('<?');
 
 
-        _Start['target384'] := getCharIndex();
+        _Start['target382'] := getCharIndex();
         mGENERIC_ID();
-        target := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['target384'], getCharIndex()-1);
-        // block:XMLLexer.g:37:32: ( WS )?
+        target := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['target382'], getCharIndex()-1);
+        // block:XMLLexer.g:36:32: ( WS )?
         _alt[11]:=2;
         _LA[11,0] := input.LA(1);
 
@@ -558,7 +558,7 @@ begin
         case (_alt[11]) of
              1 :
                 begin
-                // XMLLexer.g:37:32: WS
+                // XMLLexer.g:36:32: WS
                 begin
                 mWS(); 
 
@@ -569,7 +569,7 @@ begin
         end;
 
          Writeln('PI: '+target.getText()); 
-        // closureBlock:XMLLexer.g:39:9: ( ATTRIBUTE ( WS )? )*
+        // closureBlock:XMLLexer.g:38:9: ( ATTRIBUTE ( WS )? )*
         repeat 
             _alt[13]:=2;
             _LA[13,0] := input.LA(1);
@@ -586,11 +586,11 @@ begin
             case (_alt[13]) of
         	 1 :
         	    begin
-        	    // XMLLexer.g:39:11: ATTRIBUTE ( WS )?
+        	    // XMLLexer.g:38:11: ATTRIBUTE ( WS )?
         	    begin
         	    mATTRIBUTE(); 
 
-        	    // block:XMLLexer.g:39:21: ( WS )?
+        	    // block:XMLLexer.g:38:21: ( WS )?
         	    _alt[12]:=2;
         	    _LA[12,0] := input.LA(1);
 
@@ -603,7 +603,7 @@ begin
         	    case (_alt[12]) of
         	         1 :
         	            begin
-        	            // XMLLexer.g:39:21: WS
+        	            // XMLLexer.g:38:21: WS
         	            begin
         	            mWS(); 
 
@@ -640,8 +640,8 @@ var
   _alt:array [0..255] of Integer;
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:42:18: ( ''<?'' ( ''x'' | ''X'' ) ( ''m'' | ''M'' ) ( ''l'' | ''L'' ) ( WS )? ( ATTRIBUTE ( WS )? )* ''?>'' )
-        // XMLLexer.g:43:9: ''<?'' ( ''x'' | ''X'' ) ( ''m'' | ''M'' ) ( ''l'' | ''L'' ) ( WS )? ( ATTRIBUTE ( WS )? )* ''?>''
+        // ruleBlockSingleAlt:XMLLexer.g:41:18: ( ''<?'' ( ''x'' | ''X'' ) ( ''m'' | ''M'' ) ( ''l'' | ''L'' ) ( WS )? ( ATTRIBUTE ( WS )? )* ''?>'' )
+        // XMLLexer.g:42:9: ''<?'' ( ''x'' | ''X'' ) ( ''m'' | ''M'' ) ( ''l'' | ''L'' ) ( WS )? ( ATTRIBUTE ( WS )? )* ''?>''
         begin
         match('<?');
 
@@ -676,7 +676,7 @@ begin
             recover(EMismatchedSetException.CreateWithBitset(nil, input));
             raise EMismatchedSetException.CreateWithBitset(nil, input);end;
 
-        // block:XMLLexer.g:43:44: ( WS )?
+        // block:XMLLexer.g:42:44: ( WS )?
         _alt[14]:=2;
         _LA[14,0] := input.LA(1);
 
@@ -689,7 +689,7 @@ begin
         case (_alt[14]) of
              1 :
                 begin
-                // XMLLexer.g:43:44: WS
+                // XMLLexer.g:42:44: WS
                 begin
                 mWS(); 
 
@@ -700,7 +700,7 @@ begin
         end;
 
          Writeln('XML declaration'); 
-        // closureBlock:XMLLexer.g:45:9: ( ATTRIBUTE ( WS )? )*
+        // closureBlock:XMLLexer.g:44:9: ( ATTRIBUTE ( WS )? )*
         repeat 
             _alt[16]:=2;
             _LA[16,0] := input.LA(1);
@@ -717,11 +717,11 @@ begin
             case (_alt[16]) of
         	 1 :
         	    begin
-        	    // XMLLexer.g:45:11: ATTRIBUTE ( WS )?
+        	    // XMLLexer.g:44:11: ATTRIBUTE ( WS )?
         	    begin
         	    mATTRIBUTE(); 
 
-        	    // block:XMLLexer.g:45:21: ( WS )?
+        	    // block:XMLLexer.g:44:21: ( WS )?
         	    _alt[15]:=2;
         	    _LA[15,0] := input.LA(1);
 
@@ -734,7 +734,7 @@ begin
         	    case (_alt[15]) of
         	         1 :
         	            begin
-        	            // XMLLexer.g:45:21: WS
+        	            // XMLLexer.g:44:21: WS
         	            begin
         	            mWS(); 
 
@@ -769,15 +769,15 @@ var
   _type:Integer;
   _channel:Integer;
   _alt:array [0..255] of Integer;
-  t:IToken;
-  pi:IToken;
+  t:ICommonToken;
+  pi:ICommonToken;
 
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:50:5: ( ( START_TAG ( ELEMENT | t= PCDATA | t= CDATA | t= COMMENT | pi= PI )* END_TAG | EMPTY_ELEMENT ) )
-        // XMLLexer.g:50:7: ( START_TAG ( ELEMENT | t= PCDATA | t= CDATA | t= COMMENT | pi= PI )* END_TAG | EMPTY_ELEMENT )
+        // ruleBlockSingleAlt:XMLLexer.g:49:5: ( ( START_TAG ( ELEMENT | t= PCDATA | t= CDATA | t= COMMENT | pi= PI )* END_TAG | EMPTY_ELEMENT ) )
+        // XMLLexer.g:49:7: ( START_TAG ( ELEMENT | t= PCDATA | t= CDATA | t= COMMENT | pi= PI )* END_TAG | EMPTY_ELEMENT )
         begin
-        // block:XMLLexer.g:50:7: ( START_TAG ( ELEMENT | t= PCDATA | t= CDATA | t= COMMENT | pi= PI )* END_TAG | EMPTY_ELEMENT )
+        // block:XMLLexer.g:49:7: ( START_TAG ( ELEMENT | t= PCDATA | t= CDATA | t= COMMENT | pi= PI )* END_TAG | EMPTY_ELEMENT )
         _alt[18]:=2;
         {** The code to initiate execution of a cyclic DFA; this is used
          *  in the rule to predict an alt just like the fixed DFA case.
@@ -787,11 +787,11 @@ begin
         case (_alt[18]) of
              1 :
                 begin
-                // XMLLexer.g:50:9: START_TAG ( ELEMENT | t= PCDATA | t= CDATA | t= COMMENT | pi= PI )* END_TAG
+                // XMLLexer.g:49:9: START_TAG ( ELEMENT | t= PCDATA | t= CDATA | t= COMMENT | pi= PI )* END_TAG
                 begin
                 mSTART_TAG(); 
 
-                // closureBlock:XMLLexer.g:51:13: ( ELEMENT | t= PCDATA | t= CDATA | t= COMMENT | pi= PI )*
+                // closureBlock:XMLLexer.g:50:13: ( ELEMENT | t= PCDATA | t= CDATA | t= COMMENT | pi= PI )*
                 repeat 
                     _alt[17]:=6;
                     _LA[17,0] := input.LA(1);
@@ -896,7 +896,7 @@ begin
                     case (_alt[17]) of
                 	 1 :
                 	    begin
-                	    // XMLLexer.g:51:14: ELEMENT
+                	    // XMLLexer.g:50:14: ELEMENT
                 	    begin
                 	    mELEMENT(); 
 
@@ -905,44 +905,44 @@ begin
                 	    end;
                 	 2 :
                 	    begin
-                	    // XMLLexer.g:52:15: t= PCDATA
+                	    // XMLLexer.g:51:15: t= PCDATA
                 	    begin
-                	    _Start['t548'] := getCharIndex();
+                	    _Start['t546'] := getCharIndex();
                 	    mPCDATA();
-                	    t := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['t548'], getCharIndex()-1);
+                	    t := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['t546'], getCharIndex()-1);
                 	     Writeln('PCDATA: "'+t.getText()+'"'); 
 
                 	    end;
                 	    end;
                 	 3 :
                 	    begin
-                	    // XMLLexer.g:54:15: t= CDATA
+                	    // XMLLexer.g:53:15: t= CDATA
                 	    begin
-                	    _Start['t584'] := getCharIndex();
+                	    _Start['t582'] := getCharIndex();
                 	    mCDATA();
-                	    t := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['t584'], getCharIndex()-1);
+                	    t := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['t582'], getCharIndex()-1);
                 	     Writeln('CDATA: "'+t.getText()+'"'); 
 
                 	    end;
                 	    end;
                 	 4 :
                 	    begin
-                	    // XMLLexer.g:56:15: t= COMMENT
+                	    // XMLLexer.g:55:15: t= COMMENT
                 	    begin
-                	    _Start['t620'] := getCharIndex();
+                	    _Start['t618'] := getCharIndex();
                 	    mCOMMENT();
-                	    t := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['t620'], getCharIndex()-1);
+                	    t := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['t618'], getCharIndex()-1);
                 	     Writeln('Comment: "'+t.getText()+'"'); 
 
                 	    end;
                 	    end;
                 	 5 :
                 	    begin
-                	    // XMLLexer.g:58:15: pi= PI
+                	    // XMLLexer.g:57:15: pi= PI
                 	    begin
-                	    _Start['pi656'] := getCharIndex();
+                	    _Start['pi654'] := getCharIndex();
                 	    mPI();
-                	    pi := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['pi656'], getCharIndex()-1);
+                	    pi := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['pi654'], getCharIndex()-1);
 
                 	    end;
                 	    end;
@@ -959,7 +959,7 @@ begin
                 end;
              2 :
                 begin
-                // XMLLexer.g:61:11: EMPTY_ELEMENT
+                // XMLLexer.g:60:11: EMPTY_ELEMENT
                 begin
                 mEMPTY_ELEMENT(); 
 
@@ -982,16 +982,16 @@ var
   _type:Integer;
   _channel:Integer;
   _alt:array [0..255] of Integer;
-  name:IToken;
+  name:ICommonToken;
 
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:66:5: ( ''<'' ( WS )? name= GENERIC_ID ( WS )? ( ATTRIBUTE ( WS )? )* ''>'' )
-        // XMLLexer.g:66:7: ''<'' ( WS )? name= GENERIC_ID ( WS )? ( ATTRIBUTE ( WS )? )* ''>''
+        // ruleBlockSingleAlt:XMLLexer.g:65:5: ( ''<'' ( WS )? name= GENERIC_ID ( WS )? ( ATTRIBUTE ( WS )? )* ''>'' )
+        // XMLLexer.g:65:7: ''<'' ( WS )? name= GENERIC_ID ( WS )? ( ATTRIBUTE ( WS )? )* ''>''
         begin
         match($003C);
 
-        // block:XMLLexer.g:66:11: ( WS )?
+        // block:XMLLexer.g:65:11: ( WS )?
         _alt[19]:=2;
         _LA[19,0] := input.LA(1);
 
@@ -1004,7 +1004,7 @@ begin
         case (_alt[19]) of
              1 :
                 begin
-                // XMLLexer.g:66:11: WS
+                // XMLLexer.g:65:11: WS
                 begin
                 mWS(); 
 
@@ -1014,10 +1014,10 @@ begin
 
         end;
 
-        _Start['name734'] := getCharIndex();
+        _Start['name732'] := getCharIndex();
         mGENERIC_ID();
-        name := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['name734'], getCharIndex()-1);
-        // block:XMLLexer.g:66:31: ( WS )?
+        name := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['name732'], getCharIndex()-1);
+        // block:XMLLexer.g:65:31: ( WS )?
         _alt[20]:=2;
         _LA[20,0] := input.LA(1);
 
@@ -1030,7 +1030,7 @@ begin
         case (_alt[20]) of
              1 :
                 begin
-                // XMLLexer.g:66:31: WS
+                // XMLLexer.g:65:31: WS
                 begin
                 mWS(); 
 
@@ -1041,7 +1041,7 @@ begin
         end;
 
          Writeln('Start Tag: '+name.getText()); 
-        // closureBlock:XMLLexer.g:68:9: ( ATTRIBUTE ( WS )? )*
+        // closureBlock:XMLLexer.g:67:9: ( ATTRIBUTE ( WS )? )*
         repeat 
             _alt[22]:=2;
             _LA[22,0] := input.LA(1);
@@ -1058,11 +1058,11 @@ begin
             case (_alt[22]) of
         	 1 :
         	    begin
-        	    // XMLLexer.g:68:11: ATTRIBUTE ( WS )?
+        	    // XMLLexer.g:67:11: ATTRIBUTE ( WS )?
         	    begin
         	    mATTRIBUTE(); 
 
-        	    // block:XMLLexer.g:68:21: ( WS )?
+        	    // block:XMLLexer.g:67:21: ( WS )?
         	    _alt[21]:=2;
         	    _LA[21,0] := input.LA(1);
 
@@ -1075,7 +1075,7 @@ begin
         	    case (_alt[21]) of
         	         1 :
         	            begin
-        	            // XMLLexer.g:68:21: WS
+        	            // XMLLexer.g:67:21: WS
         	            begin
         	            mWS(); 
 
@@ -1109,16 +1109,16 @@ var
   _type:Integer;
   _channel:Integer;
   _alt:array [0..255] of Integer;
-  name:IToken;
+  name:ICommonToken;
 
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:72:5: ( ''<'' ( WS )? name= GENERIC_ID ( WS )? ( ATTRIBUTE ( WS )? )* ''/>'' )
-        // XMLLexer.g:72:7: ''<'' ( WS )? name= GENERIC_ID ( WS )? ( ATTRIBUTE ( WS )? )* ''/>''
+        // ruleBlockSingleAlt:XMLLexer.g:71:5: ( ''<'' ( WS )? name= GENERIC_ID ( WS )? ( ATTRIBUTE ( WS )? )* ''/>'' )
+        // XMLLexer.g:71:7: ''<'' ( WS )? name= GENERIC_ID ( WS )? ( ATTRIBUTE ( WS )? )* ''/>''
         begin
         match($003C);
 
-        // block:XMLLexer.g:72:11: ( WS )?
+        // block:XMLLexer.g:71:11: ( WS )?
         _alt[23]:=2;
         _LA[23,0] := input.LA(1);
 
@@ -1131,7 +1131,7 @@ begin
         case (_alt[23]) of
              1 :
                 begin
-                // XMLLexer.g:72:11: WS
+                // XMLLexer.g:71:11: WS
                 begin
                 mWS(); 
 
@@ -1141,10 +1141,10 @@ begin
 
         end;
 
-        _Start['name796'] := getCharIndex();
+        _Start['name794'] := getCharIndex();
         mGENERIC_ID();
-        name := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['name796'], getCharIndex()-1);
-        // block:XMLLexer.g:72:31: ( WS )?
+        name := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['name794'], getCharIndex()-1);
+        // block:XMLLexer.g:71:31: ( WS )?
         _alt[24]:=2;
         _LA[24,0] := input.LA(1);
 
@@ -1157,7 +1157,7 @@ begin
         case (_alt[24]) of
              1 :
                 begin
-                // XMLLexer.g:72:31: WS
+                // XMLLexer.g:71:31: WS
                 begin
                 mWS(); 
 
@@ -1168,7 +1168,7 @@ begin
         end;
 
          Writeln('Empty Element: '+name.getText()); 
-        // closureBlock:XMLLexer.g:74:9: ( ATTRIBUTE ( WS )? )*
+        // closureBlock:XMLLexer.g:73:9: ( ATTRIBUTE ( WS )? )*
         repeat 
             _alt[26]:=2;
             _LA[26,0] := input.LA(1);
@@ -1185,11 +1185,11 @@ begin
             case (_alt[26]) of
         	 1 :
         	    begin
-        	    // XMLLexer.g:74:11: ATTRIBUTE ( WS )?
+        	    // XMLLexer.g:73:11: ATTRIBUTE ( WS )?
         	    begin
         	    mATTRIBUTE(); 
 
-        	    // block:XMLLexer.g:74:21: ( WS )?
+        	    // block:XMLLexer.g:73:21: ( WS )?
         	    _alt[25]:=2;
         	    _LA[25,0] := input.LA(1);
 
@@ -1202,7 +1202,7 @@ begin
         	    case (_alt[25]) of
         	         1 :
         	            begin
-        	            // XMLLexer.g:74:21: WS
+        	            // XMLLexer.g:73:21: WS
         	            begin
         	            mWS(); 
 
@@ -1237,18 +1237,18 @@ var
   _type:Integer;
   _channel:Integer;
   _alt:array [0..255] of Integer;
-  name:IToken;
-  value:IToken;
+  name:ICommonToken;
+  value:ICommonToken;
 
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:78:5: (name= GENERIC_ID ( WS )? ''='' ( WS )? value= VALUE )
-        // XMLLexer.g:78:7: name= GENERIC_ID ( WS )? ''='' ( WS )? value= VALUE
+        // ruleBlockSingleAlt:XMLLexer.g:77:5: (name= GENERIC_ID ( WS )? ''='' ( WS )? value= VALUE )
+        // XMLLexer.g:77:7: name= GENERIC_ID ( WS )? ''='' ( WS )? value= VALUE
         begin
-        _Start['name853'] := getCharIndex();
+        _Start['name851'] := getCharIndex();
         mGENERIC_ID();
-        name := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['name853'], getCharIndex()-1);
-        // block:XMLLexer.g:78:23: ( WS )?
+        name := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['name851'], getCharIndex()-1);
+        // block:XMLLexer.g:77:23: ( WS )?
         _alt[27]:=2;
         _LA[27,0] := input.LA(1);
 
@@ -1261,7 +1261,7 @@ begin
         case (_alt[27]) of
              1 :
                 begin
-                // XMLLexer.g:78:23: WS
+                // XMLLexer.g:77:23: WS
                 begin
                 mWS(); 
 
@@ -1273,7 +1273,7 @@ begin
 
         match($003D);
 
-        // block:XMLLexer.g:78:31: ( WS )?
+        // block:XMLLexer.g:77:31: ( WS )?
         _alt[28]:=2;
         _LA[28,0] := input.LA(1);
 
@@ -1286,7 +1286,7 @@ begin
         case (_alt[28]) of
              1 :
                 begin
-                // XMLLexer.g:78:31: WS
+                // XMLLexer.g:77:31: WS
                 begin
                 mWS(); 
 
@@ -1296,9 +1296,9 @@ begin
 
         end;
 
-        _Start['value865'] := getCharIndex();
+        _Start['value863'] := getCharIndex();
         mVALUE();
-        value := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['value865'], getCharIndex()-1);
+        value := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['value863'], getCharIndex()-1);
          Writeln('Attr: '+name.getText()+'='+value.getText()); 
 
         end;
@@ -1313,17 +1313,17 @@ var
   _type:Integer;
   _channel:Integer;
   _alt:array [0..255] of Integer;
-  name:IToken;
+  name:ICommonToken;
 
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:83:5: ( ''</'' ( WS )? name= GENERIC_ID ( WS )? ''>'' )
-        // XMLLexer.g:83:7: ''</'' ( WS )? name= GENERIC_ID ( WS )? ''>''
+        // ruleBlockSingleAlt:XMLLexer.g:82:5: ( ''</'' ( WS )? name= GENERIC_ID ( WS )? ''>'' )
+        // XMLLexer.g:82:7: ''</'' ( WS )? name= GENERIC_ID ( WS )? ''>''
         begin
         match('</');
 
 
-        // block:XMLLexer.g:83:12: ( WS )?
+        // block:XMLLexer.g:82:12: ( WS )?
         _alt[29]:=2;
         _LA[29,0] := input.LA(1);
 
@@ -1336,7 +1336,7 @@ begin
         case (_alt[29]) of
              1 :
                 begin
-                // XMLLexer.g:83:12: WS
+                // XMLLexer.g:82:12: WS
                 begin
                 mWS(); 
 
@@ -1346,10 +1346,10 @@ begin
 
         end;
 
-        _Start['name902'] := getCharIndex();
+        _Start['name900'] := getCharIndex();
         mGENERIC_ID();
-        name := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['name902'], getCharIndex()-1);
-        // block:XMLLexer.g:83:32: ( WS )?
+        name := TAntlrCommonToken.CreateWithStream(input, INVALID_TOKEN_TYPE, DEFAULT_CHANNEL, _Start['name900'], getCharIndex()-1);
+        // block:XMLLexer.g:82:32: ( WS )?
         _alt[30]:=2;
         _LA[30,0] := input.LA(1);
 
@@ -1362,7 +1362,7 @@ begin
         case (_alt[30]) of
              1 :
                 begin
-                // XMLLexer.g:83:32: WS
+                // XMLLexer.g:82:32: WS
                 begin
                 mWS(); 
 
@@ -1390,13 +1390,13 @@ var
   _alt:array [0..255] of Integer;
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:88:2: ( ''<!--'' ( options {greedy=false; } : . )* ''-->'' )
-        // XMLLexer.g:88:4: ''<!--'' ( options {greedy=false; } : . )* ''-->''
+        // ruleBlockSingleAlt:XMLLexer.g:87:2: ( ''<!--'' ( options {greedy=false; } : . )* ''-->'' )
+        // XMLLexer.g:87:4: ''<!--'' ( options {greedy=false; } : . )* ''-->''
         begin
         match('<!--');
 
 
-        // closureBlock:XMLLexer.g:88:11: ( options {greedy=false; } : . )*
+        // closureBlock:XMLLexer.g:87:11: ( options {greedy=false; } : . )*
         repeat 
             _alt[31]:=2;
             _LA[31,0] := input.LA(1);
@@ -1445,7 +1445,7 @@ begin
             case (_alt[31]) of
         	 1 :
         	    begin
-        	    // XMLLexer.g:88:38: .
+        	    // XMLLexer.g:87:38: .
         	    begin
         	    matchAny(); 
 
@@ -1476,13 +1476,13 @@ var
   _alt:array [0..255] of Integer;
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:92:2: ( ''<![CDATA['' ( options {greedy=false; } : . )* '']]>'' )
-        // XMLLexer.g:92:4: ''<![CDATA['' ( options {greedy=false; } : . )* '']]>''
+        // ruleBlockSingleAlt:XMLLexer.g:91:2: ( ''<![CDATA['' ( options {greedy=false; } : . )* '']]>'' )
+        // XMLLexer.g:91:4: ''<![CDATA['' ( options {greedy=false; } : . )* '']]>''
         begin
         match('<![CDATA[');
 
 
-        // closureBlock:XMLLexer.g:92:16: ( options {greedy=false; } : . )*
+        // closureBlock:XMLLexer.g:91:16: ( options {greedy=false; } : . )*
         repeat 
             _alt[32]:=2;
             _LA[32,0] := input.LA(1);
@@ -1531,7 +1531,7 @@ begin
             case (_alt[32]) of
         	 1 :
         	    begin
-        	    // XMLLexer.g:92:43: .
+        	    // XMLLexer.g:91:43: .
         	    begin
         	    matchAny(); 
 
@@ -1562,10 +1562,10 @@ var
   _alt:array [0..255] of Integer;
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:95:17: ( (~ ''<'' )+ )
-        // XMLLexer.g:95:19: (~ ''<'' )+
+        // ruleBlockSingleAlt:XMLLexer.g:94:17: ( (~ ''<'' )+ )
+        // XMLLexer.g:94:19: (~ ''<'' )+
         begin
-        // positiveClosureBlock:XMLLexer.g:95:19: (~ ''<'' )+
+        // positiveClosureBlock:XMLLexer.g:94:19: (~ ''<'' )+
         _cnt[33]:=0;
         repeat 
             _alt[33]:=2;
@@ -1585,7 +1585,7 @@ begin
             case (_alt[33]) of 
         	 1 :
         	    begin
-        	    // XMLLexer.g:95:20: ~ ''<''
+        	    // XMLLexer.g:94:20: ~ ''<''
         	    begin
         	    if ( ((input.LA(1)>=$0000) and (input.LA(1)<=$003B)) or ((input.LA(1)>=$003D) and (input.LA(1)<=$FFFF)) ) then
         	    begin
@@ -1626,10 +1626,10 @@ var
   _alt:array [0..255] of Integer;
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:97:16: ( ( ''\"'' (~ ''\"'' )* ''\"'' | ''\'''' (~ ''\'''' )* ''\'''' ) )
-        // XMLLexer.g:98:9: ( ''\"'' (~ ''\"'' )* ''\"'' | ''\'''' (~ ''\'''' )* ''\'''' )
+        // ruleBlockSingleAlt:XMLLexer.g:96:16: ( ( ''\"'' (~ ''\"'' )* ''\"'' | ''\'''' (~ ''\'''' )* ''\'''' ) )
+        // XMLLexer.g:97:9: ( ''\"'' (~ ''\"'' )* ''\"'' | ''\'''' (~ ''\'''' )* ''\'''' )
         begin
-        // block:XMLLexer.g:98:9: ( ''\"'' (~ ''\"'' )* ''\"'' | ''\'''' (~ ''\'''' )* ''\'''' )
+        // block:XMLLexer.g:97:9: ( ''\"'' (~ ''\"'' )* ''\"'' | ''\'''' (~ ''\'''' )* ''\'''' )
         _alt[36]:=2;
         _LA[36,0] := input.LA(1);
 
@@ -1650,11 +1650,11 @@ begin
         case (_alt[36]) of
              1 :
                 begin
-                // XMLLexer.g:98:11: ''\"'' (~ ''\"'' )* ''\"''
+                // XMLLexer.g:97:11: ''\"'' (~ ''\"'' )* ''\"''
                 begin
                 match($0022);
 
-                // closureBlock:XMLLexer.g:98:16: (~ ''\"'' )*
+                // closureBlock:XMLLexer.g:97:16: (~ ''\"'' )*
                 repeat 
                     _alt[34]:=2;
                     _LA[34,0] := input.LA(1);
@@ -1671,7 +1671,7 @@ begin
                     case (_alt[34]) of
                 	 1 :
                 	    begin
-                	    // XMLLexer.g:98:17: ~ ''\"''
+                	    // XMLLexer.g:97:17: ~ ''\"''
                 	    begin
                 	    if ( ((input.LA(1)>=$0000) and (input.LA(1)<=$0021)) or ((input.LA(1)>=$0023) and (input.LA(1)<=$FFFF)) ) then
                 	    begin
@@ -1699,11 +1699,11 @@ begin
                 end;
              2 :
                 begin
-                // XMLLexer.g:99:11: ''\'''' (~ ''\'''' )* ''\''''
+                // XMLLexer.g:98:11: ''\'''' (~ ''\'''' )* ''\''''
                 begin
                 match($0027);
 
-                // closureBlock:XMLLexer.g:99:16: (~ ''\'''' )*
+                // closureBlock:XMLLexer.g:98:16: (~ ''\'''' )*
                 repeat 
                     _alt[35]:=2;
                     _LA[35,0] := input.LA(1);
@@ -1720,7 +1720,7 @@ begin
                     case (_alt[35]) of
                 	 1 :
                 	    begin
-                	    // XMLLexer.g:99:17: ~ ''\''''
+                	    // XMLLexer.g:98:17: ~ ''\''''
                 	    begin
                 	    if ( ((input.LA(1)>=$0000) and (input.LA(1)<=$0026)) or ((input.LA(1)>=$0028) and (input.LA(1)<=$FFFF)) ) then
                 	    begin
@@ -1764,8 +1764,8 @@ var
   _alt:array [0..255] of Integer;
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:104:5: ( ( LETTER | ''_'' | '':'' ) ( options {greedy=true; } : LETTER | ''0'' .. ''9'' | ''.'' | ''-'' | ''_'' | '':'' )* )
-        // XMLLexer.g:104:7: ( LETTER | ''_'' | '':'' ) ( options {greedy=true; } : LETTER | ''0'' .. ''9'' | ''.'' | ''-'' | ''_'' | '':'' )*
+        // ruleBlockSingleAlt:XMLLexer.g:103:5: ( ( LETTER | ''_'' | '':'' ) ( options {greedy=true; } : LETTER | ''0'' .. ''9'' | ''.'' | ''-'' | ''_'' | '':'' )* )
+        // XMLLexer.g:103:7: ( LETTER | ''_'' | '':'' ) ( options {greedy=true; } : LETTER | ''0'' .. ''9'' | ''.'' | ''-'' | ''_'' | '':'' )*
         begin
         if ( (input.LA(1)=$003A) or ((input.LA(1)>=$0041) and (input.LA(1)<=$005A)) or (input.LA(1)=$005F) or ((input.LA(1)>=$0061) and (input.LA(1)<=$007A)) ) then
         begin
@@ -1777,7 +1777,7 @@ begin
             recover(EMismatchedSetException.CreateWithBitset(nil, input));
             raise EMismatchedSetException.CreateWithBitset(nil, input);end;
 
-        // closureBlock:XMLLexer.g:105:9: ( options {greedy=true; } : LETTER | ''0'' .. ''9'' | ''.'' | ''-'' | ''_'' | '':'' )*
+        // closureBlock:XMLLexer.g:104:9: ( options {greedy=true; } : LETTER | ''0'' .. ''9'' | ''.'' | ''-'' | ''_'' | '':'' )*
         repeat 
             _alt[37]:=7;
             case input.LA(1) of
@@ -1871,7 +1871,7 @@ begin
             case (_alt[37]) of
         	 1 :
         	    begin
-        	    // XMLLexer.g:105:36: LETTER
+        	    // XMLLexer.g:104:36: LETTER
         	    begin
         	    mLETTER(); 
 
@@ -1880,7 +1880,7 @@ begin
         	    end;
         	 2 :
         	    begin
-        	    // XMLLexer.g:105:45: ''0'' .. ''9''
+        	    // XMLLexer.g:104:45: ''0'' .. ''9''
         	    begin
         	    matchRange($0030,$0039); 
 
@@ -1889,7 +1889,7 @@ begin
         	    end;
         	 3 :
         	    begin
-        	    // XMLLexer.g:105:56: ''.''
+        	    // XMLLexer.g:104:56: ''.''
         	    begin
         	    match($002E);
 
@@ -1898,7 +1898,7 @@ begin
         	    end;
         	 4 :
         	    begin
-        	    // XMLLexer.g:105:62: ''-''
+        	    // XMLLexer.g:104:62: ''-''
         	    begin
         	    match($002D);
 
@@ -1907,7 +1907,7 @@ begin
         	    end;
         	 5 :
         	    begin
-        	    // XMLLexer.g:105:68: ''_''
+        	    // XMLLexer.g:104:68: ''_''
         	    begin
         	    match($005F);
 
@@ -1916,7 +1916,7 @@ begin
         	    end;
         	 6 :
         	    begin
-        	    // XMLLexer.g:105:74: '':''
+        	    // XMLLexer.g:104:74: '':''
         	    begin
         	    match($003A);
 
@@ -1944,7 +1944,7 @@ var
   _alt:array [0..255] of Integer;
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:109:2: ( ''a'' .. ''z'' | ''A'' .. ''Z'' )
+        // ruleBlockSingleAlt:XMLLexer.g:108:2: ( ''a'' .. ''z'' | ''A'' .. ''Z'' )
         // XMLLexer.g:
         begin
         if ( ((input.LA(1)>=$0041) and (input.LA(1)<=$005A)) or ((input.LA(1)>=$0061) and (input.LA(1)<=$007A)) ) then
@@ -1972,10 +1972,10 @@ var
   _alt:array [0..255] of Integer;
 begin
     try 
-        // ruleBlockSingleAlt:XMLLexer.g:113:14: ( ( '' '' | ''\t'' | ( ''\n'' | ''\r\n'' | ''\r'' ) )+ )
-        // XMLLexer.g:114:9: ( '' '' | ''\t'' | ( ''\n'' | ''\r\n'' | ''\r'' ) )+
+        // ruleBlockSingleAlt:XMLLexer.g:112:14: ( ( '' '' | ''\t'' | ( ''\n'' | ''\r\n'' | ''\r'' ) )+ )
+        // XMLLexer.g:113:9: ( '' '' | ''\t'' | ( ''\n'' | ''\r\n'' | ''\r'' ) )+
         begin
-        // positiveClosureBlock:XMLLexer.g:114:9: ( '' '' | ''\t'' | ( ''\n'' | ''\r\n'' | ''\r'' ) )+
+        // positiveClosureBlock:XMLLexer.g:113:9: ( '' '' | ''\t'' | ( ''\n'' | ''\r\n'' | ''\r'' ) )+
         _cnt[39]:=0;
         repeat 
             _alt[39]:=4;
@@ -2001,7 +2001,7 @@ begin
             case (_alt[39]) of 
         	 1 :
         	    begin
-        	    // XMLLexer.g:114:13: '' ''
+        	    // XMLLexer.g:113:13: '' ''
         	    begin
         	    match($0020);
 
@@ -2010,7 +2010,7 @@ begin
         	    end;
         	 2 :
         	    begin
-        	    // XMLLexer.g:115:13: ''\t''
+        	    // XMLLexer.g:114:13: ''\t''
         	    begin
         	    match($0009);
 
@@ -2019,9 +2019,9 @@ begin
         	    end;
         	 3 :
         	    begin
-        	    // XMLLexer.g:116:12: ( ''\n'' | ''\r\n'' | ''\r'' )
+        	    // XMLLexer.g:115:12: ( ''\n'' | ''\r\n'' | ''\r'' )
         	    begin
-        	    // block:XMLLexer.g:116:12: ( ''\n'' | ''\r\n'' | ''\r'' )
+        	    // block:XMLLexer.g:115:12: ( ''\n'' | ''\r\n'' | ''\r'' )
         	    _alt[38]:=3;
         	    _LA[38,0] := input.LA(1);
 
@@ -2049,7 +2049,7 @@ begin
         	    case (_alt[38]) of
         	         1 :
         	            begin
-        	            // XMLLexer.g:116:14: ''\n''
+        	            // XMLLexer.g:115:14: ''\n''
         	            begin
         	            match($000A);
 
@@ -2058,7 +2058,7 @@ begin
         	            end;
         	         2 :
         	            begin
-        	            // XMLLexer.g:117:15: ''\r\n''
+        	            // XMLLexer.g:116:15: ''\r\n''
         	            begin
         	            match('\r\n');
 
@@ -2068,7 +2068,7 @@ begin
         	            end;
         	         3 :
         	            begin
-        	            // XMLLexer.g:118:15: ''\r''
+        	            // XMLLexer.g:117:15: ''\r''
         	            begin
         	            match($000D);
 
@@ -2301,7 +2301,7 @@ end;
 
 function TXMLLexer.TAntlrDFA18.getDescription():string;
 begin
-  Result:='50:7: ( START_TAG ( ELEMENT | t= PCDATA | t= CDATA | t= COMMENT | pi= PI )* END_'+
+  Result:='49:7: ( START_TAG ( ELEMENT | t= PCDATA | t= CDATA | t= COMMENT | pi= PI )* END_'+
   'TAG | EMPTY_ELEMENT )';
 end;
 

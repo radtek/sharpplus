@@ -1,4 +1,4 @@
-// $ANTLR 3.1.2 Simple.g 2009-07-23 21:43:23
+// $ANTLR 3.2 10 03, 2009 17:07:46 Simple.g 2009-10-03 17:11:42
 unit SimpleLexer;
 
 interface
@@ -7,7 +7,7 @@ uses Classes, SysUtils, Dialogs, JclContainerIntf,
 
         JavadocParser, JavadocLexer,
  
-     Antlr;
+     Antlr, AntlrTree;
 
 type
     TSimpleLexer = class(TAntlrLexer)

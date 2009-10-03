@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 PolyDifferentiator.g 2009-07-23 21:44:30
+// $ANTLR 3.2 10 03, 2009 17:07:46 PolyDifferentiator.g 2009-10-03 17:15:07
 unit PolyDifferentiator;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
     const WS=7;
     const INT=5;
@@ -59,7 +59,7 @@ type
 
     public
         type IPolyDifferentiator_poly_return=interface(ITreeRuleReturnScope)
-        ['{76C5041A-571A-439A-8D04-2F3716063C07}']
+        ['{4ACDF6B2-30B8-4D93-8DFA-147F5AFB98CC}']
         end;   
         type poly_return =class( TTreeRuleReturnScope , IPolyDifferentiator_poly_return)
         private
@@ -398,7 +398,7 @@ begin
 
 
                 // AST REWRITE
-                // elements: INT, 9, MULT, ID, INT
+                // elements: INT, 9, ID, MULT, INT
                 // token labels: 
                 // rule labels: retval
                 // token list labels: 
@@ -477,7 +477,7 @@ begin
 
 
                 // AST REWRITE
-                // elements: 9, INT, ID, INT
+                // elements: INT, 9, INT, ID
                 // token labels: 
                 // rule labels: retval
                 // token list labels: 

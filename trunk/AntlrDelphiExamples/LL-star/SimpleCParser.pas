@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 SimpleC.g 2009-07-23 21:44:03
+// $ANTLR 3.2 10 03, 2009 17:07:46 SimpleC.g 2009-10-03 17:12:47
 unit SimpleCParser;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
     const T__20=20;
     const INT=5;
@@ -127,7 +127,7 @@ type
 
     // $ANTLR start "functionHeader"
     // SimpleC.g:27:1: functionHeader returns [String name] : dtype ID ''('' ( formalParameter ( '','' formalParameter )* )? '')'' ;
-    function functionHeader():string;
+    function functionHeader():String;
     // $ANTLR end functionHeader
 
 
@@ -414,9 +414,9 @@ var
 
   _last:ITree;
 
-  functionHeader1:string; 
+  functionHeader1:String; 
 
-  functionHeader2:string; 
+  functionHeader2:String; 
 
 
 begin
@@ -568,10 +568,10 @@ begin
     end;
 end;// $ANTLR start "functionHeader"
 // SimpleC.g:27:1: functionHeader returns [String name] : dtype ID ''('' ( formalParameter ( '','' formalParameter )* )? '')'' ;
-function TSimpleCParser.functionHeader():string;
+function TSimpleCParser.functionHeader():String;
 var
   _alt:array [0..255] of Integer;
-  name:string;
+  name:String;
   root:array [0..255] of ITree;
 
   _first_:array [0..255] of ITree;

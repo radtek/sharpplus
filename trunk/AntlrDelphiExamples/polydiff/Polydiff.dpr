@@ -5,6 +5,7 @@ program Polydiff;
 uses
   SysUtils,
   Antlr,
+  AntlrTree,
   PolyDifferentiator in 'PolyDifferentiator.pas',
   PolyLexer in 'PolyLexer.pas',
   PolyParser in 'PolyParser.pas',

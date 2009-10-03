@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 Poly.g 2009-07-23 21:44:29
+// $ANTLR 3.2 10 03, 2009 17:07:46 Poly.g 2009-10-03 17:15:06
 unit PolyParser;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
     const WS=7;
     const INT=5;
@@ -56,7 +56,7 @@ type
 
     public
         type IPolyParser_poly_return=interface(IParserRuleReturnScope)
-        ['{09F4E9D3-B793-4821-A8A8-841D43A8DF47}']
+        ['{84C006B3-768E-4236-9FC2-56D3A6DD44B1}']
         end;   
         type poly_return =class( TParserRuleReturnScope , IPolyParser_poly_return)
         private
@@ -73,7 +73,7 @@ type
 
     public
         type IPolyParser_term_return=interface(IParserRuleReturnScope)
-        ['{121D0BB1-8B98-47B4-904C-4A6BA3456848}']
+        ['{4CFBAA5E-B29A-4776-9816-CC83DB69E8F6}']
         end;   
         type term_return =class( TParserRuleReturnScope , IPolyParser_term_return)
         private
@@ -90,7 +90,7 @@ type
 
     public
         type IPolyParser_exp_return=interface(IParserRuleReturnScope)
-        ['{BADBB7E8-893F-41FE-9DF8-DC08547361E1}']
+        ['{3F2C2815-44EC-4A9F-A2DF-39574DBD2BF1}']
         end;   
         type exp_return =class( TParserRuleReturnScope , IPolyParser_exp_return)
         private
@@ -422,7 +422,7 @@ begin
 
 
                 // AST REWRITE
-                // elements: INT, ID
+                // elements: ID, INT
                 // token labels: 
                 // rule labels: retval
                 // token list labels: 

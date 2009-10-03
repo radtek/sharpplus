@@ -1,11 +1,11 @@
-// $ANTLR 3.1.2 LangDumpDecl.g 2009-07-23 21:46:38
+// $ANTLR 3.2 10 03, 2009 17:07:46 LangDumpDecl.g 2009-10-03 17:20:09
 unit LangDumpDecl;
 
 interface
 
 uses Classes, SysUtils, Dialogs, JclContainerIntf, 
  
-     Antlr;
+     Antlr, AntlrTree;
 
     const WS=9;
     const FLOATTYPE=7;
@@ -54,7 +54,7 @@ type
 
     public
         type ILangDumpDecl_declarator_return=interface(ITreeRuleReturnScope)
-        ['{21174EC8-D332-4666-928A-2778AC4C073C}']
+        ['{577A84F3-6061-43DA-B1F9-6D0FB60BAF03}']
         end;   
         type declarator_return =class( TTreeRuleReturnScope , ILangDumpDecl_declarator_return)
         private
