@@ -1,0 +1,4 @@
+tree=(FUNC_DEF (FUNC_HDR int foo (ARG_DEF int y)) (BLOCK (VAR_DEF int i) (for (= i 0) (< i 3) (= i (+ i 1)) (BLOCK (= x 3) (= y 5)))))
+tree=(FUNC_DEF (FUNC_HDR int foo (ARG_DEF int y)) (BLOCK (= x 3) (= y 5) (= y 5) (for (= i 0) (< i 3) (= i (+ i 1)) (BLOCK (= x 3) (= y 5)))))
+tree=(FUNC_DEF (FUNC_HDR int foo (ARG_DEF int y)) (BLOCK (= x 3) (= y 5) (= y 5) (for (= i 0) (< i 3) (= i (+ i 1)) (BLOCK (= x 3) (= y 5)))))
+
