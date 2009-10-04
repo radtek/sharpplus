@@ -1,4 +1,4 @@
-// $ANTLR 3.2 10 03, 2009 17:07:46 C.g 2009-10-03 18:35:55
+// $ANTLR 3.2 10 04, 2009 23:19:32 C.g 2009-10-05 01:05:07
 unit CParser;
 
 interface
@@ -1515,7 +1515,7 @@ type
   end;
 
 implementation
-uses JclStacks,
+uses JclStacks,JclArrayLists,
     // delegates
     // delegators
  
@@ -2075,7 +2075,7 @@ begin
         	      if (state.backtracking>0) then 
         	      begin 
         	        state.failed:=true; 
-        	        Exit;  
+        	        Exit(0);
         	      end;
         	        raise EEarlyExitException.CreateWithDecision(1, input);
                 end;
@@ -2293,7 +2293,7 @@ begin
                 	      if (state.backtracking>0) then 
                 	      begin 
                 	        state.failed:=true; 
-                	        Exit;  
+                	        Exit(0);
                 	      end;
                 	        raise EEarlyExitException.CreateWithDecision(4, input);
                         end;
@@ -2597,7 +2597,7 @@ begin
         	      if (state.backtracking>0) then 
         	      begin 
         	        state.failed:=true; 
-        	        Exit;  
+        	        Exit(0);
         	      end;
         	        raise EEarlyExitException.CreateWithDecision(9, input);
                 end;
@@ -2835,7 +2835,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             raise EMismatchedSetException.CreateWithBitset(nil, input);
         end;
@@ -3089,7 +3089,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             raise EFailedPredicateException.Create(input, 'type_id', 'isTypeName(input.LT(1).getText())');
         end;
@@ -3285,7 +3285,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             raise EMismatchedSetException.CreateWithBitset(nil, input);
         end;
@@ -3369,7 +3369,7 @@ begin
         	      if (state.backtracking>0) then 
         	      begin 
         	        state.failed:=true; 
-        	        Exit;  
+        	        Exit(0);
         	      end;
         	        raise EEarlyExitException.CreateWithDecision(15, input);
                 end;
@@ -3536,7 +3536,7 @@ begin
         	      if (state.backtracking>0) then 
         	      begin 
         	        state.failed:=true; 
-        	        Exit;  
+        	        Exit(0);
         	      end;
         	        raise EEarlyExitException.CreateWithDecision(16, input);
                 end;
@@ -3692,7 +3692,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             //Todo:raise ENoViableAltException.CreateNoViable(''
             raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -4124,7 +4124,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             raise EMismatchedSetException.CreateWithBitset(nil, input);
         end;
@@ -4297,7 +4297,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             //Todo:raise ENoViableAltException.CreateNoViable(''
             raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -4635,7 +4635,7 @@ begin
                 	      if (state.backtracking>0) then 
                 	      begin 
                 	        state.failed:=true; 
-                	        Exit;  
+                	        Exit(0);
                 	      end;
                 	        raise EEarlyExitException.CreateWithDecision(28, input);
                         end;
@@ -5191,7 +5191,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             //Todo:raise ENoViableAltException.CreateNoViable(''
             raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -5572,7 +5572,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             //Todo:raise ENoViableAltException.CreateNoViable(''
             raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -6586,7 +6586,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             raise EMismatchedSetException.CreateWithBitset(nil, input);
         end;
@@ -6658,7 +6658,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             //Todo:raise ENoViableAltException.CreateNoViable(''
             raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -6773,7 +6773,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             raise EMismatchedSetException.CreateWithBitset(nil, input);
         end;
@@ -7121,7 +7121,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             raise EMismatchedSetException.CreateWithBitset(nil, input);
         end;
@@ -7734,7 +7734,7 @@ begin
         	        if (state.backtracking>0) then 
         	        begin 
         	          state.failed:=true; 
-        	          Exit;  
+        	          Exit(0);
         	        end;
         	        raise EMismatchedSetException.CreateWithBitset(nil, input);
         	    end;
@@ -7831,7 +7831,7 @@ begin
         	        if (state.backtracking>0) then 
         	        begin 
         	          state.failed:=true; 
-        	          Exit;  
+        	          Exit(0);
         	        end;
         	        raise EMismatchedSetException.CreateWithBitset(nil, input);
         	    end;
@@ -7928,7 +7928,7 @@ begin
         	        if (state.backtracking>0) then 
         	        begin 
         	          state.failed:=true; 
-        	          Exit;  
+        	          Exit(0);
         	        end;
         	        raise EMismatchedSetException.CreateWithBitset(nil, input);
         	    end;
@@ -8150,7 +8150,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             //Todo:raise ENoViableAltException.CreateNoViable(''
             raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -8438,7 +8438,7 @@ begin
         	      if (state.backtracking>0) then 
         	      begin 
         	        state.failed:=true; 
-        	        Exit;  
+        	        Exit(0);
         	      end;
         	        raise EEarlyExitException.CreateWithDecision(66, input);
                 end;
@@ -8507,7 +8507,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             //Todo:raise ENoViableAltException.CreateNoViable(''
             raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -8603,7 +8603,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             //Todo:raise ENoViableAltException.CreateNoViable(''
             raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -8787,7 +8787,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Exit;  
+              Exit(0);
             end;
             //Todo:raise ENoViableAltException.CreateNoViable(''
             raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -9512,7 +9512,7 @@ begin
     	      if (state.backtracking>0) then 
     	      begin 
     	        state.failed:=true; 
-    	        Exit;  
+    	        Exit(0);
     	      end;
     	        raise EEarlyExitException.CreateWithDecision(80, input);
             end;
