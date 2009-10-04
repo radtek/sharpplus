@@ -1,4 +1,4 @@
-// $ANTLR 3.2 10 04, 2009 24:10:08 Reduce.g 2009-10-04 00:27:55
+// $ANTLR 3.2 10 04, 2009 23:19:32 Reduce.g 2009-10-04 23:19:41
 unit Reduce;
 
 interface
@@ -68,7 +68,7 @@ type
 
     public
         type IReduce_bottomup_return=interface(ITreeRuleReturnScope)
-        ['{543F514E-18BB-4898-9335-F31903ACA57A}']
+        ['{2531F04F-493C-4E09-B1FA-ABA5517F0F18}']
         end;   
         type bottomup_return =class( TTreeRuleReturnScope , IReduce_bottomup_return)
         private
@@ -85,7 +85,7 @@ type
 
     public
         type IReduce_xPlusx_return=interface(ITreeRuleReturnScope)
-        ['{BAF43235-0370-4D4B-99BF-F7AD465084B6}']
+        ['{C45172C2-8FAD-450D-84D5-BA09099B823F}']
         end;   
         type xPlusx_return =class( TTreeRuleReturnScope , IReduce_xPlusx_return)
         private
@@ -102,7 +102,7 @@ type
 
     public
         type IReduce_multBy2_return=interface(ITreeRuleReturnScope)
-        ['{9186A1C4-F5B0-46FC-93CA-053D104337FD}']
+        ['{F17101B2-0B9C-465C-BD7D-B4BB1440FFC6}']
         end;   
         type multBy2_return =class( TTreeRuleReturnScope , IReduce_multBy2_return)
         private
@@ -119,7 +119,7 @@ type
 
     public
         type IReduce_combineShifts_return=interface(ITreeRuleReturnScope)
-        ['{77CED52D-B8A0-45E5-8662-03E04BCB5A7D}']
+        ['{4A0D1D39-2A00-473A-BC5A-AC5CB2EEAA32}']
         end;   
         type combineShifts_return =class( TTreeRuleReturnScope , IReduce_combineShifts_return)
         private
@@ -290,7 +290,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Result:=retval//bottomup_return(retval.getobject);;  
+              Exit(retval{bottomup_return(retval.getobject);});
             end;
             //Todo:raise ENoViableAltException.CreateNoViable(''
             raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -311,7 +311,7 @@ begin
                 state._fsp:=state._fsp-1;
                 if (state.failed) then
                 begin
-                  Result:=retval//bottomup_return(retval.getobject);;    Exit;
+                  Result:=retval{bottomup_return(retval.getobject);};    Exit;
                 end;
                 if ( state.backtracking=1 ) then 
                  
@@ -334,7 +334,7 @@ begin
                 state._fsp:=state._fsp-1;
                 if (state.failed) then
                 begin
-                  Result:=retval//bottomup_return(retval.getobject);;    Exit;
+                  Result:=retval{bottomup_return(retval.getobject);};    Exit;
                 end;
                 if ( state.backtracking=1 ) then 
                  
@@ -357,7 +357,7 @@ begin
                 state._fsp:=state._fsp-1;
                 if (state.failed) then
                 begin
-                  Result:=retval//bottomup_return(retval.getobject);;    Exit;
+                  Result:=retval{bottomup_return(retval.getobject);};    Exit;
                 end;
                 if ( state.backtracking=1 ) then 
                  
@@ -380,7 +380,7 @@ begin
     end;
     finally 
     end;
-    Result:=retval//bottomup_return(retval.getobject);;
+    Result:=retval{bottomup_return(retval.getobject);};
 end;
 
 
@@ -441,7 +441,7 @@ begin
         char_literal4:=match(input,12,FOLLOW_12_in_xPlusx155) as ICommonTree; 
         if (state.failed) then
         begin
-          Result:=retval//xPlusx_return(retval.getobject);;    Exit;
+          Result:=retval{xPlusx_return(retval.getobject);};    Exit;
         end; 
         if ( state.backtracking=1 ) then 
         _stream[SIndex('12')].add(char_literal4);
@@ -451,13 +451,13 @@ begin
         if ( _first_[0]=nil ) then _first_[0] := char_literal4;
         match(input, DOWN, nil); if (state.failed) then
         begin
-          Result:=retval//xPlusx_return(retval.getobject);;    Exit;
+          Result:=retval{xPlusx_return(retval.getobject);};    Exit;
         end;
         _last := input.LT(1) as ICommonTree;
         i:=match(input,INT,FOLLOW_INT_in_xPlusx159) as ICommonTree; 
         if (state.failed) then
         begin
-          Result:=retval//xPlusx_return(retval.getobject);;    Exit;
+          Result:=retval{xPlusx_return(retval.getobject);};    Exit;
         end; 
         if ( state.backtracking=1 ) then 
         _stream[SIndex('INT')].add(i);
@@ -466,7 +466,7 @@ begin
         j:=match(input,INT,FOLLOW_INT_in_xPlusx163) as ICommonTree; 
         if (state.failed) then
         begin
-          Result:=retval//xPlusx_return(retval.getobject);;    Exit;
+          Result:=retval{xPlusx_return(retval.getobject);};    Exit;
         end; 
         if ( state.backtracking=1 ) then 
         _stream[SIndex('INT')].add(j);
@@ -475,14 +475,14 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Result:=retval//xPlusx_return(retval.getobject);;  
+              Exit(retval{xPlusx_return(retval.getobject);});
             end;
             raise EFailedPredicateException.Create(input, 'xPlusx', 'Equal($i.int,$j.int)');
         end;
 
         match(input, UP, nil); if (state.failed) then
         begin
-          Result:=retval//xPlusx_return(retval.getobject);;    Exit;
+          Result:=retval{xPlusx_return(retval.getobject);};    Exit;
         end;_last := _save_last_[1];
         end;
 
@@ -497,7 +497,7 @@ begin
         // wildcard labels: 
         if ( state.backtracking=1 ) then begin
         retval.tree := root[0];
-        _stream[SIndex('j')]:=TRewriteRuleTokenStream.CreateWithOne(getTreeAdaptor,'token j',j);
+        _stream[SIndex('j')]:=TRewriteRuleNodeStream.CreateWithOne(getTreeAdaptor,'token j',j);
         _stream[SIndex('retval')]:=TRewriteRuleSubtreeStream.CreateWithOne(getTreeAdaptor,'rule retval',IIF(Assigned(retval), retval.gettree,nil));
 
         root[0] := ICommonTree(getTreeAdaptor.null());
@@ -532,7 +532,7 @@ begin
     end;
     finally 
     end;
-    Result:=retval//xPlusx_return(retval.getobject);;
+    Result:=retval{xPlusx_return(retval.getobject);};
 end;
 
 
@@ -628,7 +628,7 @@ begin
                         if (state.backtracking>0) then 
                         begin 
                           state.failed:=true; 
-                          Result:=retval//multBy2_return(retval.getobject);;  
+                          Exit(retval{multBy2_return(retval.getobject);});
                         end;
                         //Todo:raise ENoViableAltException.CreateNoViable(''
                         raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -640,7 +640,7 @@ begin
                       if (state.backtracking>0) then 
                       begin 
                         state.failed:=true; 
-                        Result:=retval//multBy2_return(retval.getobject);;  
+                        Exit(retval{multBy2_return(retval.getobject);});
                       end;
                       //Todo:raise ENoViableAltException.CreateNoViable(''
                       raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -674,7 +674,7 @@ begin
                   if (state.backtracking>0) then 
                   begin 
                     state.failed:=true; 
-                    Result:=retval//multBy2_return(retval.getobject);;  
+                    Exit(retval{multBy2_return(retval.getobject);});
                   end;
                   //Todo:raise ENoViableAltException.CreateNoViable(''
                   raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -694,7 +694,7 @@ begin
                 if (state.backtracking>0) then 
                 begin 
                   state.failed:=true; 
-                  Result:=retval//multBy2_return(retval.getobject);;  
+                  Exit(retval{multBy2_return(retval.getobject);});
                 end;
                 //Todo:raise ENoViableAltException.CreateNoViable(''
                 raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -706,7 +706,7 @@ begin
               if (state.backtracking>0) then 
               begin 
                 state.failed:=true; 
-                Result:=retval//multBy2_return(retval.getobject);;  
+                Exit(retval{multBy2_return(retval.getobject);});
               end;
               //Todo:raise ENoViableAltException.CreateNoViable(''
               raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -718,7 +718,7 @@ begin
             if (state.backtracking>0) then 
             begin 
               state.failed:=true; 
-              Result:=retval//multBy2_return(retval.getobject);;  
+              Exit(retval{multBy2_return(retval.getobject);});
             end;
             //Todo:raise ENoViableAltException.CreateNoViable(''
             raise ENoViableAltException.CreateNoViable('ENoViableAltException'
@@ -738,7 +738,7 @@ begin
                 char_literal5:=match(input,MULT,FOLLOW_MULT_in_multBy2197) as ICommonTree; 
                 if (state.failed) then
                 begin
-                  Result:=retval//multBy2_return(retval.getobject);;    Exit;
+                  Result:=retval{multBy2_return(retval.getobject);};    Exit;
                 end; 
                 if ( state.backtracking=1 ) then 
                 _stream[SIndex('MULT')].add(char_literal5);
@@ -748,13 +748,13 @@ begin
                 if ( _first_[0]=nil ) then _first_[0] := char_literal5;
                 match(input, DOWN, nil); if (state.failed) then
                 begin
-                  Result:=retval//multBy2_return(retval.getobject);;    Exit;
+                  Result:=retval{multBy2_return(retval.getobject);};    Exit;
                 end;
                 _last := input.LT(1) as ICommonTree;
                 x:=match(input,INT,FOLLOW_INT_in_multBy2201) as ICommonTree; 
                 if (state.failed) then
                 begin
-                  Result:=retval//multBy2_return(retval.getobject);;    Exit;
+                  Result:=retval{multBy2_return(retval.getobject);};    Exit;
                 end; 
                 if ( state.backtracking=1 ) then 
                 _stream[SIndex('INT')].add(x);
@@ -763,7 +763,7 @@ begin
                     if (state.backtracking>0) then 
                     begin 
                       state.failed:=true; 
-                      Result:=retval//multBy2_return(retval.getobject);;  
+                      Exit(retval{multBy2_return(retval.getobject);});
                     end;
                     raise EFailedPredicateException.Create(input, 'multBy2', '2=$x.int');
                 end;
@@ -772,7 +772,7 @@ begin
                 matchAny(input); 
                 if (state.failed) then
                 begin
-                  Result:=retval//multBy2_return(retval.getobject);;    Exit;
+                  Result:=retval{multBy2_return(retval.getobject);};    Exit;
                 end;
                  
                 if ( state.backtracking=1 ) then
@@ -780,7 +780,7 @@ begin
 
                 match(input, UP, nil); if (state.failed) then
                 begin
-                  Result:=retval//multBy2_return(retval.getobject);;    Exit;
+                  Result:=retval{multBy2_return(retval.getobject);};    Exit;
                 end;_last := _save_last_[1];
                 end;
 
@@ -833,7 +833,7 @@ begin
                 char_literal6:=match(input,MULT,FOLLOW_MULT_in_multBy2232) as ICommonTree; 
                 if (state.failed) then
                 begin
-                  Result:=retval//multBy2_return(retval.getobject);;    Exit;
+                  Result:=retval{multBy2_return(retval.getobject);};    Exit;
                 end; 
                 if ( state.backtracking=1 ) then 
                 _stream[SIndex('MULT')].add(char_literal6);
@@ -843,14 +843,14 @@ begin
                 if ( _first_[0]=nil ) then _first_[0] := char_literal6;
                 match(input, DOWN, nil); if (state.failed) then
                 begin
-                  Result:=retval//multBy2_return(retval.getobject);;    Exit;
+                  Result:=retval{multBy2_return(retval.getobject);};    Exit;
                 end;
                 _last := input.LT(1) as ICommonTree;
                 a:=ICommonTree(input.LT(1));
                 matchAny(input); 
                 if (state.failed) then
                 begin
-                  Result:=retval//multBy2_return(retval.getobject);;    Exit;
+                  Result:=retval{multBy2_return(retval.getobject);};    Exit;
                 end;
                  
                 if ( state.backtracking=1 ) then
@@ -859,7 +859,7 @@ begin
                 b:=match(input,INT,FOLLOW_INT_in_multBy2240) as ICommonTree; 
                 if (state.failed) then
                 begin
-                  Result:=retval//multBy2_return(retval.getobject);;    Exit;
+                  Result:=retval{multBy2_return(retval.getobject);};    Exit;
                 end; 
                 if ( state.backtracking=1 ) then 
                 _stream[SIndex('INT')].add(b);
@@ -868,14 +868,14 @@ begin
                     if (state.backtracking>0) then 
                     begin 
                       state.failed:=true; 
-                      Result:=retval//multBy2_return(retval.getobject);;  
+                      Exit(retval{multBy2_return(retval.getobject);});
                     end;
                     raise EFailedPredicateException.Create(input, 'multBy2', '2=$b.int');
                 end;
 
                 match(input, UP, nil); if (state.failed) then
                 begin
-                  Result:=retval//multBy2_return(retval.getobject);;    Exit;
+                  Result:=retval{multBy2_return(retval.getobject);};    Exit;
                 end;_last := _save_last_[1];
                 end;
 
@@ -927,7 +927,7 @@ begin
     end;
     finally 
     end;
-    Result:=retval//multBy2_return(retval.getobject);;
+    Result:=retval{multBy2_return(retval.getobject);};
 end;
 
 
@@ -992,7 +992,7 @@ begin
         SHIFT7:=match(input,SHIFT,FOLLOW_SHIFT_in_combineShifts278) as ICommonTree; 
         if (state.failed) then
         begin
-          Result:=retval//combineShifts_return(retval.getobject);;    Exit;
+          Result:=retval{combineShifts_return(retval.getobject);};    Exit;
         end; 
         if ( state.backtracking=1 ) then 
         _stream[SIndex('SHIFT')].add(SHIFT7);
@@ -1002,7 +1002,7 @@ begin
         if ( _first_[0]=nil ) then _first_[0] := SHIFT7;
         match(input, DOWN, nil); if (state.failed) then
         begin
-          Result:=retval//combineShifts_return(retval.getobject);;    Exit;
+          Result:=retval{combineShifts_return(retval.getobject);};    Exit;
         end;
         _last := input.LT(1) as ICommonTree;
         begin
@@ -1012,7 +1012,7 @@ begin
         SHIFT8:=match(input,SHIFT,FOLLOW_SHIFT_in_combineShifts281) as ICommonTree; 
         if (state.failed) then
         begin
-          Result:=retval//combineShifts_return(retval.getobject);;    Exit;
+          Result:=retval{combineShifts_return(retval.getobject);};    Exit;
         end; 
         if ( state.backtracking=1 ) then 
         _stream[SIndex('SHIFT')].add(SHIFT8);
@@ -1022,14 +1022,14 @@ begin
         if ( _first_[1]=nil ) then _first_[1] := SHIFT8;
         match(input, DOWN, nil); if (state.failed) then
         begin
-          Result:=retval//combineShifts_return(retval.getobject);;    Exit;
+          Result:=retval{combineShifts_return(retval.getobject);};    Exit;
         end;
         _last := input.LT(1) as ICommonTree;
         e:=ICommonTree(input.LT(1));
         matchAny(input); 
         if (state.failed) then
         begin
-          Result:=retval//combineShifts_return(retval.getobject);;    Exit;
+          Result:=retval{combineShifts_return(retval.getobject);};    Exit;
         end;
          
         if ( state.backtracking=1 ) then
@@ -1038,7 +1038,7 @@ begin
         n:=match(input,INT,FOLLOW_INT_in_combineShifts289) as ICommonTree; 
         if (state.failed) then
         begin
-          Result:=retval//combineShifts_return(retval.getobject);;    Exit;
+          Result:=retval{combineShifts_return(retval.getobject);};    Exit;
         end; 
         if ( state.backtracking=1 ) then 
         _stream[SIndex('INT')].add(n);
@@ -1046,7 +1046,7 @@ begin
 
         match(input, UP, nil); if (state.failed) then
         begin
-          Result:=retval//combineShifts_return(retval.getobject);;    Exit;
+          Result:=retval{combineShifts_return(retval.getobject);};    Exit;
         end;_last := _save_last_[2];
         end;
 
@@ -1054,7 +1054,7 @@ begin
         m:=match(input,INT,FOLLOW_INT_in_combineShifts294) as ICommonTree; 
         if (state.failed) then
         begin
-          Result:=retval//combineShifts_return(retval.getobject);;    Exit;
+          Result:=retval{combineShifts_return(retval.getobject);};    Exit;
         end; 
         if ( state.backtracking=1 ) then 
         _stream[SIndex('INT')].add(m);
@@ -1062,7 +1062,7 @@ begin
 
         match(input, UP, nil); if (state.failed) then
         begin
-          Result:=retval//combineShifts_return(retval.getobject);;    Exit;
+          Result:=retval{combineShifts_return(retval.getobject);};    Exit;
         end;_last := _save_last_[1];
         end;
 
@@ -1112,7 +1112,7 @@ begin
     end;
     finally 
     end;
-    Result:=retval//combineShifts_return(retval.getobject);;
+    Result:=retval{combineShifts_return(retval.getobject);};
 end;// $ANTLR start "synpred3_Reduce"
 function TReduce.synpred3_Reduce_fragment():Integer;
 var
@@ -1149,7 +1149,7 @@ begin
         if (state.backtracking>0) then 
         begin 
           state.failed:=true; 
-          Result:=0;  
+          Exit(0);
         end;
         raise EFailedPredicateException.Create(input, 'synpred3_Reduce', '2=$x.int');
     end;
