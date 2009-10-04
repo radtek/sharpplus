@@ -1,4 +1,4 @@
-// $ANTLR 3.2 10 04, 2009 24:10:08 VecMath.g 2009-10-04 00:27:54
+// $ANTLR 3.2 10 04, 2009 23:19:32 VecMath.g 2009-10-04 23:19:40
 unit VecMathParser;
 
 interface
@@ -75,7 +75,7 @@ type
 
     public
         type IVecMathParser_prog_return=interface(IParserRuleReturnScope)
-        ['{26A5E234-CD38-4D74-B187-6D73DB92493E}']
+        ['{3C1432DE-71DC-4970-AA74-DC997325696F}']
         end;   
         type prog_return =class( TParserRuleReturnScope , IVecMathParser_prog_return)
         private
@@ -92,7 +92,7 @@ type
 
     public
         type IVecMathParser_stat_return=interface(IParserRuleReturnScope)
-        ['{BCA5B008-C3BB-4AD4-9312-A8A53C59CF80}']
+        ['{88A46184-539E-475A-9FD7-B5E506244FC7}']
         end;   
         type stat_return =class( TParserRuleReturnScope , IVecMathParser_stat_return)
         private
@@ -109,7 +109,7 @@ type
 
     public
         type IVecMathParser_expr_return=interface(IParserRuleReturnScope)
-        ['{4C97CFF0-0AEF-4030-B42E-271F0D7E1F18}']
+        ['{8BB61B27-3F7A-4163-917F-EFC5C002DF7F}']
         end;   
         type expr_return =class( TParserRuleReturnScope , IVecMathParser_expr_return)
         private
@@ -126,7 +126,7 @@ type
 
     public
         type IVecMathParser_multExpr_return=interface(IParserRuleReturnScope)
-        ['{BA2B7DC0-DF9E-48E5-9C58-30138BCA64B8}']
+        ['{2492F72F-ABAE-4AEC-B8FB-B2E02CB1D4A9}']
         end;   
         type multExpr_return =class( TParserRuleReturnScope , IVecMathParser_multExpr_return)
         private
@@ -143,7 +143,7 @@ type
 
     public
         type IVecMathParser_primary_return=interface(IParserRuleReturnScope)
-        ['{BFB00564-A7A1-4659-A1E2-7E8E30A9F37B}']
+        ['{7FA636FE-9CB7-43BE-9A0D-D3FEB8DFFFB4}']
         end;   
         type primary_return =class( TParserRuleReturnScope , IVecMathParser_primary_return)
         private
@@ -352,7 +352,7 @@ begin
     end;
     finally 
     end;
-    Result:=retval//prog_return(retval.getobject);;
+    Result:=retval{prog_return(retval.getobject);};
 end;
 
 
@@ -535,7 +535,7 @@ begin
     end;
     finally 
     end;
-    Result:=retval//stat_return(retval.getobject);;
+    Result:=retval{stat_return(retval.getobject);};
 end;
 
 
@@ -646,7 +646,7 @@ begin
     end;
     finally 
     end;
-    Result:=retval//expr_return(retval.getobject);;
+    Result:=retval{expr_return(retval.getobject);};
 end;
 
 
@@ -800,7 +800,7 @@ begin
     end;
     finally 
     end;
-    Result:=retval//multExpr_return(retval.getobject);;
+    Result:=retval{multExpr_return(retval.getobject);};
 end;
 
 
@@ -1073,7 +1073,7 @@ begin
     end;
     finally 
     end;
-    Result:=retval//primary_return(retval.getobject);;
+    Result:=retval{primary_return(retval.getobject);};
 end;
 
 
