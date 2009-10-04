@@ -27,7 +27,7 @@ begin
       Writeln(Format('Token:%s type:%d', [t.getText, t.GetType]));
       t:=lex.nextToken;
     end;
- }
+}
   try
     try
         g.translation_unit();

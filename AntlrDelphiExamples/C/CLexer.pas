@@ -1,4 +1,4 @@
-// $ANTLR 3.2 10 03, 2009 17:07:46 C.g 2009-10-03 18:35:55
+// $ANTLR 3.2 10 04, 2009 23:19:32 C.g 2009-10-05 01:05:08
 unit CLexer;
 
 interface
@@ -531,7 +531,7 @@ type
     end;
 
 implementation
-uses  JclStacks,
+uses  JclStacks,JclArrayLists,
     // delegates
     // delegators
  
