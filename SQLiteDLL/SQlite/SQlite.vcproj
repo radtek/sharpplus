@@ -250,6 +250,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fkey.c"
+				>
+			</File>
+			<File
 				RelativePath=".\fts3_expr.c"
 				>
 			</File>
