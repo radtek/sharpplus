@@ -99,6 +99,17 @@ static void updateMaxBlobsize(Mem *p){
 #endif
 
 /*
+** The next global variable is incremented each type the OP_Found opcode
+** is executed. This is used to test whether or not the foreign key
+** operation implemented using OP_FkIsZero is working. This variable
+** has no function other than to help verify the correct operation of the
+** library.
+*/
+#ifdef SQLITE_TEST
+int sqlite3_found_count = 0;
+#endif
+
+/*
 ** Test a register to see if it exceeds the current maximum blob size.
 ** If it does, record the new maximum blob size.
 */
@@ -616,9 +627,8 @@ int sqlite3VdbeExec(
       i64 b;
     } ah;
     struct OP_Ge_stack_vars {
-      int flags;
-      int res;
-      char affinity;
+      int res;            /* Result of the comparison of pIn1 against pIn3 */
+      char affinity;      /* Affinity to use for comparison */
     } ai;
     struct OP_Compare_stack_vars {
       int n;
@@ -1279,10 +1289,12 @@ case OP_Halt: {
     sqlite3SetString(&p->zErrMsg, db, "%s", pOp->p4.z);
   }
   rc = sqlite3VdbeHalt(p);
-  assert( rc==SQLITE_BUSY || rc==SQLITE_OK );
+  assert( rc==SQLITE_BUSY || rc==SQLITE_OK || rc==SQLITE_ERROR );
   if( rc==SQLITE_BUSY ){
     p->rc = rc = SQLITE_BUSY;
   }else{
+    assert( rc==SQLITE_OK || p->rc==SQLITE_CONSTRAINT );
+    assert( rc==SQLITE_OK || db->nDeferredCons>0 );
     rc = p->rc ? SQLITE_ERROR : SQLITE_DONE;
   }
   goto vdbe_return;
@@ -1527,6 +1539,15 @@ case OP_ResultRow: {
   assert( p->nResColumn==pOp->p2 );
   assert( pOp->p1>0 );
   assert( pOp->p1+pOp->p2<=p->nMem+1 );
+
+  /* If this statement has violated immediate foreign key constraints, do
+  ** not return the number of rows modified. And do not RELEASE the statement
+  ** transaction. It needs to be rolled back.  */
+  if( SQLITE_OK!=(rc = sqlite3VdbeCheckFk(p, 0)) ){
+    assert( db->flags&SQLITE_CountRows );
+    assert( p->usesStmtJournal );
+    break;
+  }
 
   /* If the SQLITE_CountRows flag is set in sqlite3.flags mask, then
   ** DML statements invoke this opcode to return the number of rows
@@ -2099,12 +2120,24 @@ case OP_ToReal: {                  /* same as TK_TO_REAL, in1 */
 ** This works just like the Lt opcode except that the jump is taken if
 ** the operands in registers P1 and P3 are not equal.  See the Lt opcode for
 ** additional information.
+**
+** If SQLITE_NULLEQ is set in P5 then the result of comparison is always either
+** true or false and is never NULL.  If both operands are NULL then the result
+** of comparison is false.  If either operand is NULL then the result is true.
+** If neither operand is NULL the the result is the same as it would be if
+** the SQLITE_NULLEQ flag were omitted from P5.
 */
 /* Opcode: Eq P1 P2 P3 P4 P5
 **
 ** This works just like the Lt opcode except that the jump is taken if
 ** the operands in registers P1 and P3 are equal.
 ** See the Lt opcode for additional information.
+**
+** If SQLITE_NULLEQ is set in P5 then the result of comparison is always either
+** true or false and is never NULL.  If both operands are NULL then the result
+** of comparison is true.  If either operand is NULL then the result is false.
+** If neither operand is NULL the the result is the same as it would be if
+** the SQLITE_NULLEQ flag were omitted from P5.
 */
 /* Opcode: Le P1 P2 P3 P4 P5
 **
@@ -2131,38 +2164,47 @@ case OP_Le:               /* same as TK_LE, jump, in1, in3 */
 case OP_Gt:               /* same as TK_GT, jump, in1, in3 */
 case OP_Ge: {             /* same as TK_GE, jump, in1, in3 */
 #if 0  /* local variables moved into u.ai */
-  int flags;
-  int res;
-  char affinity;
+  int res;            /* Result of the comparison of pIn1 against pIn3 */
+  char affinity;      /* Affinity to use for comparison */
 #endif /* local variables moved into u.ai */
 
-  u.ai.flags = pIn1->flags|pIn3->flags;
-
-  if( u.ai.flags&MEM_Null ){
-    /* If either operand is NULL then the result is always NULL.
-    ** The jump is taken if the SQLITE_JUMPIFNULL bit is set.
-    */
-    if( pOp->p5 & SQLITE_STOREP2 ){
-      pOut = &p->aMem[pOp->p2];
-      MemSetTypeFlag(pOut, MEM_Null);
-      REGISTER_TRACE(pOp->p2, pOut);
-    }else if( pOp->p5 & SQLITE_JUMPIFNULL ){
-      pc = pOp->p2-1;
+  if( (pIn1->flags | pIn3->flags)&MEM_Null ){
+    /* One or both operands are NULL */
+    if( pOp->p5 & SQLITE_NULLEQ ){
+      /* If SQLITE_NULLEQ is set (which will only happen if the operator is
+      ** OP_Eq or OP_Ne) then take the jump or not depending on whether
+      ** or not both operands are null.
+      */
+      assert( pOp->opcode==OP_Eq || pOp->opcode==OP_Ne );
+      u.ai.res = (pIn1->flags & pIn3->flags & MEM_Null)==0;
+    }else{
+      /* SQLITE_NULLEQ is clear and at least one operand is NULL,
+      ** then the result is always NULL.
+      ** The jump is taken if the SQLITE_JUMPIFNULL bit is set.
+      */
+      if( pOp->p5 & SQLITE_STOREP2 ){
+        pOut = &p->aMem[pOp->p2];
+        MemSetTypeFlag(pOut, MEM_Null);
+        REGISTER_TRACE(pOp->p2, pOut);
+      }else if( pOp->p5 & SQLITE_JUMPIFNULL ){
+        pc = pOp->p2-1;
+      }
+      break;
     }
-    break;
-  }
+  }else{
+    /* Neither operand is NULL.  Do a comparison. */
+    u.ai.affinity = pOp->p5 & SQLITE_AFF_MASK;
+    if( u.ai.affinity ){
+      applyAffinity(pIn1, u.ai.affinity, encoding);
+      applyAffinity(pIn3, u.ai.affinity, encoding);
+      if( db->mallocFailed ) goto no_mem;
+    }
 
-  u.ai.affinity = pOp->p5 & SQLITE_AFF_MASK;
-  if( u.ai.affinity ){
-    applyAffinity(pIn1, u.ai.affinity, encoding);
-    applyAffinity(pIn3, u.ai.affinity, encoding);
-    if( db->mallocFailed ) goto no_mem;
+    assert( pOp->p4type==P4_COLLSEQ || pOp->p4.pColl==0 );
+    ExpandBlob(pIn1);
+    ExpandBlob(pIn3);
+    u.ai.res = sqlite3MemCompare(pIn3, pIn1, pOp->p4.pColl);
   }
-
-  assert( pOp->p4type==P4_COLLSEQ || pOp->p4.pColl==0 );
-  ExpandBlob(pIn1);
-  ExpandBlob(pIn3);
-  u.ai.res = sqlite3MemCompare(pIn3, pIn1, pOp->p4.pColl);
   switch( pOp->opcode ){
     case OP_Eq:    u.ai.res = u.ai.res==0;     break;
     case OP_Ne:    u.ai.res = u.ai.res!=0;     break;
@@ -2230,9 +2272,18 @@ case OP_Compare: {
   assert( u.aj.n>0 );
   assert( u.aj.pKeyInfo!=0 );
   u.aj.p1 = pOp->p1;
-  assert( u.aj.p1>0 && u.aj.p1+u.aj.n<=p->nMem+1 );
   u.aj.p2 = pOp->p2;
-  assert( u.aj.p2>0 && u.aj.p2+u.aj.n<=p->nMem+1 );
+#if SQLITE_DEBUG
+  if( aPermute ){
+    int k, mx = 0;
+    for(k=0; k<u.aj.n; k++) if( aPermute[k]>mx ) mx = aPermute[k];
+    assert( u.aj.p1>0 && u.aj.p1+mx<=p->nMem+1 );
+    assert( u.aj.p2>0 && u.aj.p2+mx<=p->nMem+1 );
+  }else{
+    assert( u.aj.p1>0 && u.aj.p1+u.aj.n<=p->nMem+1 );
+    assert( u.aj.p2>0 && u.aj.p2+u.aj.n<=p->nMem+1 );
+  }
+#endif /* SQLITE_DEBUG */
   for(u.aj.i=0; u.aj.i<u.aj.n; u.aj.i++){
     u.aj.idx = aPermute ? aPermute[u.aj.i] : u.aj.i;
     REGISTER_TRACE(u.aj.p1+u.aj.idx, &p->aMem[u.aj.p1+u.aj.idx]);
@@ -2947,6 +2998,7 @@ case OP_Savepoint: {
         /* Link the new savepoint into the database handle's list. */
         u.aq.pNew->pNext = db->pSavepoint;
         db->pSavepoint = u.aq.pNew;
+        u.aq.pNew->nDeferredCons = db->nDeferredCons;
       }
     }
   }else{
@@ -2984,6 +3036,9 @@ case OP_Savepoint: {
       */
       int isTransaction = u.aq.pSavepoint->pNext==0 && db->isTransactionSavepoint;
       if( isTransaction && u.aq.p1==SAVEPOINT_RELEASE ){
+        if( (rc = sqlite3VdbeCheckFk(p, 1))!=SQLITE_OK ){
+          goto vdbe_return;
+        }
         db->autoCommit = 1;
         if( sqlite3VdbeHalt(p)==SQLITE_BUSY ){
           p->pc = pc;
@@ -3016,7 +3071,10 @@ case OP_Savepoint: {
         db->nSavepoint--;
       }
 
-      /* If it is a RELEASE, then destroy the savepoint being operated on too */
+      /* If it is a RELEASE, then destroy the savepoint being operated on
+      ** too. If it is a ROLLBACK TO, then set the number of deferred
+      ** constraint violations present in the database to the value stored
+      ** when the savepoint was created.  */
       if( u.aq.p1==SAVEPOINT_RELEASE ){
         assert( u.aq.pSavepoint==db->pSavepoint );
         db->pSavepoint = u.aq.pSavepoint->pNext;
@@ -3024,6 +3082,8 @@ case OP_Savepoint: {
         if( !isTransaction ){
           db->nSavepoint--;
         }
+      }else{
+        db->nDeferredCons = u.aq.pSavepoint->nDeferredCons;
       }
     }
   }
@@ -3074,6 +3134,8 @@ case OP_AutoCommit: {
       assert( u.ar.desiredAutoCommit==1 );
       sqlite3RollbackAll(db);
       db->autoCommit = 1;
+    }else if( (rc = sqlite3VdbeCheckFk(p, 1))!=SQLITE_OK ){
+      goto vdbe_return;
     }else{
       db->autoCommit = (u8)u.ar.desiredAutoCommit;
       if( sqlite3VdbeHalt(p)==SQLITE_BUSY ){
@@ -3149,7 +3211,7 @@ case OP_Transaction: {
       p->rc = rc = SQLITE_BUSY;
       goto vdbe_return;
     }
-    if( rc!=SQLITE_OK && rc!=SQLITE_READONLY /* && rc!=SQLITE_BUSY */ ){
+    if( rc!=SQLITE_OK ){
       goto abort_due_to_error;
     }
 
@@ -3163,6 +3225,11 @@ case OP_Transaction: {
         p->iStatement = db->nSavepoint + db->nStatement;
       }
       rc = sqlite3BtreeBeginStmt(u.as.pBt, p->iStatement);
+
+      /* Store the current value of the database handles deferred constraint
+      ** counter. If the statement transaction needs to be rolled back,
+      ** the value of this counter needs to be restored too.  */
+      p->nStmtDefCons = db->nDeferredCons;
     }
   }
   break;
@@ -3782,6 +3849,10 @@ case OP_Found: {        /* jump, in3 */
   UnpackedRecord *pIdxKey;
   char aTempRec[ROUND8(sizeof(UnpackedRecord)) + sizeof(Mem)*3 + 7];
 #endif /* local variables moved into u.bb */
+
+#ifdef SQLITE_TEST
+  sqlite3_found_count++;
+#endif
 
   u.bb.alreadyExists = 0;
   assert( pOp->p1>=0 && pOp->p1<p->nCursor );
@@ -5242,24 +5313,24 @@ case OP_Program: {        /* jump */
   u.bz.pRt = &p->aMem[pOp->p3];
   assert( u.bz.pProgram->nOp>0 );
 
-  /* If the SQLITE_RecTriggers flag is clear, then recursive invocation of
-  ** triggers is disabled for backwards compatibility (flag set/cleared by
-  ** the "PRAGMA recursive_triggers" command).
+  /* If the p5 flag is clear, then recursive invocation of triggers is
+  ** disabled for backwards compatibility (p5 is set if this sub-program
+  ** is really a trigger, not a foreign key action, and the flag set
+  ** and cleared by the "PRAGMA recursive_triggers" command is clear).
   **
   ** It is recursive invocation of triggers, at the SQL level, that is
   ** disabled. In some cases a single trigger may generate more than one
   ** SubProgram (if the trigger may be executed with more than one different
   ** ON CONFLICT algorithm). SubProgram structures associated with a
   ** single trigger all have the same value for the SubProgram.token
-  ** variable.
-  */
-  if( 0==(db->flags&SQLITE_RecTriggers) ){
+  ** variable.  */
+  if( pOp->p5 ){
     u.bz.t = u.bz.pProgram->token;
     for(u.bz.pFrame=p->pFrame; u.bz.pFrame && u.bz.pFrame->token!=u.bz.t; u.bz.pFrame=u.bz.pFrame->pParent);
     if( u.bz.pFrame ) break;
   }
 
-  if( p->nFrame>db->aLimit[SQLITE_LIMIT_TRIGGER_DEPTH] ){
+  if( p->nFrame>=db->aLimit[SQLITE_LIMIT_TRIGGER_DEPTH] ){
     rc = SQLITE_ERROR;
     sqlite3SetString(&p->zErrMsg, db, "too many levels of trigger recursion");
     break;
@@ -5352,6 +5423,44 @@ case OP_Param: {           /* out2-prerelease */
 }
 
 #endif /* #ifndef SQLITE_OMIT_TRIGGER */
+
+#ifndef SQLITE_OMIT_FOREIGN_KEY
+/* Opcode: FkCounter P1 P2 * * *
+**
+** Increment a "constraint counter" by P2 (P2 may be negative or positive).
+** If P1 is non-zero, the database constraint counter is incremented 
+** (deferred foreign key constraints). Otherwise, if P1 is zero, the 
+** statement counter is incremented (immediate foreign key constraints).
+*/
+case OP_FkCounter: {
+  if( pOp->p1 ){
+    db->nDeferredCons += pOp->p2;
+  }else{
+    p->nFkConstraint += pOp->p2;
+  }
+  break;
+}
+
+/* Opcode: FkIfZero P1 P2 * * *
+**
+** This opcode tests if a foreign key constraint-counter is currently zero.
+** If so, jump to instruction P2. Otherwise, fall through to the next 
+** instruction.
+**
+** If P1 is non-zero, then the jump is taken if the database constraint-counter
+** is zero (the one that counts deferred constraint violations). If P1 is
+** zero, the jump is taken if the statement constraint-counter is zero
+** (immediate foreign key constraint violations).
+*/
+case OP_FkIfZero: {         /* jump */
+  if( pOp->p1 ){
+    if( db->nDeferredCons==0 ) pc = pOp->p2-1;
+  }else{
+    if( p->nFkConstraint==0 ) pc = pOp->p2-1;
+  }
+  break;
+}
+#endif /* #ifndef SQLITE_OMIT_FOREIGN_KEY */
 
 #ifndef SQLITE_OMIT_AUTOINCREMENT
 /* Opcode: MemMax P1 P2 * * *
