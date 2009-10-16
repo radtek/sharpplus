@@ -182,3 +182,5 @@ BLOB=324
 ID_2("identifier")=325
 SIMPLE_LETTER=326
 ANY=327
+LITERAL_no="no"=328
+LITERAL_action="action"=329
