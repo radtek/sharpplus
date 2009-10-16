@@ -7597,6 +7597,8 @@ void SqliteParser::nmnum() {
 	case SQL2RW_release:
 	case ID:
 	case STRING:
+	case LITERAL_no:
+	case LITERAL_action:
 	{
 		nm();
 		if (inputState->guessing==0) {
@@ -7885,12 +7887,34 @@ void SqliteParser::fallback() {
 		fallback_AST = currentAST.root;
 		break;
 	}
-	case SQL2RW_plan:
+	case LITERAL_no:
 	{
 		RefAST tmp281_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp281_AST = astFactory->create(LT(1));
 			astFactory->addASTChild(currentAST, tmp281_AST);
+		}
+		match(LITERAL_no);
+		fallback_AST = currentAST.root;
+		break;
+	}
+	case LITERAL_action:
+	{
+		RefAST tmp282_AST = nullAST;
+		if ( inputState->guessing == 0 ) {
+			tmp282_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp282_AST);
+		}
+		match(LITERAL_action);
+		fallback_AST = currentAST.root;
+		break;
+	}
+	case SQL2RW_plan:
+	{
+		RefAST tmp283_AST = nullAST;
+		if ( inputState->guessing == 0 ) {
+			tmp283_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp283_AST);
 		}
 		match(SQL2RW_plan);
 		fallback_AST = currentAST.root;
@@ -7898,10 +7922,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_begin:
 	{
-		RefAST tmp282_AST = nullAST;
+		RefAST tmp284_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp282_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp282_AST);
+			tmp284_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp284_AST);
 		}
 		match(SQL2RW_begin);
 		fallback_AST = currentAST.root;
@@ -7909,10 +7933,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_deferred:
 	{
-		RefAST tmp283_AST = nullAST;
+		RefAST tmp285_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp283_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp283_AST);
+			tmp285_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp285_AST);
 		}
 		match(SQL2RW_deferred);
 		fallback_AST = currentAST.root;
@@ -7920,10 +7944,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_immediate:
 	{
-		RefAST tmp284_AST = nullAST;
+		RefAST tmp286_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp284_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp284_AST);
+			tmp286_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp286_AST);
 		}
 		match(SQL2RW_immediate);
 		fallback_AST = currentAST.root;
@@ -7931,10 +7955,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_exclusive:
 	{
-		RefAST tmp285_AST = nullAST;
+		RefAST tmp287_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp285_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp285_AST);
+			tmp287_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp287_AST);
 		}
 		match(SQL2RW_exclusive);
 		fallback_AST = currentAST.root;
@@ -7942,10 +7966,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_end:
 	{
-		RefAST tmp286_AST = nullAST;
+		RefAST tmp288_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp286_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp286_AST);
+			tmp288_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp288_AST);
 		}
 		match(SQL2RW_end);
 		fallback_AST = currentAST.root;
@@ -7953,10 +7977,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_if:
 	{
-		RefAST tmp287_AST = nullAST;
+		RefAST tmp289_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp287_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp287_AST);
+			tmp289_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp289_AST);
 		}
 		match(SQL2RW_if);
 		fallback_AST = currentAST.root;
@@ -7964,10 +7988,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_temp:
 	{
-		RefAST tmp288_AST = nullAST;
+		RefAST tmp290_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp288_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp288_AST);
+			tmp290_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp290_AST);
 		}
 		match(SQL2RW_temp);
 		fallback_AST = currentAST.root;
@@ -7975,10 +7999,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_temporary:
 	{
-		RefAST tmp289_AST = nullAST;
+		RefAST tmp291_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp289_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp289_AST);
+			tmp291_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp291_AST);
 		}
 		match(SQL2RW_temporary);
 		fallback_AST = currentAST.root;
@@ -7986,10 +8010,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_abort:
 	{
-		RefAST tmp290_AST = nullAST;
+		RefAST tmp292_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp290_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp290_AST);
+			tmp292_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp292_AST);
 		}
 		match(SQL2RW_abort);
 		fallback_AST = currentAST.root;
@@ -7997,10 +8021,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_after:
 	{
-		RefAST tmp291_AST = nullAST;
+		RefAST tmp293_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp291_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp291_AST);
+			tmp293_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp293_AST);
 		}
 		match(SQL2RW_after);
 		fallback_AST = currentAST.root;
@@ -8008,10 +8032,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_analyze:
 	{
-		RefAST tmp292_AST = nullAST;
+		RefAST tmp294_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp292_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp292_AST);
+			tmp294_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp294_AST);
 		}
 		match(SQL2RW_analyze);
 		fallback_AST = currentAST.root;
@@ -8019,10 +8043,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_asc:
 	{
-		RefAST tmp293_AST = nullAST;
+		RefAST tmp295_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp293_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp293_AST);
+			tmp295_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp295_AST);
 		}
 		match(SQL2RW_asc);
 		fallback_AST = currentAST.root;
@@ -8030,10 +8054,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_attach:
 	{
-		RefAST tmp294_AST = nullAST;
+		RefAST tmp296_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp294_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp294_AST);
+			tmp296_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp296_AST);
 		}
 		match(SQL2RW_attach);
 		fallback_AST = currentAST.root;
@@ -8041,10 +8065,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_before:
 	{
-		RefAST tmp295_AST = nullAST;
+		RefAST tmp297_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp295_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp295_AST);
+			tmp297_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp297_AST);
 		}
 		match(SQL2RW_before);
 		fallback_AST = currentAST.root;
@@ -8052,10 +8076,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_cascade:
 	{
-		RefAST tmp296_AST = nullAST;
+		RefAST tmp298_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp296_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp296_AST);
+			tmp298_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp298_AST);
 		}
 		match(SQL2RW_cascade);
 		fallback_AST = currentAST.root;
@@ -8063,10 +8087,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_cast:
 	{
-		RefAST tmp297_AST = nullAST;
+		RefAST tmp299_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp297_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp297_AST);
+			tmp299_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp299_AST);
 		}
 		match(SQL2RW_cast);
 		fallback_AST = currentAST.root;
@@ -8074,10 +8098,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_conflict:
 	{
-		RefAST tmp298_AST = nullAST;
+		RefAST tmp300_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp298_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp298_AST);
+			tmp300_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp300_AST);
 		}
 		match(SQL2RW_conflict);
 		fallback_AST = currentAST.root;
@@ -8085,10 +8109,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_database:
 	{
-		RefAST tmp299_AST = nullAST;
+		RefAST tmp301_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp299_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp299_AST);
+			tmp301_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp301_AST);
 		}
 		match(SQL2RW_database);
 		fallback_AST = currentAST.root;
@@ -8096,10 +8120,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_desc:
 	{
-		RefAST tmp300_AST = nullAST;
+		RefAST tmp302_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp300_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp300_AST);
+			tmp302_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp302_AST);
 		}
 		match(SQL2RW_desc);
 		fallback_AST = currentAST.root;
@@ -8107,10 +8131,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_detach:
 	{
-		RefAST tmp301_AST = nullAST;
+		RefAST tmp303_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp301_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp301_AST);
+			tmp303_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp303_AST);
 		}
 		match(SQL2RW_detach);
 		fallback_AST = currentAST.root;
@@ -8118,10 +8142,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_each:
 	{
-		RefAST tmp302_AST = nullAST;
+		RefAST tmp304_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp302_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp302_AST);
+			tmp304_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp304_AST);
 		}
 		match(SQL2RW_each);
 		fallback_AST = currentAST.root;
@@ -8129,10 +8153,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_fail:
 	{
-		RefAST tmp303_AST = nullAST;
+		RefAST tmp305_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp303_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp303_AST);
+			tmp305_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp305_AST);
 		}
 		match(SQL2RW_fail);
 		fallback_AST = currentAST.root;
@@ -8140,10 +8164,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_for:
 	{
-		RefAST tmp304_AST = nullAST;
+		RefAST tmp306_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp304_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp304_AST);
+			tmp306_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp306_AST);
 		}
 		match(SQL2RW_for);
 		fallback_AST = currentAST.root;
@@ -8151,10 +8175,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_ignore:
 	{
-		RefAST tmp305_AST = nullAST;
+		RefAST tmp307_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp305_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp305_AST);
+			tmp307_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp307_AST);
 		}
 		match(SQL2RW_ignore);
 		fallback_AST = currentAST.root;
@@ -8162,10 +8186,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_initially:
 	{
-		RefAST tmp306_AST = nullAST;
+		RefAST tmp308_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp306_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp306_AST);
+			tmp308_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp308_AST);
 		}
 		match(SQL2RW_initially);
 		fallback_AST = currentAST.root;
@@ -8173,10 +8197,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_instead:
 	{
-		RefAST tmp307_AST = nullAST;
+		RefAST tmp309_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp307_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp307_AST);
+			tmp309_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp309_AST);
 		}
 		match(SQL2RW_instead);
 		fallback_AST = currentAST.root;
@@ -8184,10 +8208,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_indexed:
 	{
-		RefAST tmp308_AST = nullAST;
+		RefAST tmp310_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp308_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp308_AST);
+			tmp310_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp310_AST);
 		}
 		match(SQL2RW_indexed);
 		fallback_AST = currentAST.root;
@@ -8206,10 +8230,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_match:
 	{
-		RefAST tmp309_AST = nullAST;
+		RefAST tmp311_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp309_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp309_AST);
+			tmp311_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp311_AST);
 		}
 		match(SQL2RW_match);
 		fallback_AST = currentAST.root;
@@ -8217,10 +8241,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_key:
 	{
-		RefAST tmp310_AST = nullAST;
+		RefAST tmp312_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp310_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp310_AST);
+			tmp312_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp312_AST);
 		}
 		match(SQL2RW_key);
 		fallback_AST = currentAST.root;
@@ -8228,10 +8252,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_of:
 	{
-		RefAST tmp311_AST = nullAST;
+		RefAST tmp313_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp311_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp311_AST);
+			tmp313_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp313_AST);
 		}
 		match(SQL2RW_of);
 		fallback_AST = currentAST.root;
@@ -8239,10 +8263,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_offset:
 	{
-		RefAST tmp312_AST = nullAST;
+		RefAST tmp314_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp312_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp312_AST);
+			tmp314_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp314_AST);
 		}
 		match(SQL2RW_offset);
 		fallback_AST = currentAST.root;
@@ -8250,10 +8274,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_pragma:
 	{
-		RefAST tmp313_AST = nullAST;
+		RefAST tmp315_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp313_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp313_AST);
+			tmp315_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp315_AST);
 		}
 		match(SQL2RW_pragma);
 		fallback_AST = currentAST.root;
@@ -8261,10 +8285,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_raise:
 	{
-		RefAST tmp314_AST = nullAST;
+		RefAST tmp316_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp314_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp314_AST);
+			tmp316_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp316_AST);
 		}
 		match(SQL2RW_raise);
 		fallback_AST = currentAST.root;
@@ -8272,10 +8296,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_replace:
 	{
-		RefAST tmp315_AST = nullAST;
+		RefAST tmp317_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp315_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp315_AST);
+			tmp317_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp317_AST);
 		}
 		match(SQL2RW_replace);
 		fallback_AST = currentAST.root;
@@ -8283,10 +8307,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_restrict:
 	{
-		RefAST tmp316_AST = nullAST;
+		RefAST tmp318_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp316_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp316_AST);
+			tmp318_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp318_AST);
 		}
 		match(SQL2RW_restrict);
 		fallback_AST = currentAST.root;
@@ -8294,10 +8318,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_row:
 	{
-		RefAST tmp317_AST = nullAST;
+		RefAST tmp319_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp317_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp317_AST);
+			tmp319_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp319_AST);
 		}
 		match(SQL2RW_row);
 		fallback_AST = currentAST.root;
@@ -8305,10 +8329,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_trigger:
 	{
-		RefAST tmp318_AST = nullAST;
+		RefAST tmp320_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp318_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp318_AST);
+			tmp320_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp320_AST);
 		}
 		match(SQL2RW_trigger);
 		fallback_AST = currentAST.root;
@@ -8316,10 +8340,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_vacuum:
 	{
-		RefAST tmp319_AST = nullAST;
+		RefAST tmp321_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp319_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp319_AST);
+			tmp321_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp321_AST);
 		}
 		match(SQL2RW_vacuum);
 		fallback_AST = currentAST.root;
@@ -8327,10 +8351,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_view:
 	{
-		RefAST tmp320_AST = nullAST;
+		RefAST tmp322_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp320_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp320_AST);
+			tmp322_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp322_AST);
 		}
 		match(SQL2RW_view);
 		fallback_AST = currentAST.root;
@@ -8338,10 +8362,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_virtual:
 	{
-		RefAST tmp321_AST = nullAST;
+		RefAST tmp323_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp321_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp321_AST);
+			tmp323_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp323_AST);
 		}
 		match(SQL2RW_virtual);
 		fallback_AST = currentAST.root;
@@ -8349,10 +8373,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_reindex:
 	{
-		RefAST tmp322_AST = nullAST;
+		RefAST tmp324_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp322_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp322_AST);
+			tmp324_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp324_AST);
 		}
 		match(SQL2RW_reindex);
 		fallback_AST = currentAST.root;
@@ -8360,10 +8384,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_rename:
 	{
-		RefAST tmp323_AST = nullAST;
+		RefAST tmp325_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp323_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp323_AST);
+			tmp325_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp325_AST);
 		}
 		match(SQL2RW_rename);
 		fallback_AST = currentAST.root;
@@ -8382,10 +8406,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_rollback:
 	{
-		RefAST tmp324_AST = nullAST;
+		RefAST tmp326_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp324_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp324_AST);
+			tmp326_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp326_AST);
 		}
 		match(SQL2RW_rollback);
 		fallback_AST = currentAST.root;
@@ -8393,10 +8417,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_by:
 	{
-		RefAST tmp325_AST = nullAST;
+		RefAST tmp327_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp325_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp325_AST);
+			tmp327_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp327_AST);
 		}
 		match(SQL2RW_by);
 		fallback_AST = currentAST.root;
@@ -8404,10 +8428,10 @@ void SqliteParser::fallback() {
 	}
 	case SQL2RW_column:
 	{
-		RefAST tmp326_AST = nullAST;
+		RefAST tmp328_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp326_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp326_AST);
+			tmp328_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp328_AST);
 		}
 		match(SQL2RW_column);
 		fallback_AST = currentAST.root;
@@ -8415,24 +8439,6 @@ void SqliteParser::fallback() {
 	}
 	default:
 		if ((LA(1) == SQL2RW_savepoint) && (_tokenSet_33.member(LA(2)))) {
-			RefAST tmp327_AST = nullAST;
-			if ( inputState->guessing == 0 ) {
-				tmp327_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp327_AST);
-			}
-			match(SQL2RW_savepoint);
-			fallback_AST = currentAST.root;
-		}
-		else if ((LA(1) == SQL2RW_release) && (_tokenSet_33.member(LA(2)))) {
-			RefAST tmp328_AST = nullAST;
-			if ( inputState->guessing == 0 ) {
-				tmp328_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp328_AST);
-			}
-			match(SQL2RW_release);
-			fallback_AST = currentAST.root;
-		}
-		else if ((LA(1) == SQL2RW_savepoint) && (_tokenSet_33.member(LA(2)))) {
 			RefAST tmp329_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
 				tmp329_AST = astFactory->create(LT(1));
@@ -8446,6 +8452,24 @@ void SqliteParser::fallback() {
 			if ( inputState->guessing == 0 ) {
 				tmp330_AST = astFactory->create(LT(1));
 				astFactory->addASTChild(currentAST, tmp330_AST);
+			}
+			match(SQL2RW_release);
+			fallback_AST = currentAST.root;
+		}
+		else if ((LA(1) == SQL2RW_savepoint) && (_tokenSet_33.member(LA(2)))) {
+			RefAST tmp331_AST = nullAST;
+			if ( inputState->guessing == 0 ) {
+				tmp331_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp331_AST);
+			}
+			match(SQL2RW_savepoint);
+			fallback_AST = currentAST.root;
+		}
+		else if ((LA(1) == SQL2RW_release) && (_tokenSet_33.member(LA(2)))) {
+			RefAST tmp332_AST = nullAST;
+			if ( inputState->guessing == 0 ) {
+				tmp332_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp332_AST);
 			}
 			match(SQL2RW_release);
 			fallback_AST = currentAST.root;
@@ -8470,10 +8494,10 @@ void SqliteParser::ids() {
 		ids_AST = currentAST.root;
 	}
 	else if ((LA(1) == STRING)) {
-		RefAST tmp331_AST = nullAST;
+		RefAST tmp333_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp331_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp331_AST);
+			tmp333_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp333_AST);
 		}
 		match(STRING);
 		ids_AST = currentAST.root;
@@ -8497,10 +8521,10 @@ string  SqliteParser::plus_num() {
 	
 	{
 	if ((LA(1) == PLUS)) {
-		RefAST tmp332_AST = nullAST;
+		RefAST tmp334_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp332_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp332_AST);
+			tmp334_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp334_AST);
 		}
 		match(PLUS);
 		if ( inputState->guessing==0 ) {
@@ -8535,19 +8559,19 @@ void SqliteParser::number() {
 	RefAST number_AST = nullAST;
 	
 	if ((LA(1) == INTEGER)) {
-		RefAST tmp333_AST = nullAST;
+		RefAST tmp335_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp333_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp333_AST);
+			tmp335_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp335_AST);
 		}
 		match(INTEGER);
 		number_AST = currentAST.root;
 	}
 	else if ((LA(1) == FLOAT)) {
-		RefAST tmp334_AST = nullAST;
+		RefAST tmp336_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp334_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp334_AST);
+			tmp336_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp336_AST);
 		}
 		match(FLOAT);
 		number_AST = currentAST.root;
@@ -8565,28 +8589,28 @@ void SqliteParser::ctime_kw() {
 	RefAST ctime_kw_AST = nullAST;
 	
 	if ((LA(1) == SQL2RW_currentdate)) {
-		RefAST tmp335_AST = nullAST;
+		RefAST tmp337_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp335_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp335_AST);
+			tmp337_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp337_AST);
 		}
 		match(SQL2RW_currentdate);
 		ctime_kw_AST = currentAST.root;
 	}
 	else if ((LA(1) == SQL2RW_currenttime)) {
-		RefAST tmp336_AST = nullAST;
+		RefAST tmp338_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp336_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp336_AST);
+			tmp338_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp338_AST);
 		}
 		match(SQL2RW_currenttime);
 		ctime_kw_AST = currentAST.root;
 	}
 	else if ((LA(1) == SQL2RW_currenttimestamp)) {
-		RefAST tmp337_AST = nullAST;
+		RefAST tmp339_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp337_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp337_AST);
+			tmp339_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp339_AST);
 		}
 		match(SQL2RW_currenttimestamp);
 		ctime_kw_AST = currentAST.root;
@@ -8604,10 +8628,10 @@ void SqliteParser::refarg() {
 	RefAST refarg_AST = nullAST;
 	
 	if ((LA(1) == SQL2RW_match)) {
-		RefAST tmp338_AST = nullAST;
+		RefAST tmp340_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp338_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp338_AST);
+			tmp340_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp340_AST);
 		}
 		match(SQL2RW_match);
 		nm();
@@ -8617,25 +8641,6 @@ void SqliteParser::refarg() {
 		refarg_AST = currentAST.root;
 	}
 	else if ((LA(1) == SQL2RW_on) && (LA(2) == SQL2RW_delete)) {
-		RefAST tmp339_AST = nullAST;
-		if ( inputState->guessing == 0 ) {
-			tmp339_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp339_AST);
-		}
-		match(SQL2RW_on);
-		RefAST tmp340_AST = nullAST;
-		if ( inputState->guessing == 0 ) {
-			tmp340_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp340_AST);
-		}
-		match(SQL2RW_delete);
-		refact();
-		if (inputState->guessing==0) {
-			astFactory->addASTChild( currentAST, returnAST );
-		}
-		refarg_AST = currentAST.root;
-	}
-	else if ((LA(1) == SQL2RW_on) && (LA(2) == SQL2RW_update)) {
 		RefAST tmp341_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp341_AST = astFactory->create(LT(1));
@@ -8647,14 +8652,14 @@ void SqliteParser::refarg() {
 			tmp342_AST = astFactory->create(LT(1));
 			astFactory->addASTChild(currentAST, tmp342_AST);
 		}
-		match(SQL2RW_update);
+		match(SQL2RW_delete);
 		refact();
 		if (inputState->guessing==0) {
 			astFactory->addASTChild( currentAST, returnAST );
 		}
 		refarg_AST = currentAST.root;
 	}
-	else if ((LA(1) == SQL2RW_on) && (LA(2) == SQL2RW_insert)) {
+	else if ((LA(1) == SQL2RW_on) && (LA(2) == SQL2RW_update)) {
 		RefAST tmp343_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp343_AST = astFactory->create(LT(1));
@@ -8666,7 +8671,7 @@ void SqliteParser::refarg() {
 			tmp344_AST = astFactory->create(LT(1));
 			astFactory->addASTChild(currentAST, tmp344_AST);
 		}
-		match(SQL2RW_insert);
+		match(SQL2RW_update);
 		refact();
 		if (inputState->guessing==0) {
 			astFactory->addASTChild( currentAST, returnAST );
@@ -8770,6 +8775,21 @@ void SqliteParser::refact() {
 			astFactory->addASTChild(currentAST, tmp353_AST);
 		}
 		match(SQL2RW_restrict);
+		refact_AST = currentAST.root;
+	}
+	else if ((LA(1) == LITERAL_no)) {
+		RefAST tmp354_AST = nullAST;
+		if ( inputState->guessing == 0 ) {
+			tmp354_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp354_AST);
+		}
+		match(LITERAL_no);
+		RefAST tmp355_AST = nullAST;
+		if ( inputState->guessing == 0 ) {
+			tmp355_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp355_AST);
+		}
+		match(LITERAL_action);
 		refact_AST = currentAST.root;
 	}
 	else {
@@ -8921,18 +8941,18 @@ void SqliteParser::multiselect_op() {
 	RefAST multiselect_op_AST = nullAST;
 	
 	if ((LA(1) == SQL2RW_union)) {
-		RefAST tmp354_AST = nullAST;
+		RefAST tmp356_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp354_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp354_AST);
+			tmp356_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp356_AST);
 		}
 		match(SQL2RW_union);
 		{
 		if ((LA(1) == SQL2RW_all)) {
-			RefAST tmp355_AST = nullAST;
+			RefAST tmp357_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp355_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp355_AST);
+				tmp357_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp357_AST);
 			}
 			match(SQL2RW_all);
 		}
@@ -8946,19 +8966,19 @@ void SqliteParser::multiselect_op() {
 		multiselect_op_AST = currentAST.root;
 	}
 	else if ((LA(1) == SQL2RW_except)) {
-		RefAST tmp356_AST = nullAST;
+		RefAST tmp358_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp356_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp356_AST);
+			tmp358_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp358_AST);
 		}
 		match(SQL2RW_except);
 		multiselect_op_AST = currentAST.root;
 	}
 	else if ((LA(1) == SQL2RW_intersect)) {
-		RefAST tmp357_AST = nullAST;
+		RefAST tmp359_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp357_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp357_AST);
+			tmp359_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp359_AST);
 		}
 		match(SQL2RW_intersect);
 		multiselect_op_AST = currentAST.root;
@@ -8982,10 +9002,10 @@ void SqliteParser::selcollist() {
 	{ // ( ... )*
 	for (;;) {
 		if ((LA(1) == COMMA)) {
-			RefAST tmp358_AST = nullAST;
+			RefAST tmp360_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp358_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp358_AST);
+				tmp360_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp360_AST);
 			}
 			match(COMMA);
 			sclp();
@@ -9009,10 +9029,10 @@ void SqliteParser::from() {
 	ASTPair currentAST;
 	RefAST from_AST = nullAST;
 	
-	RefAST tmp359_AST = nullAST;
+	RefAST tmp361_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp359_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp359_AST);
+		tmp361_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp361_AST);
 	}
 	match(SQL2RW_from);
 	seltablist();
@@ -9028,16 +9048,16 @@ void SqliteParser::groupby_opt() {
 	ASTPair currentAST;
 	RefAST groupby_opt_AST = nullAST;
 	
-	RefAST tmp360_AST = nullAST;
+	RefAST tmp362_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp360_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp360_AST);
+		tmp362_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp362_AST);
 	}
 	match(SQL2RW_group);
-	RefAST tmp361_AST = nullAST;
+	RefAST tmp363_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp361_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp361_AST);
+		tmp363_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp363_AST);
 	}
 	match(SQL2RW_by);
 	exprlist();
@@ -9053,10 +9073,10 @@ void SqliteParser::having_opt() {
 	ASTPair currentAST;
 	RefAST having_opt_AST = nullAST;
 	
-	RefAST tmp362_AST = nullAST;
+	RefAST tmp364_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp362_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp362_AST);
+		tmp364_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp364_AST);
 	}
 	match(SQL2RW_having);
 	expr();
@@ -9072,16 +9092,16 @@ void SqliteParser::orderby_opt() {
 	ASTPair currentAST;
 	RefAST orderby_opt_AST = nullAST;
 	
-	RefAST tmp363_AST = nullAST;
+	RefAST tmp365_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp363_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp363_AST);
+		tmp365_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp365_AST);
 	}
 	match(SQL2RW_order);
-	RefAST tmp364_AST = nullAST;
+	RefAST tmp366_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp364_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp364_AST);
+		tmp366_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp366_AST);
 	}
 	match(SQL2RW_by);
 	sortlist();
@@ -9097,10 +9117,10 @@ void SqliteParser::limit_opt() {
 	ASTPair currentAST;
 	RefAST limit_opt_AST = nullAST;
 	
-	RefAST tmp365_AST = nullAST;
+	RefAST tmp367_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp365_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp365_AST);
+		tmp367_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp367_AST);
 	}
 	match(SQL2RW_limit);
 	expr();
@@ -9111,18 +9131,18 @@ void SqliteParser::limit_opt() {
 	if ((LA(1) == SQL2RW_offset || LA(1) == COMMA)) {
 		{
 		if ((LA(1) == SQL2RW_offset)) {
-			RefAST tmp366_AST = nullAST;
+			RefAST tmp368_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp366_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp366_AST);
+				tmp368_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp368_AST);
 			}
 			match(SQL2RW_offset);
 		}
 		else if ((LA(1) == COMMA)) {
-			RefAST tmp367_AST = nullAST;
+			RefAST tmp369_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp367_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp367_AST);
+				tmp369_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp369_AST);
 			}
 			match(COMMA);
 		}
@@ -9175,25 +9195,25 @@ void SqliteParser::sclp() {
 		if (inputState->guessing==0) {
 			astFactory->addASTChild( currentAST, returnAST );
 		}
-		RefAST tmp368_AST = nullAST;
+		RefAST tmp370_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp368_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp368_AST);
+			tmp370_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp370_AST);
 		}
 		match(DOT);
-		RefAST tmp369_AST = nullAST;
+		RefAST tmp371_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp369_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp369_AST);
+			tmp371_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp371_AST);
 		}
 		match(STAR);
 		sclp_AST = currentAST.root;
 	}
 	else if ((LA(1) == STAR)) {
-		RefAST tmp370_AST = nullAST;
+		RefAST tmp372_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp370_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp370_AST);
+			tmp372_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp372_AST);
 		}
 		match(STAR);
 		sclp_AST = currentAST.root;
@@ -9233,10 +9253,10 @@ void SqliteParser::sub_select_as() {
 	
 	{
 	if ((LA(1) == SQL2RW_as)) {
-		RefAST tmp371_AST = nullAST;
+		RefAST tmp373_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp371_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp371_AST);
+			tmp373_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp373_AST);
 		}
 		match(SQL2RW_as);
 		nm();
@@ -9279,10 +9299,10 @@ string  SqliteParser::table_as() {
 	
 	{
 	if ((LA(1) == SQL2RW_as)) {
-		RefAST tmp372_AST = nullAST;
+		RefAST tmp374_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp372_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp372_AST);
+			tmp374_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp374_AST);
 		}
 		match(SQL2RW_as);
 		szAlias=nm();
@@ -9430,20 +9450,20 @@ void SqliteParser::seltabitem() {
 		seltabitem_AST = currentAST.root;
 	}
 	else if ((LA(1) == LP)) {
-		RefAST tmp373_AST = nullAST;
+		RefAST tmp375_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp373_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp373_AST);
+			tmp375_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp375_AST);
 		}
 		match(LP);
 		seltablist_paren();
 		if (inputState->guessing==0) {
 			astFactory->addASTChild( currentAST, returnAST );
 		}
-		RefAST tmp374_AST = nullAST;
+		RefAST tmp376_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp374_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp374_AST);
+			tmp376_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp376_AST);
 		}
 		match(RP);
 		{
@@ -9503,10 +9523,10 @@ void SqliteParser::joinop() {
 	RefAST joinop_AST = nullAST;
 	
 	if ((LA(1) == COMMA)) {
-		RefAST tmp375_AST = nullAST;
+		RefAST tmp377_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp375_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp375_AST);
+			tmp377_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp377_AST);
 		}
 		match(COMMA);
 		joinop_AST = currentAST.root;
@@ -9543,10 +9563,10 @@ void SqliteParser::joinop() {
 			if (inputState->guessing==0) {
 				astFactory->addASTChild( currentAST, returnAST );
 			}
-			RefAST tmp376_AST = nullAST;
+			RefAST tmp378_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp376_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp376_AST);
+				tmp378_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp378_AST);
 			}
 			match(SQL2RW_join);
 			joinop_AST = currentAST.root;
@@ -9560,10 +9580,10 @@ void SqliteParser::joinop() {
 			if (inputState->guessing==0) {
 				astFactory->addASTChild( currentAST, returnAST );
 			}
-			RefAST tmp377_AST = nullAST;
+			RefAST tmp379_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp377_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp377_AST);
+				tmp379_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp379_AST);
 			}
 			match(SQL2RW_join);
 			joinop_AST = currentAST.root;
@@ -9573,19 +9593,19 @@ void SqliteParser::joinop() {
 			if (inputState->guessing==0) {
 				astFactory->addASTChild( currentAST, returnAST );
 			}
-			RefAST tmp378_AST = nullAST;
+			RefAST tmp380_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp378_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp378_AST);
+				tmp380_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp380_AST);
 			}
 			match(SQL2RW_join);
 			joinop_AST = currentAST.root;
 		}
 		else if ((LA(1) == SQL2RW_join)) {
-			RefAST tmp379_AST = nullAST;
+			RefAST tmp381_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp379_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp379_AST);
+				tmp381_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp381_AST);
 			}
 			match(SQL2RW_join);
 			joinop_AST = currentAST.root;
@@ -9602,10 +9622,10 @@ void SqliteParser::on_opt() {
 	ASTPair currentAST;
 	RefAST on_opt_AST = nullAST;
 	
-	RefAST tmp380_AST = nullAST;
+	RefAST tmp382_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp380_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp380_AST);
+		tmp382_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp382_AST);
 	}
 	match(SQL2RW_on);
 	expr();
@@ -9621,26 +9641,26 @@ void SqliteParser::using_opt() {
 	ASTPair currentAST;
 	RefAST using_opt_AST = nullAST;
 	
-	RefAST tmp381_AST = nullAST;
+	RefAST tmp383_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp381_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp381_AST);
+		tmp383_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp383_AST);
 	}
 	match(SQL2RW_using);
-	RefAST tmp382_AST = nullAST;
+	RefAST tmp384_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp382_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp382_AST);
+		tmp384_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp384_AST);
 	}
 	match(LP);
 	inscollist();
 	if (inputState->guessing==0) {
 		astFactory->addASTChild( currentAST, returnAST );
 	}
-	RefAST tmp383_AST = nullAST;
+	RefAST tmp385_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp383_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp383_AST);
+		tmp385_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp385_AST);
 	}
 	match(RP);
 	using_opt_AST = currentAST.root;
@@ -9685,10 +9705,10 @@ void SqliteParser::inscollist() {
 	{ // ( ... )*
 	for (;;) {
 		if ((LA(1) == COMMA)) {
-			RefAST tmp384_AST = nullAST;
+			RefAST tmp386_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp384_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp384_AST);
+				tmp386_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp386_AST);
 			}
 			match(COMMA);
 			nm();
@@ -9719,10 +9739,10 @@ void SqliteParser::sortlist() {
 	{ // ( ... )*
 	for (;;) {
 		if ((LA(1) == COMMA)) {
-			RefAST tmp385_AST = nullAST;
+			RefAST tmp387_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp385_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp385_AST);
+				tmp387_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp387_AST);
 			}
 			match(COMMA);
 			sortitem();
@@ -9773,26 +9793,26 @@ void SqliteParser::init_deferred_pred_opt() {
 	ASTPair currentAST;
 	RefAST init_deferred_pred_opt_AST = nullAST;
 	
-	RefAST tmp386_AST = nullAST;
+	RefAST tmp388_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp386_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp386_AST);
+		tmp388_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp388_AST);
 	}
 	match(SQL2RW_initially);
 	{
 	if ((LA(1) == SQL2RW_deferred)) {
-		RefAST tmp387_AST = nullAST;
+		RefAST tmp389_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp387_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp387_AST);
+			tmp389_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp389_AST);
 		}
 		match(SQL2RW_deferred);
 	}
 	else if ((LA(1) == SQL2RW_immediate)) {
-		RefAST tmp388_AST = nullAST;
+		RefAST tmp390_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp388_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp388_AST);
+			tmp390_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp390_AST);
 		}
 		match(SQL2RW_immediate);
 	}
@@ -9847,7 +9867,7 @@ void SqliteParser::carg() {
 
 void SqliteParser::initializeASTFactory( ASTFactory& factory )
 {
-	factory.setMaxNodeType(327);
+	factory.setMaxNodeType(329);
 }
 const char* SqliteParser::tokenNames[] = {
 	"<0>",
@@ -10178,6 +10198,8 @@ const char* SqliteParser::tokenNames[] = {
 	"identifier",
 	"SIMPLE_LETTER",
 	"ANY",
+	"\"no\"",
+	"\"action\"",
 	0
 };
 
@@ -10195,7 +10217,7 @@ const unsigned long SqliteParser::_tokenSet_2_data_[] = { 0UL, 140UL, 20971552UL
 // "alter" "analyze" "attach" "create" "detach" "drop" "pragma" "reindex" 
 // "vacuum" 
 const BitSet SqliteParser::_tokenSet_2(_tokenSet_2_data_,16);
-const unsigned long SqliteParser::_tokenSet_3_data_[] = { 4294967280UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294966783UL, 255UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_3_data_[] = { 4294967280UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294966783UL, 1023UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // null null null null null null null null null null null null null null 
 // null null null null null null null null null null null null "abort" 
 // "add" "after" "all" "alter" "analyze" "and" "as" "asc" "attach" "autoincrement" 
@@ -10227,9 +10249,10 @@ const unsigned long SqliteParser::_tokenSet_3_data_[] = { 4294967280UL, 42949672
 // TCONS_DEF SPACE NEW_LINE SL_COMMENT MINUS LP RP PLUS STAR ML_COMMENT 
 // SLASH REM EQ LE NE LSHIFT LESS_THAN GE RSHIFT GT NE_LEGAL BITOR CONCAT 
 // COMMA BITAND BITNOT STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL3 
-// NUMBERIC ID_1 VARIABLE_1 VARIABLE_2 BLOB ID_2 SIMPLE_LETTER ANY 
+// NUMBERIC ID_1 VARIABLE_1 VARIABLE_2 BLOB ID_2 SIMPLE_LETTER ANY "no" 
+// "action" 
 const BitSet SqliteParser::_tokenSet_3(_tokenSet_3_data_,40);
-const unsigned long SqliteParser::_tokenSet_4_data_[] = { 1073741824UL, 1345061065UL, 2355430346UL, 1728054066UL, 29360129UL, 3257926657UL, 267649280UL, 872419712UL, 98752UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_4_data_[] = { 1073741824UL, 1345061065UL, 2355430346UL, 1728054066UL, 29360129UL, 3257926657UL, 267649280UL, 872419712UL, 98752UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "cast" "column" "conflict" "cross" "current_date" "current_time" "current_timestamp" 
 // "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
@@ -10237,12 +10260,12 @@ const unsigned long SqliteParser::_tokenSet_4_data_[] = { 1073741824UL, 13450610
 // "instead" "key" "left" "like" "match" "natural" "of" "offset" "outer" 
 // "plan" "pragma" "query" "raise" "regexp" "reindex" "rename" "replace" 
 // "restrict" "right" "rollback" "row" "temp" "temporary" "trigger" "vacuum" 
-// "view" "virtual" "indexed" "savepoint" "release" ID STRING 
-const BitSet SqliteParser::_tokenSet_4(_tokenSet_4_data_,20);
+// "view" "virtual" "indexed" "savepoint" "release" ID STRING "no" "action" 
+const BitSet SqliteParser::_tokenSet_4(_tokenSet_4_data_,24);
 const unsigned long SqliteParser::_tokenSet_5_data_[] = { 2UL, 0UL, 131072UL, 0UL, 0UL, 2048UL, 805306368UL, 134217728UL, 96UL, 640UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "default" "not" "select" "set" "values" "where" "indexed" LP SEMI 
 const BitSet SqliteParser::_tokenSet_5(_tokenSet_5_data_,20);
-const unsigned long SqliteParser::_tokenSet_6_data_[] = { 1073741824UL, 1345061065UL, 2355430282UL, 654311986UL, 20971521UL, 3224371201UL, 234094848UL, 872419712UL, 33216UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_6_data_[] = { 1073741824UL, 1345061065UL, 2355430282UL, 654311986UL, 20971521UL, 3224371201UL, 234094848UL, 872419712UL, 33216UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "cast" "column" "conflict" "current_date" "current_time" "current_timestamp" 
 // "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
@@ -10250,9 +10273,9 @@ const unsigned long SqliteParser::_tokenSet_6_data_[] = { 1073741824UL, 13450610
 // "key" "like" "match" "of" "offset" "plan" "pragma" "query" "raise" "regexp" 
 // "reindex" "rename" "replace" "restrict" "rollback" "row" "temp" "temporary" 
 // "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" "release" 
-// ID 
-const BitSet SqliteParser::_tokenSet_6(_tokenSet_6_data_,20);
-const unsigned long SqliteParser::_tokenSet_7_data_[] = { 1073741826UL, 1345061097UL, 3429172170UL, 1728071474UL, 62918659UL, 3278900225UL, 267649280UL, 873009536UL, 98800UL, 67109632UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// ID "no" "action" 
+const BitSet SqliteParser::_tokenSet_6(_tokenSet_6_data_,24);
+const unsigned long SqliteParser::_tokenSet_7_data_[] = { 1073741826UL, 1345061097UL, 3429172170UL, 1728071474UL, 62918659UL, 3278900225UL, 267649280UL, 873009536UL, 98800UL, 67109632UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "abort" "after" "analyze" "as" "asc" "attach" "before" "begin" "by" 
 // "cascade" "cast" "column" "conflict" "cross" "current_date" "current_time" 
 // "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
@@ -10262,9 +10285,9 @@ const unsigned long SqliteParser::_tokenSet_7_data_[] = { 1073741826UL, 13450610
 // "on" "order" "outer" "plan" "pragma" "query" "raise" "regexp" "reindex" 
 // "rename" "replace" "restrict" "right" "rollback" "row" "temp" "temporary" 
 // "trigger" "union" "using" "vacuum" "view" "virtual" "when" "where" "indexed" 
-// "savepoint" "release" ID STRING RP SEMI COMMA 
-const BitSet SqliteParser::_tokenSet_7(_tokenSet_7_data_,20);
-const unsigned long SqliteParser::_tokenSet_8_data_[] = { 1073741824UL, 1345061065UL, 2356609994UL, 1728054066UL, 29360129UL, 3262120961UL, 267649280UL, 872419712UL, 104896UL, 1024UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "savepoint" "release" ID STRING RP SEMI COMMA "no" "action" 
+const BitSet SqliteParser::_tokenSet_7(_tokenSet_7_data_,24);
+const unsigned long SqliteParser::_tokenSet_8_data_[] = { 1073741824UL, 1345061065UL, 2356609994UL, 1728054066UL, 29360129UL, 3262120961UL, 267649280UL, 872419712UL, 104896UL, 1024UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "cast" "column" "conflict" "cross" "current_date" "current_time" "current_timestamp" 
 // "database" "default" "deferred" "delete" "desc" "detach" "end" "each" 
@@ -10273,9 +10296,9 @@ const unsigned long SqliteParser::_tokenSet_8_data_[] = { 1073741824UL, 13450610
 // "of" "offset" "on" "outer" "plan" "pragma" "query" "raise" "regexp" 
 // "reindex" "rename" "replace" "restrict" "right" "rollback" "row" "temp" 
 // "temporary" "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" 
-// "release" INTEGER FLOAT ID STRING PLUS 
-const BitSet SqliteParser::_tokenSet_8(_tokenSet_8_data_,20);
-const unsigned long SqliteParser::_tokenSet_9_data_[] = { 1073741826UL, 3492544713UL, 2356085659UL, 654311986UL, 20971521UL, 3224381441UL, 234619137UL, 872550784UL, 98752UL, 512UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "release" INTEGER FLOAT ID STRING PLUS "no" "action" 
+const BitSet SqliteParser::_tokenSet_8(_tokenSet_8_data_,24);
+const unsigned long SqliteParser::_tokenSet_9_data_[] = { 1073741826UL, 3492544713UL, 2356085659UL, 654311986UL, 20971521UL, 3224381441UL, 234619137UL, 872550784UL, 98752UL, 512UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "cast" "check" "collate" "column" "conflict" "constraint" "current_date" 
 // "current_time" "current_timestamp" "database" "default" "deferred" "deferrable" 
@@ -10284,9 +10307,9 @@ const unsigned long SqliteParser::_tokenSet_9_data_[] = { 1073741826UL, 34925447
 // "not" "null" "of" "offset" "plan" "pragma" "primary" "query" "raise" 
 // "references" "regexp" "reindex" "rename" "replace" "restrict" "rollback" 
 // "row" "temp" "temporary" "trigger" "unique" "vacuum" "view" "virtual" 
-// "indexed" "savepoint" "release" ID STRING SEMI 
-const BitSet SqliteParser::_tokenSet_9(_tokenSet_9_data_,20);
-const unsigned long SqliteParser::_tokenSet_10_data_[] = { 1073741824UL, 1881931977UL, 2355430346UL, 1728054067UL, 29360129UL, 3257936897UL, 267649280UL, 872419712UL, 121280UL, 268436672UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "indexed" "savepoint" "release" ID STRING SEMI "no" "action" 
+const BitSet SqliteParser::_tokenSet_9(_tokenSet_9_data_,24);
+const unsigned long SqliteParser::_tokenSet_10_data_[] = { 1073741824UL, 1881931977UL, 2355430346UL, 1728054067UL, 29360129UL, 3257936897UL, 267649280UL, 872419712UL, 121280UL, 268436672UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "case" "cast" "column" "conflict" "cross" "current_date" "current_time" 
 // "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
@@ -10296,14 +10319,14 @@ const unsigned long SqliteParser::_tokenSet_10_data_[] = { 1073741824UL, 1881931
 // "raise" "regexp" "reindex" "rename" "replace" "restrict" "right" "rollback" 
 // "row" "temp" "temporary" "trigger" "vacuum" "view" "virtual" "indexed" 
 // "savepoint" "release" INTEGER FLOAT VARIABLE ID STRING MINUS LP PLUS 
-// BITNOT BLOB 
+// BITNOT BLOB "no" "action" 
 const BitSet SqliteParser::_tokenSet_10(_tokenSet_10_data_,24);
 const unsigned long SqliteParser::_tokenSet_11_data_[] = { 0UL, 1048592UL, 536870912UL, 512UL, 16777216UL, 8390657UL, 1048576UL, 0UL, 1024UL, 192801856UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "and" "between" "escape" "glob" "like" "match" "not" "or" "regexp" NOT_EQ 
 // MINUS PLUS STAR SLASH REM EQ LE LSHIFT LESS_THAN GE RSHIFT GT BITOR 
 // CONCAT BITAND 
 const BitSet SqliteParser::_tokenSet_11(_tokenSet_11_data_,20);
-const unsigned long SqliteParser::_tokenSet_12_data_[] = { 1073741824UL, 1882980553UL, 2355430346UL, 1728054067UL, 29360129UL, 3257936897UL, 267649280UL, 872419712UL, 121280UL, 268436672UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_12_data_[] = { 1073741824UL, 1882980553UL, 2355430346UL, 1728054067UL, 29360129UL, 3257936897UL, 267649280UL, 872419712UL, 121280UL, 268436672UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "asc" "attach" "before" "begin" "between" 
 // "by" "cascade" "case" "cast" "column" "conflict" "cross" "current_date" 
 // "current_time" "current_timestamp" "database" "deferred" "desc" "detach" 
@@ -10313,9 +10336,9 @@ const unsigned long SqliteParser::_tokenSet_12_data_[] = { 1073741824UL, 1882980
 // "query" "raise" "regexp" "reindex" "rename" "replace" "restrict" "right" 
 // "rollback" "row" "temp" "temporary" "trigger" "vacuum" "view" "virtual" 
 // "indexed" "savepoint" "release" INTEGER FLOAT VARIABLE ID STRING MINUS 
-// LP PLUS BITNOT BLOB 
+// LP PLUS BITNOT BLOB "no" "action" 
 const BitSet SqliteParser::_tokenSet_12(_tokenSet_12_data_,24);
-const unsigned long SqliteParser::_tokenSet_13_data_[] = { 1073741824UL, 1345061065UL, 2355430282UL, 654311986UL, 20971521UL, 3224371201UL, 234094848UL, 872419712UL, 98752UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_13_data_[] = { 1073741824UL, 1345061065UL, 2355430282UL, 654311986UL, 20971521UL, 3224371201UL, 234094848UL, 872419712UL, 98752UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "cast" "column" "conflict" "current_date" "current_time" "current_timestamp" 
 // "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
@@ -10323,8 +10346,8 @@ const unsigned long SqliteParser::_tokenSet_13_data_[] = { 1073741824UL, 1345061
 // "key" "like" "match" "of" "offset" "plan" "pragma" "query" "raise" "regexp" 
 // "reindex" "rename" "replace" "restrict" "rollback" "row" "temp" "temporary" 
 // "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" "release" 
-// ID STRING 
-const BitSet SqliteParser::_tokenSet_13(_tokenSet_13_data_,20);
+// ID STRING "no" "action" 
+const BitSet SqliteParser::_tokenSet_13(_tokenSet_13_data_,24);
 const unsigned long SqliteParser::_tokenSet_14_data_[] = { 0UL, 2147483648UL, 655377UL, 0UL, 0UL, 10240UL, 524289UL, 131072UL, 0UL, 67109120UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "check" "collate" "constraint" "default" "deferrable" "not" "null" "primary" 
 // "references" "unique" RP COMMA 
@@ -10357,7 +10380,7 @@ const unsigned long SqliteParser::_tokenSet_21_data_[] = { 2UL, 2147483648UL, 65
 // EOF "check" "collate" "constraint" "default" "deferrable" "initially" 
 // "not" "null" "primary" "references" "unique" RP SEMI COMMA 
 const BitSet SqliteParser::_tokenSet_21(_tokenSet_21_data_,20);
-const unsigned long SqliteParser::_tokenSet_22_data_[] = { 1073741824UL, 1345061065UL, 2355430282UL, 654311986UL, 20971521UL, 3224371201UL, 234094848UL, 872419712UL, 448UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_22_data_[] = { 1073741824UL, 1345061065UL, 2355430282UL, 654311986UL, 20971521UL, 3224371201UL, 234094848UL, 872419712UL, 448UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "cast" "column" "conflict" "current_date" "current_time" "current_timestamp" 
 // "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
@@ -10365,8 +10388,9 @@ const unsigned long SqliteParser::_tokenSet_22_data_[] = { 1073741824UL, 1345061
 // "key" "like" "match" "of" "offset" "plan" "pragma" "query" "raise" "regexp" 
 // "reindex" "rename" "replace" "restrict" "rollback" "row" "temp" "temporary" 
 // "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" "release" 
-const BitSet SqliteParser::_tokenSet_22(_tokenSet_22_data_,20);
-const unsigned long SqliteParser::_tokenSet_23_data_[] = { 1073741824UL, 1881931977UL, 2355430346UL, 1728054067UL, 29360129UL, 3257934849UL, 267649280UL, 872419712UL, 121280UL, 128UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "no" "action" 
+const BitSet SqliteParser::_tokenSet_22(_tokenSet_22_data_,24);
+const unsigned long SqliteParser::_tokenSet_23_data_[] = { 1073741824UL, 1881931977UL, 2355430346UL, 1728054067UL, 29360129UL, 3257934849UL, 267649280UL, 872419712UL, 121280UL, 128UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "case" "cast" "column" "conflict" "cross" "current_date" "current_time" 
 // "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
@@ -10375,9 +10399,10 @@ const unsigned long SqliteParser::_tokenSet_23_data_[] = { 1073741824UL, 1881931
 // "natural" "null" "of" "offset" "outer" "plan" "pragma" "query" "raise" 
 // "regexp" "reindex" "rename" "replace" "restrict" "right" "rollback" 
 // "row" "temp" "temporary" "trigger" "vacuum" "view" "virtual" "indexed" 
-// "savepoint" "release" INTEGER FLOAT VARIABLE ID STRING LP BLOB 
+// "savepoint" "release" INTEGER FLOAT VARIABLE ID STRING LP BLOB "no" 
+// "action" 
 const BitSet SqliteParser::_tokenSet_23(_tokenSet_23_data_,24);
-const unsigned long SqliteParser::_tokenSet_24_data_[] = { 1073741826UL, 1346109689UL, 4234478538UL, 1728071602UL, 62918659UL, 3283102721UL, 267649280UL, 873010048UL, 99824UL, 259911488UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_24_data_[] = { 1073741826UL, 1346109689UL, 4234478538UL, 1728071602UL, 62918659UL, 3283102721UL, 267649280UL, 873010048UL, 99824UL, 259911488UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "abort" "after" "analyze" "and" "as" "asc" "attach" "before" "begin" 
 // "between" "by" "cascade" "cast" "column" "conflict" "cross" "current_date" 
 // "current_time" "current_timestamp" "database" "deferred" "desc" "detach" 
@@ -10389,9 +10414,9 @@ const unsigned long SqliteParser::_tokenSet_24_data_[] = { 1073741826UL, 1346109
 // "rollback" "row" "temp" "temporary" "then" "trigger" "union" "using" 
 // "vacuum" "view" "virtual" "when" "where" "indexed" "savepoint" "release" 
 // NOT_EQ ID STRING MINUS RP SEMI PLUS STAR SLASH REM EQ LE LSHIFT LESS_THAN 
-// GE RSHIFT GT BITOR CONCAT COMMA BITAND 
-const BitSet SqliteParser::_tokenSet_24(_tokenSet_24_data_,20);
-const unsigned long SqliteParser::_tokenSet_25_data_[] = { 1073741824UL, 1345061065UL, 2355430346UL, 1862271794UL, 29360129UL, 3257926657UL, 267649280UL, 872419712UL, 98752UL, 128UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// GE RSHIFT GT BITOR CONCAT COMMA BITAND "no" "action" 
+const BitSet SqliteParser::_tokenSet_24(_tokenSet_24_data_,24);
+const unsigned long SqliteParser::_tokenSet_25_data_[] = { 1073741824UL, 1345061065UL, 2355430346UL, 1862271794UL, 29360129UL, 3257926657UL, 267649280UL, 872419712UL, 98752UL, 128UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "cast" "column" "conflict" "cross" "current_date" "current_time" "current_timestamp" 
 // "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
@@ -10400,9 +10425,9 @@ const unsigned long SqliteParser::_tokenSet_25_data_[] = { 1073741824UL, 1345061
 // "outer" "plan" "pragma" "query" "raise" "regexp" "reindex" "rename" 
 // "replace" "restrict" "right" "rollback" "row" "temp" "temporary" "trigger" 
 // "vacuum" "view" "virtual" "indexed" "savepoint" "release" ID STRING 
-// LP 
-const BitSet SqliteParser::_tokenSet_25(_tokenSet_25_data_,20);
-const unsigned long SqliteParser::_tokenSet_26_data_[] = { 1073741826UL, 1346109689UL, 4234478538UL, 1728071602UL, 62918659UL, 3283094529UL, 267649280UL, 873010048UL, 99824UL, 259911488UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// LP "no" "action" 
+const BitSet SqliteParser::_tokenSet_25(_tokenSet_25_data_,24);
+const unsigned long SqliteParser::_tokenSet_26_data_[] = { 1073741826UL, 1346109689UL, 4234478538UL, 1728071602UL, 62918659UL, 3283094529UL, 267649280UL, 873010048UL, 99824UL, 259911488UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "abort" "after" "analyze" "and" "as" "asc" "attach" "before" "begin" 
 // "between" "by" "cascade" "cast" "column" "conflict" "cross" "current_date" 
 // "current_time" "current_timestamp" "database" "deferred" "desc" "detach" 
@@ -10414,9 +10439,9 @@ const unsigned long SqliteParser::_tokenSet_26_data_[] = { 1073741826UL, 1346109
 // "row" "temp" "temporary" "then" "trigger" "union" "using" "vacuum" "view" 
 // "virtual" "when" "where" "indexed" "savepoint" "release" NOT_EQ ID STRING 
 // MINUS RP SEMI PLUS STAR SLASH REM EQ LE LSHIFT LESS_THAN GE RSHIFT GT 
-// BITOR CONCAT COMMA BITAND 
-const BitSet SqliteParser::_tokenSet_26(_tokenSet_26_data_,20);
-const unsigned long SqliteParser::_tokenSet_27_data_[] = { 1073741826UL, 4030464255UL, 4252959743UL, 4009772979UL, 62918683UL, 3287301121UL, 536609025UL, 873403264UL, 122352UL, 528347072UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// BITOR CONCAT COMMA BITAND "no" "action" 
+const BitSet SqliteParser::_tokenSet_26(_tokenSet_26_data_,24);
+const unsigned long SqliteParser::_tokenSet_27_data_[] = { 1073741826UL, 4030464255UL, 4252959743UL, 4009772979UL, 62918683UL, 3287301121UL, 536609025UL, 873403264UL, 122352UL, 528347072UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "abort" "after" "all" "alter" "analyze" "and" "as" "asc" "attach" 
 // "before" "begin" "between" "by" "cascade" "case" "cast" "check" "collate" 
 // "column" "commit" "conflict" "constraint" "create" "cross" "current_date" 
@@ -10432,9 +10457,9 @@ const unsigned long SqliteParser::_tokenSet_27_data_[] = { 1073741826UL, 4030464
 // "vacuum" "view" "virtual" "when" "where" "indexed" "savepoint" "release" 
 // NOT_EQ INTEGER FLOAT VARIABLE ID STRING MINUS LP RP SEMI PLUS STAR SLASH 
 // REM EQ LE LSHIFT LESS_THAN GE RSHIFT GT BITOR CONCAT COMMA BITAND BITNOT 
-// BLOB 
+// BLOB "no" "action" 
 const BitSet SqliteParser::_tokenSet_27(_tokenSet_27_data_,24);
-const unsigned long SqliteParser::_tokenSet_28_data_[] = { 1073741826UL, 1346109689UL, 4234478539UL, 1862289330UL, 62918683UL, 3283098625UL, 267649280UL, 873010048UL, 99824UL, 259911488UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_28_data_[] = { 1073741826UL, 1346109689UL, 4234478539UL, 1862289330UL, 62918683UL, 3283098625UL, 267649280UL, 873010048UL, 99824UL, 259911488UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "abort" "after" "analyze" "and" "as" "asc" "attach" "before" "begin" 
 // "between" "by" "cascade" "cast" "collate" "column" "conflict" "cross" 
 // "current_date" "current_time" "current_timestamp" "database" "deferred" 
@@ -10447,9 +10472,9 @@ const unsigned long SqliteParser::_tokenSet_28_data_[] = { 1073741826UL, 1346109
 // "then" "trigger" "union" "using" "vacuum" "view" "virtual" "when" "where" 
 // "indexed" "savepoint" "release" NOT_EQ ID STRING MINUS RP SEMI PLUS 
 // STAR SLASH REM EQ LE LSHIFT LESS_THAN GE RSHIFT GT BITOR CONCAT COMMA 
-// BITAND 
-const BitSet SqliteParser::_tokenSet_28(_tokenSet_28_data_,20);
-const unsigned long SqliteParser::_tokenSet_29_data_[] = { 1073741824UL, 1345061065UL, 2355430346UL, 1862271794UL, 29360129UL, 3257926657UL, 267649280UL, 872419712UL, 98752UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// BITAND "no" "action" 
+const BitSet SqliteParser::_tokenSet_28(_tokenSet_28_data_,24);
+const unsigned long SqliteParser::_tokenSet_29_data_[] = { 1073741824UL, 1345061065UL, 2355430346UL, 1862271794UL, 29360129UL, 3257926657UL, 267649280UL, 872419712UL, 98752UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "cast" "column" "conflict" "cross" "current_date" "current_time" "current_timestamp" 
 // "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
@@ -10458,8 +10483,9 @@ const unsigned long SqliteParser::_tokenSet_29_data_[] = { 1073741824UL, 1345061
 // "outer" "plan" "pragma" "query" "raise" "regexp" "reindex" "rename" 
 // "replace" "restrict" "right" "rollback" "row" "temp" "temporary" "trigger" 
 // "vacuum" "view" "virtual" "indexed" "savepoint" "release" ID STRING 
-const BitSet SqliteParser::_tokenSet_29(_tokenSet_29_data_,20);
-const unsigned long SqliteParser::_tokenSet_30_data_[] = { 1073741824UL, 1881931977UL, 2355430346UL, 1728054067UL, 29360129UL, 3257936897UL, 267649280UL, 872419712UL, 121280UL, 268438976UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "no" "action" 
+const BitSet SqliteParser::_tokenSet_29(_tokenSet_29_data_,24);
+const unsigned long SqliteParser::_tokenSet_30_data_[] = { 1073741824UL, 1881931977UL, 2355430346UL, 1728054067UL, 29360129UL, 3257936897UL, 267649280UL, 872419712UL, 121280UL, 268438976UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "case" "cast" "column" "conflict" "cross" "current_date" "current_time" 
 // "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
@@ -10469,7 +10495,7 @@ const unsigned long SqliteParser::_tokenSet_30_data_[] = { 1073741824UL, 1881931
 // "raise" "regexp" "reindex" "rename" "replace" "restrict" "right" "rollback" 
 // "row" "temp" "temporary" "trigger" "vacuum" "view" "virtual" "indexed" 
 // "savepoint" "release" INTEGER FLOAT VARIABLE ID STRING MINUS LP RP PLUS 
-// STAR BITNOT BLOB 
+// STAR BITNOT BLOB "no" "action" 
 const BitSet SqliteParser::_tokenSet_30(_tokenSet_30_data_,24);
 const unsigned long SqliteParser::_tokenSet_31_data_[] = { 2UL, 2147483648UL, 655377UL, 0UL, 0UL, 10240UL, 524289UL, 131072UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "check" "collate" "constraint" "default" "deferrable" "not" "null" 
@@ -10479,7 +10505,7 @@ const unsigned long SqliteParser::_tokenSet_32_data_[] = { 2UL, 2147483648UL, 65
 // EOF "check" "collate" "constraint" "default" "deferrable" "not" "null" 
 // "primary" "references" "unique" SEMI 
 const BitSet SqliteParser::_tokenSet_32(_tokenSet_32_data_,20);
-const unsigned long SqliteParser::_tokenSet_33_data_[] = { 4294967282UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 255UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_33_data_[] = { 4294967282UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 1023UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF null null null null null null null null null null null null null 
 // null null null null null null null null null null null null null "abort" 
 // "add" "after" "all" "alter" "analyze" "and" "as" "asc" "attach" "autoincrement" 
@@ -10511,9 +10537,10 @@ const unsigned long SqliteParser::_tokenSet_33_data_[] = { 4294967282UL, 4294967
 // TCONS_DEF SPACE NEW_LINE SL_COMMENT MINUS LP RP SEMI PLUS STAR ML_COMMENT 
 // SLASH REM EQ LE NE LSHIFT LESS_THAN GE RSHIFT GT NE_LEGAL BITOR CONCAT 
 // COMMA BITAND BITNOT STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL3 
-// NUMBERIC ID_1 VARIABLE_1 VARIABLE_2 BLOB ID_2 SIMPLE_LETTER ANY 
+// NUMBERIC ID_1 VARIABLE_1 VARIABLE_2 BLOB ID_2 SIMPLE_LETTER ANY "no" 
+// "action" 
 const BitSet SqliteParser::_tokenSet_33(_tokenSet_33_data_,40);
-const unsigned long SqliteParser::_tokenSet_34_data_[] = { 1073741824UL, 1881931977UL, 2355430346UL, 1728054067UL, 29360129UL, 3257936897UL, 267649280UL, 872419712UL, 121280UL, 268438720UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_34_data_[] = { 1073741824UL, 1881931977UL, 2355430346UL, 1728054067UL, 29360129UL, 3257936897UL, 267649280UL, 872419712UL, 121280UL, 268438720UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "case" "cast" "column" "conflict" "cross" "current_date" "current_time" 
 // "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
@@ -10523,7 +10550,7 @@ const unsigned long SqliteParser::_tokenSet_34_data_[] = { 1073741824UL, 1881931
 // "raise" "regexp" "reindex" "rename" "replace" "restrict" "right" "rollback" 
 // "row" "temp" "temporary" "trigger" "vacuum" "view" "virtual" "indexed" 
 // "savepoint" "release" INTEGER FLOAT VARIABLE ID STRING MINUS LP PLUS 
-// STAR BITNOT BLOB 
+// STAR BITNOT BLOB "no" "action" 
 const BitSet SqliteParser::_tokenSet_34(_tokenSet_34_data_,24);
 const unsigned long SqliteParser::_tokenSet_35_data_[] = { 2UL, 0UL, 1073741824UL, 17408UL, 33554434UL, 16777216UL, 0UL, 65536UL, 32UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "except" "group" "having" "intersect" "limit" "order" "union" "where" 
@@ -10539,7 +10566,7 @@ const BitSet SqliteParser::_tokenSet_37(_tokenSet_37_data_,20);
 const unsigned long SqliteParser::_tokenSet_38_data_[] = { 2UL, 0UL, 1073741824UL, 0UL, 33554434UL, 16777216UL, 0UL, 65536UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "except" "intersect" "limit" "order" "union" RP SEMI 
 const BitSet SqliteParser::_tokenSet_38(_tokenSet_38_data_,20);
-const unsigned long SqliteParser::_tokenSet_39_data_[] = { 1073741826UL, 1882980601UL, 3966043083UL, 1862289331UL, 62914587UL, 3283106817UL, 536084736UL, 872485248UL, 130544UL, 528347072UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_39_data_[] = { 1073741826UL, 1882980601UL, 3966043083UL, 1862289331UL, 62914587UL, 3283106817UL, 536084736UL, 872485248UL, 130544UL, 528347072UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "abort" "after" "analyze" "and" "as" "asc" "attach" "before" "begin" 
 // "between" "by" "cascade" "case" "cast" "collate" "column" "conflict" 
 // "cross" "current_date" "current_time" "current_timestamp" "database" 
@@ -10553,8 +10580,9 @@ const unsigned long SqliteParser::_tokenSet_39_data_[] = { 1073741826UL, 1882980
 // "virtual" "when" "where" "indexed" "savepoint" "release" NOT_EQ INTEGER 
 // FLOAT DOT VARIABLE ID STRING MINUS LP RP SEMI PLUS STAR SLASH REM EQ 
 // LE LSHIFT LESS_THAN GE RSHIFT GT BITOR CONCAT COMMA BITAND BITNOT BLOB 
+// "no" "action" 
 const BitSet SqliteParser::_tokenSet_39(_tokenSet_39_data_,24);
-const unsigned long SqliteParser::_tokenSet_40_data_[] = { 1073741824UL, 1345061097UL, 2355430282UL, 654311986UL, 20971521UL, 3224371201UL, 234094848UL, 872419712UL, 98752UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_40_data_[] = { 1073741824UL, 1345061097UL, 2355430282UL, 654311986UL, 20971521UL, 3224371201UL, 234094848UL, 872419712UL, 98752UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "as" "asc" "attach" "before" "begin" "by" 
 // "cascade" "cast" "column" "conflict" "current_date" "current_time" "current_timestamp" 
 // "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
@@ -10562,8 +10590,8 @@ const unsigned long SqliteParser::_tokenSet_40_data_[] = { 1073741824UL, 1345061
 // "key" "like" "match" "of" "offset" "plan" "pragma" "query" "raise" "regexp" 
 // "reindex" "rename" "replace" "restrict" "rollback" "row" "temp" "temporary" 
 // "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" "release" 
-// ID STRING 
-const BitSet SqliteParser::_tokenSet_40(_tokenSet_40_data_,20);
+// ID STRING "no" "action" 
+const BitSet SqliteParser::_tokenSet_40(_tokenSet_40_data_,24);
 const unsigned long SqliteParser::_tokenSet_41_data_[] = { 2UL, 0UL, 1073741824UL, 17536UL, 33554434UL, 16777216UL, 0UL, 65536UL, 32UL, 67109632UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "except" "from" "group" "having" "intersect" "limit" "order" "union" 
 // "where" RP SEMI COMMA 
@@ -10571,7 +10599,7 @@ const BitSet SqliteParser::_tokenSet_41(_tokenSet_41_data_,20);
 const unsigned long SqliteParser::_tokenSet_42_data_[] = { 0UL, 0UL, 64UL, 1073742080UL, 8392704UL, 33555456UL, 33554432UL, 0UL, 0UL, 67108864UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "cross" "full" "inner" "join" "left" "natural" "outer" "right" COMMA 
 const BitSet SqliteParser::_tokenSet_42(_tokenSet_42_data_,20);
-const unsigned long SqliteParser::_tokenSet_43_data_[] = { 1073741826UL, 1345061065UL, 3429172170UL, 1728071474UL, 62918659UL, 3278900225UL, 267649280UL, 873009536UL, 98784UL, 67109632UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_43_data_[] = { 1073741826UL, 1345061065UL, 3429172170UL, 1728071474UL, 62918659UL, 3278900225UL, 267649280UL, 873009536UL, 98784UL, 67109632UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "cast" "column" "conflict" "cross" "current_date" "current_time" "current_timestamp" 
 // "database" "deferred" "desc" "detach" "end" "each" "except" "exclusive" 
@@ -10581,14 +10609,14 @@ const unsigned long SqliteParser::_tokenSet_43_data_[] = { 1073741826UL, 1345061
 // "plan" "pragma" "query" "raise" "regexp" "reindex" "rename" "replace" 
 // "restrict" "right" "rollback" "row" "temp" "temporary" "trigger" "union" 
 // "using" "vacuum" "view" "virtual" "where" "indexed" "savepoint" "release" 
-// ID STRING RP SEMI COMMA 
-const BitSet SqliteParser::_tokenSet_43(_tokenSet_43_data_,20);
+// ID STRING RP SEMI COMMA "no" "action" 
+const BitSet SqliteParser::_tokenSet_43(_tokenSet_43_data_,24);
 const unsigned long SqliteParser::_tokenSet_44_data_[] = { 2UL, 0UL, 1073741888UL, 1073759488UL, 41947138UL, 54529024UL, 33554432UL, 589824UL, 96UL, 67109632UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "cross" "except" "full" "group" "having" "inner" "intersect" "join" 
 // "left" "limit" "natural" "not" "on" "order" "outer" "right" "union" 
 // "using" "where" "indexed" RP SEMI COMMA 
 const BitSet SqliteParser::_tokenSet_44(_tokenSet_44_data_,20);
-const unsigned long SqliteParser::_tokenSet_45_data_[] = { 1073741826UL, 1882980607UL, 4252304367UL, 4009772979UL, 62918683UL, 3287301121UL, 536084736UL, 873272192UL, 122352UL, 528347072UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_45_data_[] = { 1073741826UL, 1882980607UL, 4252304367UL, 4009772979UL, 62918683UL, 3287301121UL, 536084736UL, 873272192UL, 122352UL, 528347072UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "abort" "after" "all" "alter" "analyze" "and" "as" "asc" "attach" 
 // "before" "begin" "between" "by" "cascade" "case" "cast" "collate" "column" 
 // "commit" "conflict" "create" "cross" "current_date" "current_time" "current_timestamp" 
@@ -10603,6 +10631,7 @@ const unsigned long SqliteParser::_tokenSet_45_data_[] = { 1073741826UL, 1882980
 // "virtual" "when" "where" "indexed" "savepoint" "release" NOT_EQ INTEGER 
 // FLOAT VARIABLE ID STRING MINUS LP RP SEMI PLUS STAR SLASH REM EQ LE 
 // LSHIFT LESS_THAN GE RSHIFT GT BITOR CONCAT COMMA BITAND BITNOT BLOB 
+// "no" "action" 
 const BitSet SqliteParser::_tokenSet_45(_tokenSet_45_data_,24);
 const unsigned long SqliteParser::_tokenSet_46_data_[] = { 2UL, 0UL, 1073741888UL, 1073759488UL, 41947138UL, 54526976UL, 33554432UL, 589824UL, 32UL, 67109632UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "cross" "except" "full" "group" "having" "inner" "intersect" "join" 
@@ -10619,7 +10648,7 @@ const unsigned long SqliteParser::_tokenSet_48_data_[] = { 2UL, 0UL, 1073741888U
 // "left" "limit" "natural" "order" "outer" "right" "union" "where" RP 
 // SEMI COMMA 
 const BitSet SqliteParser::_tokenSet_48(_tokenSet_48_data_,20);
-const unsigned long SqliteParser::_tokenSet_49_data_[] = { 1073741824UL, 1345061065UL, 2355430346UL, 1728054066UL, 29360129UL, 3257926657UL, 267649280UL, 872419712UL, 98752UL, 128UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_49_data_[] = { 1073741824UL, 1345061065UL, 2355430346UL, 1728054066UL, 29360129UL, 3257926657UL, 267649280UL, 872419712UL, 98752UL, 128UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
 // "cast" "column" "conflict" "cross" "current_date" "current_time" "current_timestamp" 
 // "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
@@ -10627,8 +10656,8 @@ const unsigned long SqliteParser::_tokenSet_49_data_[] = { 1073741824UL, 1345061
 // "instead" "key" "left" "like" "match" "natural" "of" "offset" "outer" 
 // "plan" "pragma" "query" "raise" "regexp" "reindex" "rename" "replace" 
 // "restrict" "right" "rollback" "row" "temp" "temporary" "trigger" "vacuum" 
-// "view" "virtual" "indexed" "savepoint" "release" ID STRING LP 
-const BitSet SqliteParser::_tokenSet_49(_tokenSet_49_data_,20);
+// "view" "virtual" "indexed" "savepoint" "release" ID STRING LP "no" "action" 
+const BitSet SqliteParser::_tokenSet_49(_tokenSet_49_data_,24);
 const unsigned long SqliteParser::_tokenSet_50_data_[] = { 2UL, 0UL, 1073741824UL, 0UL, 33554434UL, 0UL, 0UL, 65536UL, 0UL, 67109632UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "except" "intersect" "limit" "union" RP SEMI COMMA 
 const BitSet SqliteParser::_tokenSet_50(_tokenSet_50_data_,20);

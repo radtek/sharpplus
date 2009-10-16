@@ -1873,13 +1873,13 @@ refarg:
         "match" nm
       | "on" "delete" refact
       | "on" "update" refact
-      | "on" "insert" refact
       ;
 
 refact: "set" "null"
       | "set" "default"
       | "cascade"
       | "restrict"
+      | "no" "action"
       ; 
       
 sign returns [string szSign] : 
@@ -2066,6 +2066,8 @@ ColumnDef col;
 fallback:
         "explain"
       | "query"
+      | "no"
+      | "action"
       | "plan"
       | "begin"
       | "deferred"
