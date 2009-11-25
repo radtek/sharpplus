@@ -1,44 +1,31 @@
 {-----------------------------------------------------------------------------
  Unit Name: SPUILib
- Author:    SharpPlus
- Purpose:   界面公用函数縼E
+ Purpose:   
  BeginDate  2001-12-11
  History:
 -----------------------------------------------------------------------------}
 unit SPUILib;
 
 interface
-uses Controls, Windows, ActnList, Sysutils, Stdctrls, Forms, {$IFDEF CX_debug}udbg, {$ENDIF}Menus;
+uses Controls, Windows, ActnList, Sysutils, Stdctrls, Forms, Menus;
 
 type
   THack = class(TCustomControl);
 
-  //从RxLib中复制过来的
 procedure MergeForm(AControl: TWinControl; AForm: TForm; Align: TAlign;
   Show: Boolean = True);
-//根据子菜单的名称获得一个菜单下的子菜单
 function GetMenuItemByName(MainMenu: TMenu; Name: string): TMenuItem; overload;
 function GetMenuItemByTag(MainMenu: TMenu; Tag: Integer): TMenuItem;
 function GetMenuItemByName(ParentMenu: TMenuItem; Name: string): TMenuItem;
 overload;
 function AddSepeartorToMenu(ParentMenu:TMenuItem; MenuName:string):TMenuItem;
-//清除某个菜单下的所有子菜单
 procedure FreeSubMenus(ParentMenu:TMenuItem);
-//根据名称获得ActionList中的一个Action
 function GetActionByName(ActionList: TCustomActionList; Name: string): TAction;
-//根据类别寻找窗体的实例
 function FindFormByClass(FormClass: TFormClass): TForm;
-//向当前Memo插葋E谋?
-procedure InsertTextToMemo(Memo:TMemo; S:string);
-//显示一个窗虂E
 function ShowForm(AForm: TFormClass): TModalResult;
-//释放一个Action
 procedure FreeAction(Action:TAction);
-//判断菜单是否是分耕脒
 function MenuItemIsSeparator(Item: TMenuItem): Boolean;
-//显示确认对话縼E
 function ConfirmDlg(Text:string):Boolean;
-//消息对话縼E
 procedure MsgDlg(Text:string);
 //ErrorDlg
 procedure ErrorDlg(Text:string);
@@ -73,7 +60,6 @@ var
   I:integer;
   SubMenu:TMenuItem;
 begin
-  //清除Menu
   for I:=ParentMenu.Count-1 downto 0 do
   begin
     SubMenu:=ParentMenu.Items[I];
@@ -140,7 +126,6 @@ var
 begin
   AutoScroll := AForm.AutoScroll;
   AForm.Hide;
-  //DestroyHandle有什么用呢?
   THack(AForm).DestroyHandle;
   with AForm do
   begin
@@ -169,7 +154,6 @@ function GetMenuItemByName(MainMenu: TMenu; Name: string): TMenuItem;
 var
   J: Integer;
 begin
-  //获得任意的菜单蟻E
   Result := nil;
   if Assigned(MainMenu) then
   begin
@@ -188,7 +172,6 @@ function GetMenuItemByTag(MainMenu: TMenu; Tag: Integer): TMenuItem;
 var
   J: Integer;
 begin
-  //获得任意的菜单蟻E
   Result := nil;
   if Assigned(MainMenu) then
   begin
@@ -208,14 +191,9 @@ function GetMenuItemByName(ParentMenu: TMenuItem; Name: string): TMenuItem;
 var
   J: Integer;
 begin
-  //获得任意的菜单蟻E
   Result := nil;
   if Assigned(ParentMenu) then
   begin
-{$IFDEF CX_debug}
-    debugger.LogComponent('HelpMenu', ParentMenu);
-    Debugger.LogMsg(Name);
-{$ENDIF}
     for J := 0 to ParentMenu.Count - 1 do
     begin
       if ParentMenu.Items[J].Name = Name then
