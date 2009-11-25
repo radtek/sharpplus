@@ -1,7 +1,6 @@
 {-----------------------------------------------------------------------------
  Unit Name: SPSysLib
- Author:    SharpPlus
- Purpose:   系统函数单元
+ Purpose:
  BeginDate: 2002-5-11
  History:
 -----------------------------------------------------------------------------}
@@ -13,6 +12,7 @@ interface
 uses Forms, Windows;
 
 procedure OpenUrl(Url:string);
+procedure SPOpenFile(AFile:string);
 procedure SPSetCurrentThreadName(const Name: string);
 
 
@@ -47,5 +47,11 @@ procedure OpenUrl(Url:string);
 begin
   ShellExecute(0, 'open', PChar(Url),nil,nil,SW_NORMAL);
 end;
+
+procedure SPOpenFile(AFile:string);
+begin
+  ShellExecute(0, 'open', PChar(AFile), nil, nil, SW_NORMAL);
+end;
+
 
 end.

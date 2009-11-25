@@ -47,14 +47,10 @@ procedure CreateRegKeyValue(Root: DWORD; const Key, ValueName, Value: string);
 
 procedure DeleteRegKeyValue(Root: DWORD; Key: string; ValueName: string = '');
 
-//获得可执行文件的所有的图眮E试疵屏斜丒
 procedure GetExeIconResNames(ExeName: TFileName; ResNames: TStrings);
-//判断一个资源名称是整数资源还是非整数资源
 function IsIntResource(ResName: PAnsiChar): Boolean;
-//将一个资源名称转化为ID
 function ResToID(ResName: PChar): Integer;
 
-//Todo: Add Prefix to all function
 function SpGetFileVersion(FileName: string): string;
 
 function SpGetFileDateTimeModified(const FileName: string;
@@ -71,6 +67,8 @@ Function SpFileSize(FileName : String) : Int64;
 Function SpFileSize2(FileName : String) : Int64;
 
 function GetShortName(sLongName:string):String;
+procedure ExploreDir(APath: string; ShowDir: Boolean = True);
+procedure ExploreFile(AFile: string; ShowDir: Boolean = True);
 implementation
 uses ComObj, ComConst, dialogs;
 
@@ -80,6 +78,28 @@ function PathCombineA(lpszDest: PAnsiChar; const lpszDir, lpszFile:
 PAnsiChar): PAnsiChar; stdcall; external 'shlwapi.dll';
 function PathCombineW(lpszDest: PWideChar; const lpszDir, lpszFile:
 PWideChar): PWideChar; stdcall; external 'shlwapi.dll';
+
+procedure ExploreDir(APath: string; ShowDir: Boolean);
+var
+  strExecute: AnsiString;
+begin
+  if not ShowDir then
+    strExecute := AnsiString(Format('EXPLORER.EXE "%s"', [APath]))
+  else
+    strExecute := AnsiString(Format('EXPLORER.EXE /e, "%s"', [APath]));
+  WinExec(PAnsiChar(strExecute), SW_SHOWNORMAL);
+end;
+
+procedure ExploreFile(AFile: string; ShowDir: Boolean);
+var
+  strExecute: AnsiString;
+begin
+  if not ShowDir then
+    strExecute := AnsiString(Format('EXPLORER.EXE /select, "%s"', [AFile]))
+  else
+    strExecute := AnsiString(Format('EXPLORER.EXE /e, /select, "%s"', [AFile]));
+  WinExec(PAnsiChar(strExecute), SW_SHOWNORMAL);
+end;
 
 function GetShortName(sLongName: string): string;
 var
@@ -221,13 +241,10 @@ var
 begin
   Assert(ResNames <> nil);
   ResNames.Clear;
-  //note:不要使用LoadLibrary，因为这样很可能会运行库的代聛E
-  //而应该使用LoadLibraryEx
   AInstance := LoadLibraryEx(PChar(ExeName), 0, LOAD_LIBRARY_AS_DATAFILE);
   if AInstance <= 31 then
     raise Exception.Create('Can not load exename library');
   try
-    //note:不能使用rt_icon，而应该使用rt_group_icon
     EnumResourceNames(AInstance, {RT_STRING} RT_Group_ICON,
       @EnumResourceNamesCallback, Integer(Pointer(ResNames)));
   finally
@@ -360,5 +377,6 @@ begin
       Move(VVers^, Result[1], Len-1);
     end;
 end;
+
 end.
 
