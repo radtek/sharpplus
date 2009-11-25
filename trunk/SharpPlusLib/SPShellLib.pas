@@ -41,7 +41,6 @@ type
     property FileName: TFileName read FFileName write FFileName;
     property IconIndex: DWORD read FIconIndex write FIconIndex default 0;
   end;
-//œ‘ æÃ·»°Õº±ÅEƒΩÁ√Ê£¨∑µªÿŒƒº˛√˚≥∆º∞Õº±ÅE˜“˝÷µ
 function GetIconAndIndex(FileName:string):string;
 function  PickIconDlg(Owner: HWND; FileName: Pointer; MaxFileNameChars: DWORD;
                   var IconIndex: DWORD): LongBool; stdcall;
@@ -92,7 +91,6 @@ begin
   Result:=string(pFolder)+'\';
 end;
 
-//Todo:º”…œÀ˜“˝
 function GetIconAndIndex(FileName:string):string;
 var
   Dialog:TCXPickIconDialog;
@@ -106,7 +104,6 @@ begin
     if Dialog.Execute then
     begin
       //Result:=Format('%s, %d', [Dialog.FileName, Dialog.IconIndex]);
-      //∏˘æ›IconIndexªÒµ√∂‘”¶resource identifier
       ResourceNames:=TStringList.Create;
       try
         GetExeIconResNames(Dialog.FileName, ResourceNames);
@@ -114,7 +111,6 @@ begin
         if not isInt(ResName) then
           raise Exception.Create('selected icon has not resource identifier')
         else
-          //note:∂∫∫≈÷Æº‰≤ªƒ‹”–ø’∏ÅE
           Result:=Format('%s,%s',[Dialog.FileName, ResName]);
       finally
         ResourceNames.Free;
@@ -140,8 +136,6 @@ begin
     ImageList.Handle := SysIL;
   end;
 end;
-
-{ TCXPickIconDialog }
 
 constructor TCXPickIconDialog.Create(AOwner: TComponent);
 begin
