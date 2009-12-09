@@ -258,6 +258,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fts3_snippet.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fts3_write.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fts3Int.h"
+				>
+			</File>
+			<File
 				RelativePath=".\func.c"
 				>
 			</File>
@@ -447,6 +459,10 @@
 			</File>
 			<File
 				RelativePath=".\vdbemem.c"
+				>
+			</File>
+			<File
+				RelativePath=".\vdbetrace.c"
 				>
 			</File>
 			<File
