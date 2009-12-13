@@ -7537,6 +7537,7 @@ void SqliteParser::nmnum() {
 	case SQL2RW_analyze:
 	case SQL2RW_asc:
 	case SQL2RW_attach:
+	case SQL2RW_action:
 	case SQL2RW_before:
 	case SQL2RW_begin:
 	case SQL2RW_by:
@@ -7571,6 +7572,7 @@ void SqliteParser::nmnum() {
 	case SQL2RW_like:
 	case SQL2RW_match:
 	case SQL2RW_natural:
+	case SQL2RW_no:
 	case SQL2RW_of:
 	case SQL2RW_offset:
 	case SQL2RW_outer:
@@ -7597,8 +7599,6 @@ void SqliteParser::nmnum() {
 	case SQL2RW_release:
 	case ID:
 	case STRING:
-	case LITERAL_no:
-	case LITERAL_action:
 	{
 		nm();
 		if (inputState->guessing==0) {
@@ -7887,25 +7887,25 @@ void SqliteParser::fallback() {
 		fallback_AST = currentAST.root;
 		break;
 	}
-	case LITERAL_no:
+	case SQL2RW_no:
 	{
 		RefAST tmp281_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp281_AST = astFactory->create(LT(1));
 			astFactory->addASTChild(currentAST, tmp281_AST);
 		}
-		match(LITERAL_no);
+		match(SQL2RW_no);
 		fallback_AST = currentAST.root;
 		break;
 	}
-	case LITERAL_action:
+	case SQL2RW_action:
 	{
 		RefAST tmp282_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp282_AST = astFactory->create(LT(1));
 			astFactory->addASTChild(currentAST, tmp282_AST);
 		}
-		match(LITERAL_action);
+		match(SQL2RW_action);
 		fallback_AST = currentAST.root;
 		break;
 	}
@@ -8777,19 +8777,19 @@ void SqliteParser::refact() {
 		match(SQL2RW_restrict);
 		refact_AST = currentAST.root;
 	}
-	else if ((LA(1) == LITERAL_no)) {
+	else if ((LA(1) == SQL2RW_no)) {
 		RefAST tmp354_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp354_AST = astFactory->create(LT(1));
 			astFactory->addASTChild(currentAST, tmp354_AST);
 		}
-		match(LITERAL_no);
+		match(SQL2RW_no);
 		RefAST tmp355_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp355_AST = astFactory->create(LT(1));
 			astFactory->addASTChild(currentAST, tmp355_AST);
 		}
-		match(LITERAL_action);
+		match(SQL2RW_action);
 		refact_AST = currentAST.root;
 	}
 	else {
@@ -9867,7 +9867,7 @@ void SqliteParser::carg() {
 
 void SqliteParser::initializeASTFactory( ASTFactory& factory )
 {
-	factory.setMaxNodeType(329);
+	factory.setMaxNodeType(327);
 }
 const char* SqliteParser::tokenNames[] = {
 	"<0>",
@@ -9911,7 +9911,7 @@ const char* SqliteParser::tokenNames[] = {
 	"\"asc\"",
 	"\"attach\"",
 	"\"autoincrement\"",
-	"<41>",
+	"\"action\"",
 	"<42>",
 	"<43>",
 	"<44>",
@@ -10044,7 +10044,7 @@ const char* SqliteParser::tokenNames[] = {
 	"\"not\"",
 	"\"notnull\"",
 	"\"null\"",
-	"<174>",
+	"\"no\"",
 	"<175>",
 	"<176>",
 	"<177>",
@@ -10198,8 +10198,6 @@ const char* SqliteParser::tokenNames[] = {
 	"identifier",
 	"SIMPLE_LETTER",
 	"ANY",
-	"\"no\"",
-	"\"action\"",
 	0
 };
 
@@ -10217,11 +10215,11 @@ const unsigned long SqliteParser::_tokenSet_2_data_[] = { 0UL, 140UL, 20971552UL
 // "alter" "analyze" "attach" "create" "detach" "drop" "pragma" "reindex" 
 // "vacuum" 
 const BitSet SqliteParser::_tokenSet_2(_tokenSet_2_data_,16);
-const unsigned long SqliteParser::_tokenSet_3_data_[] = { 4294967280UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294966783UL, 1023UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_3_data_[] = { 4294967280UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294966783UL, 255UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // null null null null null null null null null null null null null null 
 // null null null null null null null null null null null null "abort" 
 // "add" "after" "all" "alter" "analyze" "and" "as" "asc" "attach" "autoincrement" 
-// null null null null null null null null null "before" "begin" "between" 
+// "action" null null null null null null null null "before" "begin" "between" 
 // "by" null null null null null null "cascade" "case" "cast" "check" "collate" 
 // "column" "commit" "conflict" "constraint" "create" "cross" "current_date" 
 // "current_time" "current_timestamp" null null null null null null "database" 
@@ -10234,7 +10232,7 @@ const unsigned long SqliteParser::_tokenSet_3_data_[] = { 4294967280UL, 42949672
 // null null "join" null null null null null null null null null "key" 
 // "left" "like" "limit" null null null null null null "match" null null 
 // null null null null null null null "natural" "not" "notnull" "null" 
-// null null null null null null "of" "offset" "on" "or" "order" "outer" 
+// "no" null null null null null "of" "offset" "on" "or" "order" "outer" 
 // null null null null "plan" "pragma" "primary" null null null null null 
 // null null "query" null null null null null null null null null "raise" 
 // "references" "regexp" "reindex" "rename" "replace" "restrict" "right" 
@@ -10249,105 +10247,105 @@ const unsigned long SqliteParser::_tokenSet_3_data_[] = { 4294967280UL, 42949672
 // TCONS_DEF SPACE NEW_LINE SL_COMMENT MINUS LP RP PLUS STAR ML_COMMENT 
 // SLASH REM EQ LE NE LSHIFT LESS_THAN GE RSHIFT GT NE_LEGAL BITOR CONCAT 
 // COMMA BITAND BITNOT STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL3 
-// NUMBERIC ID_1 VARIABLE_1 VARIABLE_2 BLOB ID_2 SIMPLE_LETTER ANY "no" 
-// "action" 
+// NUMBERIC ID_1 VARIABLE_1 VARIABLE_2 BLOB ID_2 SIMPLE_LETTER ANY 
 const BitSet SqliteParser::_tokenSet_3(_tokenSet_3_data_,40);
-const unsigned long SqliteParser::_tokenSet_4_data_[] = { 1073741824UL, 1345061065UL, 2355430346UL, 1728054066UL, 29360129UL, 3257926657UL, 267649280UL, 872419712UL, 98752UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "cast" "column" "conflict" "cross" "current_date" "current_time" "current_timestamp" 
-// "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
-// "fail" "for" "full" "glob" "if" "ignore" "immediate" "initially" "inner" 
-// "instead" "key" "left" "like" "match" "natural" "of" "offset" "outer" 
-// "plan" "pragma" "query" "raise" "regexp" "reindex" "rename" "replace" 
-// "restrict" "right" "rollback" "row" "temp" "temporary" "trigger" "vacuum" 
-// "view" "virtual" "indexed" "savepoint" "release" ID STRING "no" "action" 
-const BitSet SqliteParser::_tokenSet_4(_tokenSet_4_data_,24);
+const unsigned long SqliteParser::_tokenSet_4_data_[] = { 1073741824UL, 1345061577UL, 2355430346UL, 1728054066UL, 29360129UL, 3257943041UL, 267649280UL, 872419712UL, 98752UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" "by" 
+// "cascade" "cast" "column" "conflict" "cross" "current_date" "current_time" 
+// "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
+// "exclusive" "explain" "fail" "for" "full" "glob" "if" "ignore" "immediate" 
+// "initially" "inner" "instead" "key" "left" "like" "match" "natural" 
+// "no" "of" "offset" "outer" "plan" "pragma" "query" "raise" "regexp" 
+// "reindex" "rename" "replace" "restrict" "right" "rollback" "row" "temp" 
+// "temporary" "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" 
+// "release" ID STRING 
+const BitSet SqliteParser::_tokenSet_4(_tokenSet_4_data_,20);
 const unsigned long SqliteParser::_tokenSet_5_data_[] = { 2UL, 0UL, 131072UL, 0UL, 0UL, 2048UL, 805306368UL, 134217728UL, 96UL, 640UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "default" "not" "select" "set" "values" "where" "indexed" LP SEMI 
 const BitSet SqliteParser::_tokenSet_5(_tokenSet_5_data_,20);
-const unsigned long SqliteParser::_tokenSet_6_data_[] = { 1073741824UL, 1345061065UL, 2355430282UL, 654311986UL, 20971521UL, 3224371201UL, 234094848UL, 872419712UL, 33216UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "cast" "column" "conflict" "current_date" "current_time" "current_timestamp" 
+const unsigned long SqliteParser::_tokenSet_6_data_[] = { 1073741824UL, 1345061577UL, 2355430282UL, 654311986UL, 20971521UL, 3224387585UL, 234094848UL, 872419712UL, 33216UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" "by" 
+// "cascade" "cast" "column" "conflict" "current_date" "current_time" "current_timestamp" 
 // "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
 // "fail" "for" "glob" "if" "ignore" "immediate" "initially" "instead" 
-// "key" "like" "match" "of" "offset" "plan" "pragma" "query" "raise" "regexp" 
-// "reindex" "rename" "replace" "restrict" "rollback" "row" "temp" "temporary" 
-// "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" "release" 
-// ID "no" "action" 
-const BitSet SqliteParser::_tokenSet_6(_tokenSet_6_data_,24);
-const unsigned long SqliteParser::_tokenSet_7_data_[] = { 1073741826UL, 1345061097UL, 3429172170UL, 1728071474UL, 62918659UL, 3278900225UL, 267649280UL, 873009536UL, 98800UL, 67109632UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// EOF "abort" "after" "analyze" "as" "asc" "attach" "before" "begin" "by" 
-// "cascade" "cast" "column" "conflict" "cross" "current_date" "current_time" 
-// "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
-// "except" "exclusive" "explain" "fail" "for" "full" "glob" "group" "having" 
-// "if" "ignore" "immediate" "initially" "inner" "instead" "intersect" 
-// "join" "key" "left" "like" "limit" "match" "natural" "not" "of" "offset" 
-// "on" "order" "outer" "plan" "pragma" "query" "raise" "regexp" "reindex" 
-// "rename" "replace" "restrict" "right" "rollback" "row" "temp" "temporary" 
-// "trigger" "union" "using" "vacuum" "view" "virtual" "when" "where" "indexed" 
-// "savepoint" "release" ID STRING RP SEMI COMMA "no" "action" 
-const BitSet SqliteParser::_tokenSet_7(_tokenSet_7_data_,24);
-const unsigned long SqliteParser::_tokenSet_8_data_[] = { 1073741824UL, 1345061065UL, 2356609994UL, 1728054066UL, 29360129UL, 3262120961UL, 267649280UL, 872419712UL, 104896UL, 1024UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "cast" "column" "conflict" "cross" "current_date" "current_time" "current_timestamp" 
-// "database" "default" "deferred" "delete" "desc" "detach" "end" "each" 
-// "exclusive" "explain" "fail" "for" "full" "glob" "if" "ignore" "immediate" 
-// "initially" "inner" "instead" "key" "left" "like" "match" "natural" 
-// "of" "offset" "on" "outer" "plan" "pragma" "query" "raise" "regexp" 
-// "reindex" "rename" "replace" "restrict" "right" "rollback" "row" "temp" 
+// "key" "like" "match" "no" "of" "offset" "plan" "pragma" "query" "raise" 
+// "regexp" "reindex" "rename" "replace" "restrict" "rollback" "row" "temp" 
 // "temporary" "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" 
-// "release" INTEGER FLOAT ID STRING PLUS "no" "action" 
-const BitSet SqliteParser::_tokenSet_8(_tokenSet_8_data_,24);
-const unsigned long SqliteParser::_tokenSet_9_data_[] = { 1073741826UL, 3492544713UL, 2356085659UL, 654311986UL, 20971521UL, 3224381441UL, 234619137UL, 872550784UL, 98752UL, 512UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// EOF "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "cast" "check" "collate" "column" "conflict" "constraint" "current_date" 
-// "current_time" "current_timestamp" "database" "default" "deferred" "deferrable" 
-// "desc" "detach" "end" "each" "exclusive" "explain" "fail" "for" "glob" 
-// "if" "ignore" "immediate" "initially" "instead" "key" "like" "match" 
-// "not" "null" "of" "offset" "plan" "pragma" "primary" "query" "raise" 
-// "references" "regexp" "reindex" "rename" "replace" "restrict" "rollback" 
-// "row" "temp" "temporary" "trigger" "unique" "vacuum" "view" "virtual" 
-// "indexed" "savepoint" "release" ID STRING SEMI "no" "action" 
-const BitSet SqliteParser::_tokenSet_9(_tokenSet_9_data_,24);
-const unsigned long SqliteParser::_tokenSet_10_data_[] = { 1073741824UL, 1881931977UL, 2355430346UL, 1728054067UL, 29360129UL, 3257936897UL, 267649280UL, 872419712UL, 121280UL, 268436672UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "case" "cast" "column" "conflict" "cross" "current_date" "current_time" 
+// "release" ID 
+const BitSet SqliteParser::_tokenSet_6(_tokenSet_6_data_,20);
+const unsigned long SqliteParser::_tokenSet_7_data_[] = { 1073741826UL, 1345061609UL, 3429172170UL, 1728071474UL, 62918659UL, 3278916609UL, 267649280UL, 873009536UL, 98800UL, 67109632UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// EOF "abort" "after" "analyze" "as" "asc" "attach" "action" "before" 
+// "begin" "by" "cascade" "cast" "column" "conflict" "cross" "current_date" 
+// "current_time" "current_timestamp" "database" "deferred" "desc" "detach" 
+// "end" "each" "except" "exclusive" "explain" "fail" "for" "full" "glob" 
+// "group" "having" "if" "ignore" "immediate" "initially" "inner" "instead" 
+// "intersect" "join" "key" "left" "like" "limit" "match" "natural" "not" 
+// "no" "of" "offset" "on" "order" "outer" "plan" "pragma" "query" "raise" 
+// "regexp" "reindex" "rename" "replace" "restrict" "right" "rollback" 
+// "row" "temp" "temporary" "trigger" "union" "using" "vacuum" "view" "virtual" 
+// "when" "where" "indexed" "savepoint" "release" ID STRING RP SEMI COMMA 
+const BitSet SqliteParser::_tokenSet_7(_tokenSet_7_data_,20);
+const unsigned long SqliteParser::_tokenSet_8_data_[] = { 1073741824UL, 1345061577UL, 2356609994UL, 1728054066UL, 29360129UL, 3262137345UL, 267649280UL, 872419712UL, 104896UL, 1024UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" "by" 
+// "cascade" "cast" "column" "conflict" "cross" "current_date" "current_time" 
+// "current_timestamp" "database" "default" "deferred" "delete" "desc" 
+// "detach" "end" "each" "exclusive" "explain" "fail" "for" "full" "glob" 
+// "if" "ignore" "immediate" "initially" "inner" "instead" "key" "left" 
+// "like" "match" "natural" "no" "of" "offset" "on" "outer" "plan" "pragma" 
+// "query" "raise" "regexp" "reindex" "rename" "replace" "restrict" "right" 
+// "rollback" "row" "temp" "temporary" "trigger" "vacuum" "view" "virtual" 
+// "indexed" "savepoint" "release" INTEGER FLOAT ID STRING PLUS 
+const BitSet SqliteParser::_tokenSet_8(_tokenSet_8_data_,20);
+const unsigned long SqliteParser::_tokenSet_9_data_[] = { 1073741826UL, 3492545225UL, 2356085659UL, 654311986UL, 20971521UL, 3224397825UL, 234619137UL, 872550784UL, 98752UL, 512UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// EOF "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" 
+// "by" "cascade" "cast" "check" "collate" "column" "conflict" "constraint" 
+// "current_date" "current_time" "current_timestamp" "database" "default" 
+// "deferred" "deferrable" "desc" "detach" "end" "each" "exclusive" "explain" 
+// "fail" "for" "glob" "if" "ignore" "immediate" "initially" "instead" 
+// "key" "like" "match" "not" "null" "no" "of" "offset" "plan" "pragma" 
+// "primary" "query" "raise" "references" "regexp" "reindex" "rename" "replace" 
+// "restrict" "rollback" "row" "temp" "temporary" "trigger" "unique" "vacuum" 
+// "view" "virtual" "indexed" "savepoint" "release" ID STRING SEMI 
+const BitSet SqliteParser::_tokenSet_9(_tokenSet_9_data_,20);
+const unsigned long SqliteParser::_tokenSet_10_data_[] = { 1073741824UL, 1881932489UL, 2355430346UL, 1728054067UL, 29360129UL, 3257953281UL, 267649280UL, 872419712UL, 121280UL, 268436672UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" "by" 
+// "cascade" "case" "cast" "column" "conflict" "cross" "current_date" "current_time" 
 // "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
 // "exclusive" "exists" "explain" "fail" "for" "full" "glob" "if" "ignore" 
 // "immediate" "initially" "inner" "instead" "key" "left" "like" "match" 
-// "natural" "not" "null" "of" "offset" "outer" "plan" "pragma" "query" 
+// "natural" "not" "null" "no" "of" "offset" "outer" "plan" "pragma" "query" 
 // "raise" "regexp" "reindex" "rename" "replace" "restrict" "right" "rollback" 
 // "row" "temp" "temporary" "trigger" "vacuum" "view" "virtual" "indexed" 
 // "savepoint" "release" INTEGER FLOAT VARIABLE ID STRING MINUS LP PLUS 
-// BITNOT BLOB "no" "action" 
+// BITNOT BLOB 
 const BitSet SqliteParser::_tokenSet_10(_tokenSet_10_data_,24);
 const unsigned long SqliteParser::_tokenSet_11_data_[] = { 0UL, 1048592UL, 536870912UL, 512UL, 16777216UL, 8390657UL, 1048576UL, 0UL, 1024UL, 192801856UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "and" "between" "escape" "glob" "like" "match" "not" "or" "regexp" NOT_EQ 
 // MINUS PLUS STAR SLASH REM EQ LE LSHIFT LESS_THAN GE RSHIFT GT BITOR 
 // CONCAT BITAND 
 const BitSet SqliteParser::_tokenSet_11(_tokenSet_11_data_,20);
-const unsigned long SqliteParser::_tokenSet_12_data_[] = { 1073741824UL, 1882980553UL, 2355430346UL, 1728054067UL, 29360129UL, 3257936897UL, 267649280UL, 872419712UL, 121280UL, 268436672UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "asc" "attach" "before" "begin" "between" 
+const unsigned long SqliteParser::_tokenSet_12_data_[] = { 1073741824UL, 1882981065UL, 2355430346UL, 1728054067UL, 29360129UL, 3257953281UL, 267649280UL, 872419712UL, 121280UL, 268436672UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" "between" 
 // "by" "cascade" "case" "cast" "column" "conflict" "cross" "current_date" 
 // "current_time" "current_timestamp" "database" "deferred" "desc" "detach" 
 // "end" "each" "exclusive" "exists" "explain" "fail" "for" "full" "glob" 
 // "if" "ignore" "immediate" "initially" "inner" "instead" "key" "left" 
-// "like" "match" "natural" "not" "null" "of" "offset" "outer" "plan" "pragma" 
-// "query" "raise" "regexp" "reindex" "rename" "replace" "restrict" "right" 
-// "rollback" "row" "temp" "temporary" "trigger" "vacuum" "view" "virtual" 
-// "indexed" "savepoint" "release" INTEGER FLOAT VARIABLE ID STRING MINUS 
-// LP PLUS BITNOT BLOB "no" "action" 
+// "like" "match" "natural" "not" "null" "no" "of" "offset" "outer" "plan" 
+// "pragma" "query" "raise" "regexp" "reindex" "rename" "replace" "restrict" 
+// "right" "rollback" "row" "temp" "temporary" "trigger" "vacuum" "view" 
+// "virtual" "indexed" "savepoint" "release" INTEGER FLOAT VARIABLE ID 
+// STRING MINUS LP PLUS BITNOT BLOB 
 const BitSet SqliteParser::_tokenSet_12(_tokenSet_12_data_,24);
-const unsigned long SqliteParser::_tokenSet_13_data_[] = { 1073741824UL, 1345061065UL, 2355430282UL, 654311986UL, 20971521UL, 3224371201UL, 234094848UL, 872419712UL, 98752UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "cast" "column" "conflict" "current_date" "current_time" "current_timestamp" 
+const unsigned long SqliteParser::_tokenSet_13_data_[] = { 1073741824UL, 1345061577UL, 2355430282UL, 654311986UL, 20971521UL, 3224387585UL, 234094848UL, 872419712UL, 98752UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" "by" 
+// "cascade" "cast" "column" "conflict" "current_date" "current_time" "current_timestamp" 
 // "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
 // "fail" "for" "glob" "if" "ignore" "immediate" "initially" "instead" 
-// "key" "like" "match" "of" "offset" "plan" "pragma" "query" "raise" "regexp" 
-// "reindex" "rename" "replace" "restrict" "rollback" "row" "temp" "temporary" 
-// "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" "release" 
-// ID STRING "no" "action" 
-const BitSet SqliteParser::_tokenSet_13(_tokenSet_13_data_,24);
+// "key" "like" "match" "no" "of" "offset" "plan" "pragma" "query" "raise" 
+// "regexp" "reindex" "rename" "replace" "restrict" "rollback" "row" "temp" 
+// "temporary" "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" 
+// "release" ID STRING 
+const BitSet SqliteParser::_tokenSet_13(_tokenSet_13_data_,20);
 const unsigned long SqliteParser::_tokenSet_14_data_[] = { 0UL, 2147483648UL, 655377UL, 0UL, 0UL, 10240UL, 524289UL, 131072UL, 0UL, 67109120UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "check" "collate" "constraint" "default" "deferrable" "not" "null" "primary" 
 // "references" "unique" RP COMMA 
@@ -10380,122 +10378,121 @@ const unsigned long SqliteParser::_tokenSet_21_data_[] = { 2UL, 2147483648UL, 65
 // EOF "check" "collate" "constraint" "default" "deferrable" "initially" 
 // "not" "null" "primary" "references" "unique" RP SEMI COMMA 
 const BitSet SqliteParser::_tokenSet_21(_tokenSet_21_data_,20);
-const unsigned long SqliteParser::_tokenSet_22_data_[] = { 1073741824UL, 1345061065UL, 2355430282UL, 654311986UL, 20971521UL, 3224371201UL, 234094848UL, 872419712UL, 448UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "cast" "column" "conflict" "current_date" "current_time" "current_timestamp" 
+const unsigned long SqliteParser::_tokenSet_22_data_[] = { 1073741824UL, 1345061577UL, 2355430282UL, 654311986UL, 20971521UL, 3224387585UL, 234094848UL, 872419712UL, 448UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" "by" 
+// "cascade" "cast" "column" "conflict" "current_date" "current_time" "current_timestamp" 
 // "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
 // "fail" "for" "glob" "if" "ignore" "immediate" "initially" "instead" 
-// "key" "like" "match" "of" "offset" "plan" "pragma" "query" "raise" "regexp" 
-// "reindex" "rename" "replace" "restrict" "rollback" "row" "temp" "temporary" 
-// "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" "release" 
-// "no" "action" 
-const BitSet SqliteParser::_tokenSet_22(_tokenSet_22_data_,24);
-const unsigned long SqliteParser::_tokenSet_23_data_[] = { 1073741824UL, 1881931977UL, 2355430346UL, 1728054067UL, 29360129UL, 3257934849UL, 267649280UL, 872419712UL, 121280UL, 128UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "case" "cast" "column" "conflict" "cross" "current_date" "current_time" 
+// "key" "like" "match" "no" "of" "offset" "plan" "pragma" "query" "raise" 
+// "regexp" "reindex" "rename" "replace" "restrict" "rollback" "row" "temp" 
+// "temporary" "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" 
+// "release" 
+const BitSet SqliteParser::_tokenSet_22(_tokenSet_22_data_,20);
+const unsigned long SqliteParser::_tokenSet_23_data_[] = { 1073741824UL, 1881932489UL, 2355430346UL, 1728054067UL, 29360129UL, 3257951233UL, 267649280UL, 872419712UL, 121280UL, 128UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" "by" 
+// "cascade" "case" "cast" "column" "conflict" "cross" "current_date" "current_time" 
 // "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
 // "exclusive" "exists" "explain" "fail" "for" "full" "glob" "if" "ignore" 
 // "immediate" "initially" "inner" "instead" "key" "left" "like" "match" 
-// "natural" "null" "of" "offset" "outer" "plan" "pragma" "query" "raise" 
-// "regexp" "reindex" "rename" "replace" "restrict" "right" "rollback" 
-// "row" "temp" "temporary" "trigger" "vacuum" "view" "virtual" "indexed" 
-// "savepoint" "release" INTEGER FLOAT VARIABLE ID STRING LP BLOB "no" 
-// "action" 
-const BitSet SqliteParser::_tokenSet_23(_tokenSet_23_data_,24);
-const unsigned long SqliteParser::_tokenSet_24_data_[] = { 1073741826UL, 1346109689UL, 4234478538UL, 1728071602UL, 62918659UL, 3283102721UL, 267649280UL, 873010048UL, 99824UL, 259911488UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// EOF "abort" "after" "analyze" "and" "as" "asc" "attach" "before" "begin" 
-// "between" "by" "cascade" "cast" "column" "conflict" "cross" "current_date" 
-// "current_time" "current_timestamp" "database" "deferred" "desc" "detach" 
-// "end" "each" "else" "escape" "except" "exclusive" "explain" "fail" "for" 
-// "from" "full" "glob" "group" "having" "if" "ignore" "immediate" "initially" 
-// "inner" "instead" "intersect" "join" "key" "left" "like" "limit" "match" 
-// "natural" "not" "null" "of" "offset" "or" "order" "outer" "plan" "pragma" 
-// "query" "raise" "regexp" "reindex" "rename" "replace" "restrict" "right" 
-// "rollback" "row" "temp" "temporary" "then" "trigger" "union" "using" 
-// "vacuum" "view" "virtual" "when" "where" "indexed" "savepoint" "release" 
-// NOT_EQ ID STRING MINUS RP SEMI PLUS STAR SLASH REM EQ LE LSHIFT LESS_THAN 
-// GE RSHIFT GT BITOR CONCAT COMMA BITAND "no" "action" 
-const BitSet SqliteParser::_tokenSet_24(_tokenSet_24_data_,24);
-const unsigned long SqliteParser::_tokenSet_25_data_[] = { 1073741824UL, 1345061065UL, 2355430346UL, 1862271794UL, 29360129UL, 3257926657UL, 267649280UL, 872419712UL, 98752UL, 128UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "cast" "column" "conflict" "cross" "current_date" "current_time" "current_timestamp" 
-// "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
-// "fail" "for" "full" "glob" "if" "ignore" "immediate" "in" "initially" 
-// "inner" "instead" "key" "left" "like" "match" "natural" "of" "offset" 
-// "outer" "plan" "pragma" "query" "raise" "regexp" "reindex" "rename" 
-// "replace" "restrict" "right" "rollback" "row" "temp" "temporary" "trigger" 
-// "vacuum" "view" "virtual" "indexed" "savepoint" "release" ID STRING 
-// LP "no" "action" 
-const BitSet SqliteParser::_tokenSet_25(_tokenSet_25_data_,24);
-const unsigned long SqliteParser::_tokenSet_26_data_[] = { 1073741826UL, 1346109689UL, 4234478538UL, 1728071602UL, 62918659UL, 3283094529UL, 267649280UL, 873010048UL, 99824UL, 259911488UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// EOF "abort" "after" "analyze" "and" "as" "asc" "attach" "before" "begin" 
-// "between" "by" "cascade" "cast" "column" "conflict" "cross" "current_date" 
-// "current_time" "current_timestamp" "database" "deferred" "desc" "detach" 
-// "end" "each" "else" "escape" "except" "exclusive" "explain" "fail" "for" 
-// "from" "full" "glob" "group" "having" "if" "ignore" "immediate" "initially" 
-// "inner" "instead" "intersect" "join" "key" "left" "like" "limit" "match" 
-// "natural" "not" "of" "offset" "or" "order" "outer" "plan" "pragma" "query" 
+// "natural" "null" "no" "of" "offset" "outer" "plan" "pragma" "query" 
 // "raise" "regexp" "reindex" "rename" "replace" "restrict" "right" "rollback" 
-// "row" "temp" "temporary" "then" "trigger" "union" "using" "vacuum" "view" 
-// "virtual" "when" "where" "indexed" "savepoint" "release" NOT_EQ ID STRING 
-// MINUS RP SEMI PLUS STAR SLASH REM EQ LE LSHIFT LESS_THAN GE RSHIFT GT 
-// BITOR CONCAT COMMA BITAND "no" "action" 
-const BitSet SqliteParser::_tokenSet_26(_tokenSet_26_data_,24);
-const unsigned long SqliteParser::_tokenSet_27_data_[] = { 1073741826UL, 4030464255UL, 4252959743UL, 4009772979UL, 62918683UL, 3287301121UL, 536609025UL, 873403264UL, 122352UL, 528347072UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// EOF "abort" "after" "all" "alter" "analyze" "and" "as" "asc" "attach" 
-// "before" "begin" "between" "by" "cascade" "case" "cast" "check" "collate" 
-// "column" "commit" "conflict" "constraint" "create" "cross" "current_date" 
-// "current_time" "current_timestamp" "database" "default" "deferred" "deferrable" 
-// "delete" "desc" "detach" "drop" "end" "each" "else" "escape" "except" 
-// "exclusive" "exists" "explain" "fail" "for" "from" "full" "glob" "group" 
-// "having" "if" "ignore" "immediate" "in" "initially" "inner" "insert" 
-// "instead" "intersect" "is" "isnull" "join" "key" "left" "like" "limit" 
-// "match" "natural" "not" "notnull" "null" "of" "offset" "on" "or" "order" 
-// "outer" "plan" "pragma" "primary" "query" "raise" "references" "regexp" 
-// "reindex" "rename" "replace" "restrict" "right" "rollback" "row" "select" 
-// "temp" "temporary" "then" "trigger" "union" "unique" "update" "using" 
-// "vacuum" "view" "virtual" "when" "where" "indexed" "savepoint" "release" 
-// NOT_EQ INTEGER FLOAT VARIABLE ID STRING MINUS LP RP SEMI PLUS STAR SLASH 
-// REM EQ LE LSHIFT LESS_THAN GE RSHIFT GT BITOR CONCAT COMMA BITAND BITNOT 
-// BLOB "no" "action" 
-const BitSet SqliteParser::_tokenSet_27(_tokenSet_27_data_,24);
-const unsigned long SqliteParser::_tokenSet_28_data_[] = { 1073741826UL, 1346109689UL, 4234478539UL, 1862289330UL, 62918683UL, 3283098625UL, 267649280UL, 873010048UL, 99824UL, 259911488UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// EOF "abort" "after" "analyze" "and" "as" "asc" "attach" "before" "begin" 
-// "between" "by" "cascade" "cast" "collate" "column" "conflict" "cross" 
+// "row" "temp" "temporary" "trigger" "vacuum" "view" "virtual" "indexed" 
+// "savepoint" "release" INTEGER FLOAT VARIABLE ID STRING LP BLOB 
+const BitSet SqliteParser::_tokenSet_23(_tokenSet_23_data_,24);
+const unsigned long SqliteParser::_tokenSet_24_data_[] = { 1073741826UL, 1346110201UL, 4234478538UL, 1728071602UL, 62918659UL, 3283119105UL, 267649280UL, 873010048UL, 99824UL, 259911488UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// EOF "abort" "after" "analyze" "and" "as" "asc" "attach" "action" "before" 
+// "begin" "between" "by" "cascade" "cast" "column" "conflict" "cross" 
 // "current_date" "current_time" "current_timestamp" "database" "deferred" 
 // "desc" "detach" "end" "each" "else" "escape" "except" "exclusive" "explain" 
 // "fail" "for" "from" "full" "glob" "group" "having" "if" "ignore" "immediate" 
-// "in" "initially" "inner" "instead" "intersect" "is" "isnull" "join" 
-// "key" "left" "like" "limit" "match" "natural" "not" "notnull" "of" "offset" 
-// "or" "order" "outer" "plan" "pragma" "query" "raise" "regexp" "reindex" 
-// "rename" "replace" "restrict" "right" "rollback" "row" "temp" "temporary" 
-// "then" "trigger" "union" "using" "vacuum" "view" "virtual" "when" "where" 
-// "indexed" "savepoint" "release" NOT_EQ ID STRING MINUS RP SEMI PLUS 
-// STAR SLASH REM EQ LE LSHIFT LESS_THAN GE RSHIFT GT BITOR CONCAT COMMA 
-// BITAND "no" "action" 
-const BitSet SqliteParser::_tokenSet_28(_tokenSet_28_data_,24);
-const unsigned long SqliteParser::_tokenSet_29_data_[] = { 1073741824UL, 1345061065UL, 2355430346UL, 1862271794UL, 29360129UL, 3257926657UL, 267649280UL, 872419712UL, 98752UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "cast" "column" "conflict" "cross" "current_date" "current_time" "current_timestamp" 
-// "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
-// "fail" "for" "full" "glob" "if" "ignore" "immediate" "in" "initially" 
-// "inner" "instead" "key" "left" "like" "match" "natural" "of" "offset" 
+// "initially" "inner" "instead" "intersect" "join" "key" "left" "like" 
+// "limit" "match" "natural" "not" "null" "no" "of" "offset" "or" "order" 
 // "outer" "plan" "pragma" "query" "raise" "regexp" "reindex" "rename" 
-// "replace" "restrict" "right" "rollback" "row" "temp" "temporary" "trigger" 
-// "vacuum" "view" "virtual" "indexed" "savepoint" "release" ID STRING 
-// "no" "action" 
-const BitSet SqliteParser::_tokenSet_29(_tokenSet_29_data_,24);
-const unsigned long SqliteParser::_tokenSet_30_data_[] = { 1073741824UL, 1881931977UL, 2355430346UL, 1728054067UL, 29360129UL, 3257936897UL, 267649280UL, 872419712UL, 121280UL, 268438976UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "case" "cast" "column" "conflict" "cross" "current_date" "current_time" 
+// "replace" "restrict" "right" "rollback" "row" "temp" "temporary" "then" 
+// "trigger" "union" "using" "vacuum" "view" "virtual" "when" "where" "indexed" 
+// "savepoint" "release" NOT_EQ ID STRING MINUS RP SEMI PLUS STAR SLASH 
+// REM EQ LE LSHIFT LESS_THAN GE RSHIFT GT BITOR CONCAT COMMA BITAND 
+const BitSet SqliteParser::_tokenSet_24(_tokenSet_24_data_,20);
+const unsigned long SqliteParser::_tokenSet_25_data_[] = { 1073741824UL, 1345061577UL, 2355430346UL, 1862271794UL, 29360129UL, 3257943041UL, 267649280UL, 872419712UL, 98752UL, 128UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" "by" 
+// "cascade" "cast" "column" "conflict" "cross" "current_date" "current_time" 
+// "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
+// "exclusive" "explain" "fail" "for" "full" "glob" "if" "ignore" "immediate" 
+// "in" "initially" "inner" "instead" "key" "left" "like" "match" "natural" 
+// "no" "of" "offset" "outer" "plan" "pragma" "query" "raise" "regexp" 
+// "reindex" "rename" "replace" "restrict" "right" "rollback" "row" "temp" 
+// "temporary" "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" 
+// "release" ID STRING LP 
+const BitSet SqliteParser::_tokenSet_25(_tokenSet_25_data_,20);
+const unsigned long SqliteParser::_tokenSet_26_data_[] = { 1073741826UL, 1346110201UL, 4234478538UL, 1728071602UL, 62918659UL, 3283110913UL, 267649280UL, 873010048UL, 99824UL, 259911488UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// EOF "abort" "after" "analyze" "and" "as" "asc" "attach" "action" "before" 
+// "begin" "between" "by" "cascade" "cast" "column" "conflict" "cross" 
+// "current_date" "current_time" "current_timestamp" "database" "deferred" 
+// "desc" "detach" "end" "each" "else" "escape" "except" "exclusive" "explain" 
+// "fail" "for" "from" "full" "glob" "group" "having" "if" "ignore" "immediate" 
+// "initially" "inner" "instead" "intersect" "join" "key" "left" "like" 
+// "limit" "match" "natural" "not" "no" "of" "offset" "or" "order" "outer" 
+// "plan" "pragma" "query" "raise" "regexp" "reindex" "rename" "replace" 
+// "restrict" "right" "rollback" "row" "temp" "temporary" "then" "trigger" 
+// "union" "using" "vacuum" "view" "virtual" "when" "where" "indexed" "savepoint" 
+// "release" NOT_EQ ID STRING MINUS RP SEMI PLUS STAR SLASH REM EQ LE LSHIFT 
+// LESS_THAN GE RSHIFT GT BITOR CONCAT COMMA BITAND 
+const BitSet SqliteParser::_tokenSet_26(_tokenSet_26_data_,20);
+const unsigned long SqliteParser::_tokenSet_27_data_[] = { 1073741826UL, 4030464767UL, 4252959743UL, 4009772979UL, 62918683UL, 3287317505UL, 536609025UL, 873403264UL, 122352UL, 528347072UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// EOF "abort" "after" "all" "alter" "analyze" "and" "as" "asc" "attach" 
+// "action" "before" "begin" "between" "by" "cascade" "case" "cast" "check" 
+// "collate" "column" "commit" "conflict" "constraint" "create" "cross" 
+// "current_date" "current_time" "current_timestamp" "database" "default" 
+// "deferred" "deferrable" "delete" "desc" "detach" "drop" "end" "each" 
+// "else" "escape" "except" "exclusive" "exists" "explain" "fail" "for" 
+// "from" "full" "glob" "group" "having" "if" "ignore" "immediate" "in" 
+// "initially" "inner" "insert" "instead" "intersect" "is" "isnull" "join" 
+// "key" "left" "like" "limit" "match" "natural" "not" "notnull" "null" 
+// "no" "of" "offset" "on" "or" "order" "outer" "plan" "pragma" "primary" 
+// "query" "raise" "references" "regexp" "reindex" "rename" "replace" "restrict" 
+// "right" "rollback" "row" "select" "temp" "temporary" "then" "trigger" 
+// "union" "unique" "update" "using" "vacuum" "view" "virtual" "when" "where" 
+// "indexed" "savepoint" "release" NOT_EQ INTEGER FLOAT VARIABLE ID STRING 
+// MINUS LP RP SEMI PLUS STAR SLASH REM EQ LE LSHIFT LESS_THAN GE RSHIFT 
+// GT BITOR CONCAT COMMA BITAND BITNOT BLOB 
+const BitSet SqliteParser::_tokenSet_27(_tokenSet_27_data_,24);
+const unsigned long SqliteParser::_tokenSet_28_data_[] = { 1073741826UL, 1346110201UL, 4234478539UL, 1862289330UL, 62918683UL, 3283115009UL, 267649280UL, 873010048UL, 99824UL, 259911488UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// EOF "abort" "after" "analyze" "and" "as" "asc" "attach" "action" "before" 
+// "begin" "between" "by" "cascade" "cast" "collate" "column" "conflict" 
+// "cross" "current_date" "current_time" "current_timestamp" "database" 
+// "deferred" "desc" "detach" "end" "each" "else" "escape" "except" "exclusive" 
+// "explain" "fail" "for" "from" "full" "glob" "group" "having" "if" "ignore" 
+// "immediate" "in" "initially" "inner" "instead" "intersect" "is" "isnull" 
+// "join" "key" "left" "like" "limit" "match" "natural" "not" "notnull" 
+// "no" "of" "offset" "or" "order" "outer" "plan" "pragma" "query" "raise" 
+// "regexp" "reindex" "rename" "replace" "restrict" "right" "rollback" 
+// "row" "temp" "temporary" "then" "trigger" "union" "using" "vacuum" "view" 
+// "virtual" "when" "where" "indexed" "savepoint" "release" NOT_EQ ID STRING 
+// MINUS RP SEMI PLUS STAR SLASH REM EQ LE LSHIFT LESS_THAN GE RSHIFT GT 
+// BITOR CONCAT COMMA BITAND 
+const BitSet SqliteParser::_tokenSet_28(_tokenSet_28_data_,20);
+const unsigned long SqliteParser::_tokenSet_29_data_[] = { 1073741824UL, 1345061577UL, 2355430346UL, 1862271794UL, 29360129UL, 3257943041UL, 267649280UL, 872419712UL, 98752UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" "by" 
+// "cascade" "cast" "column" "conflict" "cross" "current_date" "current_time" 
+// "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
+// "exclusive" "explain" "fail" "for" "full" "glob" "if" "ignore" "immediate" 
+// "in" "initially" "inner" "instead" "key" "left" "like" "match" "natural" 
+// "no" "of" "offset" "outer" "plan" "pragma" "query" "raise" "regexp" 
+// "reindex" "rename" "replace" "restrict" "right" "rollback" "row" "temp" 
+// "temporary" "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" 
+// "release" ID STRING 
+const BitSet SqliteParser::_tokenSet_29(_tokenSet_29_data_,20);
+const unsigned long SqliteParser::_tokenSet_30_data_[] = { 1073741824UL, 1881932489UL, 2355430346UL, 1728054067UL, 29360129UL, 3257953281UL, 267649280UL, 872419712UL, 121280UL, 268438976UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" "by" 
+// "cascade" "case" "cast" "column" "conflict" "cross" "current_date" "current_time" 
 // "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
 // "exclusive" "exists" "explain" "fail" "for" "full" "glob" "if" "ignore" 
 // "immediate" "initially" "inner" "instead" "key" "left" "like" "match" 
-// "natural" "not" "null" "of" "offset" "outer" "plan" "pragma" "query" 
+// "natural" "not" "null" "no" "of" "offset" "outer" "plan" "pragma" "query" 
 // "raise" "regexp" "reindex" "rename" "replace" "restrict" "right" "rollback" 
 // "row" "temp" "temporary" "trigger" "vacuum" "view" "virtual" "indexed" 
 // "savepoint" "release" INTEGER FLOAT VARIABLE ID STRING MINUS LP RP PLUS 
-// STAR BITNOT BLOB "no" "action" 
+// STAR BITNOT BLOB 
 const BitSet SqliteParser::_tokenSet_30(_tokenSet_30_data_,24);
 const unsigned long SqliteParser::_tokenSet_31_data_[] = { 2UL, 2147483648UL, 655377UL, 0UL, 0UL, 10240UL, 524289UL, 131072UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "check" "collate" "constraint" "default" "deferrable" "not" "null" 
@@ -10505,11 +10502,11 @@ const unsigned long SqliteParser::_tokenSet_32_data_[] = { 2UL, 2147483648UL, 65
 // EOF "check" "collate" "constraint" "default" "deferrable" "not" "null" 
 // "primary" "references" "unique" SEMI 
 const BitSet SqliteParser::_tokenSet_32(_tokenSet_32_data_,20);
-const unsigned long SqliteParser::_tokenSet_33_data_[] = { 4294967282UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 1023UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_33_data_[] = { 4294967282UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 4294967295UL, 255UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF null null null null null null null null null null null null null 
 // null null null null null null null null null null null null null "abort" 
 // "add" "after" "all" "alter" "analyze" "and" "as" "asc" "attach" "autoincrement" 
-// null null null null null null null null null "before" "begin" "between" 
+// "action" null null null null null null null null "before" "begin" "between" 
 // "by" null null null null null null "cascade" "case" "cast" "check" "collate" 
 // "column" "commit" "conflict" "constraint" "create" "cross" "current_date" 
 // "current_time" "current_timestamp" null null null null null null "database" 
@@ -10522,7 +10519,7 @@ const unsigned long SqliteParser::_tokenSet_33_data_[] = { 4294967282UL, 4294967
 // null null "join" null null null null null null null null null "key" 
 // "left" "like" "limit" null null null null null null "match" null null 
 // null null null null null null null "natural" "not" "notnull" "null" 
-// null null null null null null "of" "offset" "on" "or" "order" "outer" 
+// "no" null null null null null "of" "offset" "on" "or" "order" "outer" 
 // null null null null "plan" "pragma" "primary" null null null null null 
 // null null "query" null null null null null null null null null "raise" 
 // "references" "regexp" "reindex" "rename" "replace" "restrict" "right" 
@@ -10537,20 +10534,19 @@ const unsigned long SqliteParser::_tokenSet_33_data_[] = { 4294967282UL, 4294967
 // TCONS_DEF SPACE NEW_LINE SL_COMMENT MINUS LP RP SEMI PLUS STAR ML_COMMENT 
 // SLASH REM EQ LE NE LSHIFT LESS_THAN GE RSHIFT GT NE_LEGAL BITOR CONCAT 
 // COMMA BITAND BITNOT STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL3 
-// NUMBERIC ID_1 VARIABLE_1 VARIABLE_2 BLOB ID_2 SIMPLE_LETTER ANY "no" 
-// "action" 
+// NUMBERIC ID_1 VARIABLE_1 VARIABLE_2 BLOB ID_2 SIMPLE_LETTER ANY 
 const BitSet SqliteParser::_tokenSet_33(_tokenSet_33_data_,40);
-const unsigned long SqliteParser::_tokenSet_34_data_[] = { 1073741824UL, 1881931977UL, 2355430346UL, 1728054067UL, 29360129UL, 3257936897UL, 267649280UL, 872419712UL, 121280UL, 268438720UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "case" "cast" "column" "conflict" "cross" "current_date" "current_time" 
+const unsigned long SqliteParser::_tokenSet_34_data_[] = { 1073741824UL, 1881932489UL, 2355430346UL, 1728054067UL, 29360129UL, 3257953281UL, 267649280UL, 872419712UL, 121280UL, 268438720UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" "by" 
+// "cascade" "case" "cast" "column" "conflict" "cross" "current_date" "current_time" 
 // "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
 // "exclusive" "exists" "explain" "fail" "for" "full" "glob" "if" "ignore" 
 // "immediate" "initially" "inner" "instead" "key" "left" "like" "match" 
-// "natural" "not" "null" "of" "offset" "outer" "plan" "pragma" "query" 
+// "natural" "not" "null" "no" "of" "offset" "outer" "plan" "pragma" "query" 
 // "raise" "regexp" "reindex" "rename" "replace" "restrict" "right" "rollback" 
 // "row" "temp" "temporary" "trigger" "vacuum" "view" "virtual" "indexed" 
 // "savepoint" "release" INTEGER FLOAT VARIABLE ID STRING MINUS LP PLUS 
-// STAR BITNOT BLOB "no" "action" 
+// STAR BITNOT BLOB 
 const BitSet SqliteParser::_tokenSet_34(_tokenSet_34_data_,24);
 const unsigned long SqliteParser::_tokenSet_35_data_[] = { 2UL, 0UL, 1073741824UL, 17408UL, 33554434UL, 16777216UL, 0UL, 65536UL, 32UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "except" "group" "having" "intersect" "limit" "order" "union" "where" 
@@ -10566,32 +10562,31 @@ const BitSet SqliteParser::_tokenSet_37(_tokenSet_37_data_,20);
 const unsigned long SqliteParser::_tokenSet_38_data_[] = { 2UL, 0UL, 1073741824UL, 0UL, 33554434UL, 16777216UL, 0UL, 65536UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "except" "intersect" "limit" "order" "union" RP SEMI 
 const BitSet SqliteParser::_tokenSet_38(_tokenSet_38_data_,20);
-const unsigned long SqliteParser::_tokenSet_39_data_[] = { 1073741826UL, 1882980601UL, 3966043083UL, 1862289331UL, 62914587UL, 3283106817UL, 536084736UL, 872485248UL, 130544UL, 528347072UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// EOF "abort" "after" "analyze" "and" "as" "asc" "attach" "before" "begin" 
-// "between" "by" "cascade" "case" "cast" "collate" "column" "conflict" 
+const unsigned long SqliteParser::_tokenSet_39_data_[] = { 1073741826UL, 1882981113UL, 3966043083UL, 1862289331UL, 62914587UL, 3283123201UL, 536084736UL, 872485248UL, 130544UL, 528347072UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// EOF "abort" "after" "analyze" "and" "as" "asc" "attach" "action" "before" 
+// "begin" "between" "by" "cascade" "case" "cast" "collate" "column" "conflict" 
 // "cross" "current_date" "current_time" "current_timestamp" "database" 
 // "deferred" "desc" "detach" "end" "each" "escape" "except" "exclusive" 
 // "exists" "explain" "fail" "for" "from" "full" "glob" "group" "having" 
 // "if" "ignore" "immediate" "in" "initially" "inner" "instead" "intersect" 
 // "is" "isnull" "key" "left" "like" "limit" "match" "natural" "not" "notnull" 
-// "null" "of" "offset" "or" "order" "outer" "plan" "pragma" "query" "raise" 
-// "regexp" "reindex" "rename" "replace" "restrict" "right" "rollback" 
+// "null" "no" "of" "offset" "or" "order" "outer" "plan" "pragma" "query" 
+// "raise" "regexp" "reindex" "rename" "replace" "restrict" "right" "rollback" 
 // "row" "select" "temp" "temporary" "trigger" "union" "vacuum" "view" 
 // "virtual" "when" "where" "indexed" "savepoint" "release" NOT_EQ INTEGER 
 // FLOAT DOT VARIABLE ID STRING MINUS LP RP SEMI PLUS STAR SLASH REM EQ 
 // LE LSHIFT LESS_THAN GE RSHIFT GT BITOR CONCAT COMMA BITAND BITNOT BLOB 
-// "no" "action" 
 const BitSet SqliteParser::_tokenSet_39(_tokenSet_39_data_,24);
-const unsigned long SqliteParser::_tokenSet_40_data_[] = { 1073741824UL, 1345061097UL, 2355430282UL, 654311986UL, 20971521UL, 3224371201UL, 234094848UL, 872419712UL, 98752UL, 0UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "as" "asc" "attach" "before" "begin" "by" 
-// "cascade" "cast" "column" "conflict" "current_date" "current_time" "current_timestamp" 
-// "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
-// "fail" "for" "glob" "if" "ignore" "immediate" "initially" "instead" 
-// "key" "like" "match" "of" "offset" "plan" "pragma" "query" "raise" "regexp" 
-// "reindex" "rename" "replace" "restrict" "rollback" "row" "temp" "temporary" 
-// "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" "release" 
-// ID STRING "no" "action" 
-const BitSet SqliteParser::_tokenSet_40(_tokenSet_40_data_,24);
+const unsigned long SqliteParser::_tokenSet_40_data_[] = { 1073741824UL, 1345061609UL, 2355430282UL, 654311986UL, 20971521UL, 3224387585UL, 234094848UL, 872419712UL, 98752UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "as" "asc" "attach" "action" "before" "begin" 
+// "by" "cascade" "cast" "column" "conflict" "current_date" "current_time" 
+// "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
+// "exclusive" "explain" "fail" "for" "glob" "if" "ignore" "immediate" 
+// "initially" "instead" "key" "like" "match" "no" "of" "offset" "plan" 
+// "pragma" "query" "raise" "regexp" "reindex" "rename" "replace" "restrict" 
+// "rollback" "row" "temp" "temporary" "trigger" "vacuum" "view" "virtual" 
+// "indexed" "savepoint" "release" ID STRING 
+const BitSet SqliteParser::_tokenSet_40(_tokenSet_40_data_,20);
 const unsigned long SqliteParser::_tokenSet_41_data_[] = { 2UL, 0UL, 1073741824UL, 17536UL, 33554434UL, 16777216UL, 0UL, 65536UL, 32UL, 67109632UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "except" "from" "group" "having" "intersect" "limit" "order" "union" 
 // "where" RP SEMI COMMA 
@@ -10599,39 +10594,39 @@ const BitSet SqliteParser::_tokenSet_41(_tokenSet_41_data_,20);
 const unsigned long SqliteParser::_tokenSet_42_data_[] = { 0UL, 0UL, 64UL, 1073742080UL, 8392704UL, 33555456UL, 33554432UL, 0UL, 0UL, 67108864UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // "cross" "full" "inner" "join" "left" "natural" "outer" "right" COMMA 
 const BitSet SqliteParser::_tokenSet_42(_tokenSet_42_data_,20);
-const unsigned long SqliteParser::_tokenSet_43_data_[] = { 1073741826UL, 1345061065UL, 3429172170UL, 1728071474UL, 62918659UL, 3278900225UL, 267649280UL, 873009536UL, 98784UL, 67109632UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// EOF "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "cast" "column" "conflict" "cross" "current_date" "current_time" "current_timestamp" 
-// "database" "deferred" "desc" "detach" "end" "each" "except" "exclusive" 
-// "explain" "fail" "for" "full" "glob" "group" "having" "if" "ignore" 
-// "immediate" "initially" "inner" "instead" "intersect" "join" "key" "left" 
-// "like" "limit" "match" "natural" "not" "of" "offset" "on" "order" "outer" 
-// "plan" "pragma" "query" "raise" "regexp" "reindex" "rename" "replace" 
-// "restrict" "right" "rollback" "row" "temp" "temporary" "trigger" "union" 
-// "using" "vacuum" "view" "virtual" "where" "indexed" "savepoint" "release" 
-// ID STRING RP SEMI COMMA "no" "action" 
-const BitSet SqliteParser::_tokenSet_43(_tokenSet_43_data_,24);
+const unsigned long SqliteParser::_tokenSet_43_data_[] = { 1073741826UL, 1345061577UL, 3429172170UL, 1728071474UL, 62918659UL, 3278916609UL, 267649280UL, 873009536UL, 98784UL, 67109632UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// EOF "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" 
+// "by" "cascade" "cast" "column" "conflict" "cross" "current_date" "current_time" 
+// "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
+// "except" "exclusive" "explain" "fail" "for" "full" "glob" "group" "having" 
+// "if" "ignore" "immediate" "initially" "inner" "instead" "intersect" 
+// "join" "key" "left" "like" "limit" "match" "natural" "not" "no" "of" 
+// "offset" "on" "order" "outer" "plan" "pragma" "query" "raise" "regexp" 
+// "reindex" "rename" "replace" "restrict" "right" "rollback" "row" "temp" 
+// "temporary" "trigger" "union" "using" "vacuum" "view" "virtual" "where" 
+// "indexed" "savepoint" "release" ID STRING RP SEMI COMMA 
+const BitSet SqliteParser::_tokenSet_43(_tokenSet_43_data_,20);
 const unsigned long SqliteParser::_tokenSet_44_data_[] = { 2UL, 0UL, 1073741888UL, 1073759488UL, 41947138UL, 54529024UL, 33554432UL, 589824UL, 96UL, 67109632UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "cross" "except" "full" "group" "having" "inner" "intersect" "join" 
 // "left" "limit" "natural" "not" "on" "order" "outer" "right" "union" 
 // "using" "where" "indexed" RP SEMI COMMA 
 const BitSet SqliteParser::_tokenSet_44(_tokenSet_44_data_,20);
-const unsigned long SqliteParser::_tokenSet_45_data_[] = { 1073741826UL, 1882980607UL, 4252304367UL, 4009772979UL, 62918683UL, 3287301121UL, 536084736UL, 873272192UL, 122352UL, 528347072UL, 784UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long SqliteParser::_tokenSet_45_data_[] = { 1073741826UL, 1882981119UL, 4252304367UL, 4009772979UL, 62918683UL, 3287317505UL, 536084736UL, 873272192UL, 122352UL, 528347072UL, 16UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "abort" "after" "all" "alter" "analyze" "and" "as" "asc" "attach" 
-// "before" "begin" "between" "by" "cascade" "case" "cast" "collate" "column" 
-// "commit" "conflict" "create" "cross" "current_date" "current_time" "current_timestamp" 
-// "database" "deferred" "delete" "desc" "detach" "drop" "end" "each" "else" 
-// "escape" "except" "exclusive" "exists" "explain" "fail" "for" "from" 
-// "full" "glob" "group" "having" "if" "ignore" "immediate" "in" "initially" 
-// "inner" "insert" "instead" "intersect" "is" "isnull" "join" "key" "left" 
-// "like" "limit" "match" "natural" "not" "notnull" "null" "of" "offset" 
-// "on" "or" "order" "outer" "plan" "pragma" "query" "raise" "regexp" "reindex" 
-// "rename" "replace" "restrict" "right" "rollback" "row" "select" "temp" 
-// "temporary" "then" "trigger" "union" "update" "using" "vacuum" "view" 
-// "virtual" "when" "where" "indexed" "savepoint" "release" NOT_EQ INTEGER 
-// FLOAT VARIABLE ID STRING MINUS LP RP SEMI PLUS STAR SLASH REM EQ LE 
-// LSHIFT LESS_THAN GE RSHIFT GT BITOR CONCAT COMMA BITAND BITNOT BLOB 
-// "no" "action" 
+// "action" "before" "begin" "between" "by" "cascade" "case" "cast" "collate" 
+// "column" "commit" "conflict" "create" "cross" "current_date" "current_time" 
+// "current_timestamp" "database" "deferred" "delete" "desc" "detach" "drop" 
+// "end" "each" "else" "escape" "except" "exclusive" "exists" "explain" 
+// "fail" "for" "from" "full" "glob" "group" "having" "if" "ignore" "immediate" 
+// "in" "initially" "inner" "insert" "instead" "intersect" "is" "isnull" 
+// "join" "key" "left" "like" "limit" "match" "natural" "not" "notnull" 
+// "null" "no" "of" "offset" "on" "or" "order" "outer" "plan" "pragma" 
+// "query" "raise" "regexp" "reindex" "rename" "replace" "restrict" "right" 
+// "rollback" "row" "select" "temp" "temporary" "then" "trigger" "union" 
+// "update" "using" "vacuum" "view" "virtual" "when" "where" "indexed" 
+// "savepoint" "release" NOT_EQ INTEGER FLOAT VARIABLE ID STRING MINUS 
+// LP RP SEMI PLUS STAR SLASH REM EQ LE LSHIFT LESS_THAN GE RSHIFT GT BITOR 
+// CONCAT COMMA BITAND BITNOT BLOB 
 const BitSet SqliteParser::_tokenSet_45(_tokenSet_45_data_,24);
 const unsigned long SqliteParser::_tokenSet_46_data_[] = { 2UL, 0UL, 1073741888UL, 1073759488UL, 41947138UL, 54526976UL, 33554432UL, 589824UL, 32UL, 67109632UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "cross" "except" "full" "group" "having" "inner" "intersect" "join" 
@@ -10648,16 +10643,17 @@ const unsigned long SqliteParser::_tokenSet_48_data_[] = { 2UL, 0UL, 1073741888U
 // "left" "limit" "natural" "order" "outer" "right" "union" "where" RP 
 // SEMI COMMA 
 const BitSet SqliteParser::_tokenSet_48(_tokenSet_48_data_,20);
-const unsigned long SqliteParser::_tokenSet_49_data_[] = { 1073741824UL, 1345061065UL, 2355430346UL, 1728054066UL, 29360129UL, 3257926657UL, 267649280UL, 872419712UL, 98752UL, 128UL, 768UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// "abort" "after" "analyze" "asc" "attach" "before" "begin" "by" "cascade" 
-// "cast" "column" "conflict" "cross" "current_date" "current_time" "current_timestamp" 
-// "database" "deferred" "desc" "detach" "end" "each" "exclusive" "explain" 
-// "fail" "for" "full" "glob" "if" "ignore" "immediate" "initially" "inner" 
-// "instead" "key" "left" "like" "match" "natural" "of" "offset" "outer" 
-// "plan" "pragma" "query" "raise" "regexp" "reindex" "rename" "replace" 
-// "restrict" "right" "rollback" "row" "temp" "temporary" "trigger" "vacuum" 
-// "view" "virtual" "indexed" "savepoint" "release" ID STRING LP "no" "action" 
-const BitSet SqliteParser::_tokenSet_49(_tokenSet_49_data_,24);
+const unsigned long SqliteParser::_tokenSet_49_data_[] = { 1073741824UL, 1345061577UL, 2355430346UL, 1728054066UL, 29360129UL, 3257943041UL, 267649280UL, 872419712UL, 98752UL, 128UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// "abort" "after" "analyze" "asc" "attach" "action" "before" "begin" "by" 
+// "cascade" "cast" "column" "conflict" "cross" "current_date" "current_time" 
+// "current_timestamp" "database" "deferred" "desc" "detach" "end" "each" 
+// "exclusive" "explain" "fail" "for" "full" "glob" "if" "ignore" "immediate" 
+// "initially" "inner" "instead" "key" "left" "like" "match" "natural" 
+// "no" "of" "offset" "outer" "plan" "pragma" "query" "raise" "regexp" 
+// "reindex" "rename" "replace" "restrict" "right" "rollback" "row" "temp" 
+// "temporary" "trigger" "vacuum" "view" "virtual" "indexed" "savepoint" 
+// "release" ID STRING LP 
+const BitSet SqliteParser::_tokenSet_49(_tokenSet_49_data_,20);
 const unsigned long SqliteParser::_tokenSet_50_data_[] = { 2UL, 0UL, 1073741824UL, 0UL, 33554434UL, 0UL, 0UL, 65536UL, 0UL, 67109632UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF "except" "intersect" "limit" "union" RP SEMI COMMA 
 const BitSet SqliteParser::_tokenSet_50(_tokenSet_50_data_,20);

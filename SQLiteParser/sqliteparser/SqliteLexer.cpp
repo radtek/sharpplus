@@ -42,6 +42,7 @@ void SqliteLexer::initLiterals()
 	literals["immediate"] = 122;
 	literals["update"] = 242;
 	literals["escape"] = 93;
+	literals["no"] = 174;
 	literals["conflict"] = 67;
 	literals["temp"] = 231;
 	literals["having"] = 110;
@@ -113,6 +114,7 @@ void SqliteLexer::initLiterals()
 	literals["plan"] = 190;
 	literals["values"] = 251;
 	literals["collate"] = 64;
+	literals["action"] = 41;
 	literals["right"] = 217;
 	literals["notnull"] = 172;
 	literals["union"] = 240;
