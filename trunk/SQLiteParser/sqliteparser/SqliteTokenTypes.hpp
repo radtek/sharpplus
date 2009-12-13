@@ -23,6 +23,7 @@ struct CUSTOM_API SqliteTokenTypes {
 		SQL2RW_asc = 38,
 		SQL2RW_attach = 39,
 		SQL2RW_autoincrement = 40,
+		SQL2RW_action = 41,
 		SQL2RW_before = 50,
 		SQL2RW_begin = 51,
 		SQL2RW_between = 52,
@@ -89,6 +90,7 @@ struct CUSTOM_API SqliteTokenTypes {
 		SQL2RW_not = 171,
 		SQL2RW_notnull = 172,
 		SQL2RW_null = 173,
+		SQL2RW_no = 174,
 		SQL2RW_of = 180,
 		SQL2RW_offset = 181,
 		SQL2RW_on = 182,
@@ -194,8 +196,6 @@ struct CUSTOM_API SqliteTokenTypes {
 		ID_2 = 325,
 		SIMPLE_LETTER = 326,
 		ANY = 327,
-		LITERAL_no = 328,
-		LITERAL_action = 329,
 		NULL_TREE_LOOKAHEAD = 3
 	};
 #ifdef __cplusplus

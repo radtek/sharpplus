@@ -11,6 +11,7 @@ SQL2RW_as="as"=37
 SQL2RW_asc="asc"=38
 SQL2RW_attach="attach"=39
 SQL2RW_autoincrement="autoincrement"=40
+SQL2RW_action="action"=41
 SQL2RW_before="before"=50
 SQL2RW_begin="begin"=51
 SQL2RW_between="between"=52
@@ -77,6 +78,7 @@ SQL2RW_natural="natural"=170
 SQL2RW_not="not"=171
 SQL2RW_notnull="notnull"=172
 SQL2RW_null="null"=173
+SQL2RW_no="no"=174
 SQL2RW_of="of"=180
 SQL2RW_offset="offset"=181
 SQL2RW_on="on"=182
