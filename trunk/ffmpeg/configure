@@ -2011,44 +2011,16 @@ if enabled libdc1394; then
     die "ERROR: No version of libdc1394 found "
 fi
 
-
-_restrict=
-for restrict_keyword in restrict __restrict__ __restrict; do
-    check_cc <<EOF && _restrict=$restrict_keyword && break
-void foo(char * $restrict_keyword p);
-EOF
-done
-
-test "$vhook" = "default" && vhook="$dlopen"
-
-if test "$target_os" = cygwin -o "$target_os" = mingw32 && enabled_all static vhook ; then
-    disable vhook
-    echo
-    echo "At the moment vhooks don't work on Cygwin or MinGW static builds."
-    echo "Patches welcome."
-    echo
-fi
-
-if enabled vhook; then
-    check_ldflags -rdynamic
-    check_ldflags -export-dynamic
-fi
-
-check_foo_config imlib2 imlib2 Imlib2.h imlib_load_font
-check_foo_config freetype2 freetype ft2build.h FT_Init_FreeType
-
-##########################################
-# SDL check
-
 disable sdl_too_old
 disable sdl
 SDL_CONFIG="${cross_prefix}sdl-config"
 if "${SDL_CONFIG}" --version > /dev/null 2>&1; then
-    sdl_cflags=`"${SDL_CONFIG}" --cflags`
+    sdl_cflags=$("${SDL_CONFIG}" --cflags)
+    sdl_libs=$("${SDL_CONFIG}" --libs)
     temp_cflags $sdl_cflags
-    temp_extralibs `"${SDL_CONFIG}" --libs`
+    temp_extralibs $sdl_libs
     if check_lib2 SDL.h SDL_Init; then
-        _sdlversion=`"${SDL_CONFIG}" --version | sed 's/[^0-9]//g'`
+        _sdlversion=$("${SDL_CONFIG}" --version | sed 's/[^0-9]//g')
         if test "$_sdlversion" -lt 121 ; then
             enable sdl_too_old
         else
@@ -2068,25 +2040,23 @@ fi
 
 texi2html -version > /dev/null 2>&1 && enable texi2html || disable texi2html
 
-##########################################
-# Network check
-
 if enabled network; then
     check_type "sys/types.h sys/socket.h" socklen_t
     # Prefer arpa/inet.h over winsock2
     if check_header arpa/inet.h ; then
         check_func closesocket
     elif check_header winsock2.h ; then
-        network_extralibs="-lws2_32"
+        check_func_headers winsock2.h closesocket -lws2 && \
+            network_extralibs="-lws2" || \
+        { check_func_headers winsock2.h closesocket -lws2_32 && \
+            network_extralibs="-lws2_32"; }
         check_type ws2tcpip.h socklen_t
-        check_func_headers winsock2.h closesocket
+    else
+        disable network
     fi
 fi
 
-##########################################
-# IPv6 check
-
-enabled network && enabled ipv6 && check_ld <<EOF && enable ipv6 || disable ipv6
+enabled_all network ipv6 && check_ld <<EOF || disable ipv6
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -2118,16 +2088,19 @@ check_header dev/ic/bt8xx.h
 check_header sys/soundcard.h
 check_header soundcard.h
 
-check_lib2 alsa/asoundlib.h snd_pcm_htimestamp -lasound
+enabled_any alsa_indev alsa_outdev && check_lib2 alsa/asoundlib.h snd_pcm_htimestamp -lasound
 
-# deal with the X11 frame grabber
+enabled jack_indev && check_lib2 jack/jack.h jack_client_open -ljack
+
 enabled x11grab                         &&
 check_header X11/Xlib.h                 &&
 check_header X11/extensions/XShm.h      &&
+check_header X11/extensions/Xfixes.h    &&
 check_func XOpenDisplay -lX11           &&
-check_func XShmCreateImage -lX11 -lXext
+check_func XShmCreateImage -lX11 -lXext &&
+check_func XFixesGetCursorImage -lX11 -lXext -lXfixes
 
-enabled debug && add_cflags -g"$debuglevel"
+enabled debug && add_cflags -g"$debuglevel" && add_asflags -g"$debuglevel"
 
 # add some useful compiler flags if supported
 check_cflags -Wdeclaration-after-statement
@@ -2156,6 +2129,8 @@ elif enabled optimizations; then
     if enabled xlc; then
         add_cflags  -O5
         add_ldflags -O5
+    elif enabled suncc; then
+        add_cflags -O5
     elif enabled ccc; then
         add_cflags -fast
     else
@@ -2165,7 +2140,6 @@ fi
 check_cflags -fno-math-errno
 check_cflags -fno-signed-zeros
 
-# add some flags for Intel C Compiler
 if enabled icc; then
     # Just warnings, no remarks
     check_cflags -w1
@@ -2179,6 +2153,8 @@ if enabled icc; then
     check_ldflags -wd10156,11030
     # Allow to compile with optimizations
     check_ldflags -march=$cpu
+    # icc 11.0 and 11.1 work with ebp_available, but don't pass the test
+    enable ebp_available
 elif enabled ccc; then
     # disable some annoying warnings
     add_cflags -msg_disable cvtu32to64
@@ -2187,16 +2163,10 @@ elif enabled ccc; then
     add_cflags -msg_disable nomainieee
     add_cflags -msg_disable ptrmismatch1
     add_cflags -msg_disable unreachcode
-fi
-
-# PIC flags for shared library objects where they are needed
-if enabled shared; then
-    # LIBOBJFLAGS may have already been set in the OS configuration
-    if test -z "$LIBOBJFLAGS" ; then
-        case "${subarch-$arch}" in
-            x86_64|ia64|alpha|sparc*|power*|parisc*|mips*) LIBOBJFLAGS='$(PIC)' ;;
-        esac
-    fi
+elif enabled gcc; then
+    check_cflags -fno-tree-vectorize
+elif enabled clang; then
+    check_cflags -Qunused-arguments
 fi
 
 if enabled gprof; then
@@ -2204,19 +2174,18 @@ if enabled gprof; then
     add_ldflags -p
 fi
 
-VHOOKCFLAGS="-fPIC"
-
 # Find out if the .align argument is a power of two or not.
 check_asm asmalign_pot '".align 3"'
 
 enabled_any $DECODER_LIST      && enable decoders
 enabled_any $ENCODER_LIST      && enable encoders
+enabled_any $HWACCEL_LIST      && enable hwaccels
 enabled_any $BSF_LIST          && enable bsfs
 enabled_any $DEMUXER_LIST      && enable demuxers
 enabled_any $MUXER_LIST        && enable muxers
 enabled_any $FILTER_LIST       && enable filters
-enabled_any $INDEV_LIST        && enable demuxers
-enabled_any $OUTDEV_LIST       && enable muxers
+enabled_any $INDEV_LIST        && enable indevs
+enabled_any $OUTDEV_LIST       && enable outdevs
 enabled_any $PROTOCOL_LIST     && enable protocols
 
 enabled_any $THREADS_LIST      && enable threads
@@ -2226,6 +2195,7 @@ check_deps $CONFIG_LIST       \
            $HAVE_LIST         \
            $DECODER_LIST      \
            $ENCODER_LIST      \
+           $HWACCEL_LIST      \
            $PARSER_LIST       \
            $BSF_LIST          \
            $DEMUXER_LIST      \
@@ -2247,6 +2217,7 @@ if test "$extra_version" != ""; then
     echo "version string suffix     $extra_version"
 fi
 echo "big-endian                ${bigendian-no}"
+echo "runtime cpu detection     ${runtime_cpudetect-no}"
 if enabled x86; then
     echo "yasm                      ${yasm-no}"
     echo "MMX enabled               ${mmx-no}"
@@ -2288,14 +2259,8 @@ echo "optimizations             ${optimizations-no}"
 echo "static                    ${static-no}"
 echo "shared                    ${shared-no}"
 echo "postprocessing support    ${postproc-no}"
-echo "software scaler enabled   ${swscale-no}"
 echo "new filter support        ${avfilter-no}"
 echo "filters using lavformat   ${avfilter_lavf-no}"
-echo "video hooking             ${vhook-no}"
-if enabled vhook; then
-    echo "Imlib2 support            ${imlib2-no}"
-    echo "FreeType support          ${freetype2-no}"
-fi
 echo "network support           ${network-no}"
 if enabled network; then
     echo "IPv6 support              ${ipv6-no}"
@@ -2307,8 +2272,6 @@ if enabled sdl_too_old; then
 fi
 echo "Sun medialib support      ${mlib-no}"
 echo "AVISynth enabled          ${avisynth-no}"
-echo "libamr-nb support         ${libamr_nb-no}"
-echo "libamr-wb support         ${libamr_wb-no}"
 echo "libdc1394 support         ${libdc1394-no}"
 echo "libdirac enabled          ${libdirac-no}"
 echo "libfaac enabled           ${libfaac-no}"
@@ -2317,6 +2280,8 @@ echo "libfaad dlopened          ${libfaadbin-no}"
 echo "libgsm enabled            ${libgsm-no}"
 echo "libmp3lame enabled        ${libmp3lame-no}"
 echo "libnut enabled            ${libnut-no}"
+echo "libopencore-amrnb support ${libopencore_amrnb-no}"
+echo "libopencore-amrwb support ${libopencore_amrwb-no}"
 echo "libopenjpeg enabled       ${libopenjpeg-no}"
 echo "libschroedinger enabled   ${libschroedinger-no}"
 echo "libspeex enabled          ${libspeex-no}"
@@ -2324,12 +2289,11 @@ echo "libtheora enabled         ${libtheora-no}"
 echo "libvorbis enabled         ${libvorbis-no}"
 echo "libx264 enabled           ${libx264-no}"
 echo "libxvid enabled           ${libxvid-no}"
-echo "vdpau enabled             ${vdpau-no}"
 echo "zlib enabled              ${zlib-no}"
 echo "bzlib enabled             ${bzlib-no}"
 echo
 
-for type in decoder encoder parser demuxer muxer protocol filter bsf indev outdev; do
+for type in decoder encoder hwaccel parser demuxer muxer protocol filter bsf indev outdev; do
     echo "Enabled ${type}s:"
     eval list=\$$(toupper $type)_LIST
     for part in $list; do
@@ -2338,80 +2302,82 @@ for type in decoder encoder parser demuxer muxer protocol filter bsf indev outde
     echo
 done
 
-license="LGPL"
+license="LGPL version 2.1 or later"
 if enabled nonfree; then
-    license="unredistributable"
+    license="nonfree and unredistributable"
+elif enabled gplv3; then
+    license="GPL version 3 or later"
+elif enabled lgplv3; then
+    license="LGPL version 3 or later"
 elif enabled gpl; then
-    license="GPL"
+    license="GPL version 2 or later"
 fi
 
 echo "License: $license"
 
 echo "Creating config.mak and config.h..."
 
-echo "# Automatically generated by configure - do not modify!" > config.mak
-echo "/* Automatically generated by configure - do not modify! */" > $TMPH
-echo "#ifndef FFMPEG_CONFIG_H" >> $TMPH
-echo "#define FFMPEG_CONFIG_H" >> $TMPH
-echo "#define FFMPEG_CONFIGURATION \"$FFMPEG_CONFIGURATION\"" >> $TMPH
-echo "#define FFMPEG_DATADIR \"$(eval c_escape $datadir)\"" >> $TMPH
+enabled stripping || strip="echo skipping strip"
 
-echo "FFMPEG_CONFIGURATION=$FFMPEG_CONFIGURATION" >> config.mak
-echo "prefix=$prefix" >> config.mak
-echo "LIBDIR=\$(DESTDIR)$libdir" >> config.mak
-echo "SHLIBDIR=\$(DESTDIR)$shlibdir" >> config.mak
-echo "INCDIR=\$(DESTDIR)$incdir" >> config.mak
-echo "BINDIR=\$(DESTDIR)$bindir" >> config.mak
-echo "DATADIR=\$(DESTDIR)$datadir" >> config.mak
-echo "MANDIR=\$(DESTDIR)$mandir" >> config.mak
-echo "CC=$cc" >> config.mak
-echo "YASM=$yasmexe" >> config.mak
-echo "AR=$ar" >> config.mak
-echo "RANLIB=$ranlib" >> config.mak
-echo "LN_S=$ln_s" >> config.mak
-enabled stripping &&
-    echo "STRIP=$strip" >> config.mak ||
-    echo "STRIP=echo ignoring strip" >> config.mak
-
-echo "OPTFLAGS=$CFLAGS" >> config.mak
-echo "VHOOKCFLAGS=$VHOOKCFLAGS" >> config.mak
-echo "LDFLAGS=$LDFLAGS" >> config.mak
-echo "FFSERVERLDFLAGS=$FFSERVERLDFLAGS" >> config.mak
-echo "SHFLAGS=$SHFLAGS" >> config.mak
-echo "YASMFLAGS=$YASMFLAGS" >> config.mak
-echo "VHOOKSHFLAGS=$VHOOKSHFLAGS" >> config.mak
-echo "VHOOKLIBS=$VHOOKLIBS" >> config.mak
-echo "LIBOBJFLAGS=$LIBOBJFLAGS" >> config.mak
-echo "BUILD_STATIC=$static" >> config.mak
-echo "BUILDSUF=$build_suffix" >> config.mak
-echo "FULLNAME=$FULLNAME" >> config.mak
-echo "LIBPREF=$LIBPREF" >> config.mak
-echo "LIBSUF=$LIBSUF" >> config.mak
-echo "LIBNAME=$LIBNAME" >> config.mak
-echo "SLIBPREF=$SLIBPREF" >> config.mak
-echo "SLIBSUF=$SLIBSUF" >> config.mak
-echo "EXESUF=$EXESUF" >> config.mak
-echo "EXTRA_VERSION=$extra_version" >> config.mak
-echo "DEPEND_CMD=$DEPEND_CMD" >> config.mak
-echo "HOSTCC=$host_cc" >> config.mak
-echo "HOSTCFLAGS=$host_cflags" >> config.mak
-echo "HOSTLDFLAGS=$host_ldflags" >> config.mak
-echo "HOSTLIBS=$host_libs" >> config.mak
-echo "TARGET_EXEC=$target_exec" >> config.mak
-echo "TARGET_PATH=$target_path" >> config.mak
-
-if enabled bigendian; then
-    echo "WORDS_BIGENDIAN=yes" >> config.mak
-    echo "#define WORDS_BIGENDIAN 1" >> $TMPH
-fi
-
-if enabled sdl; then
-    echo "SDL_LIBS=`"${SDL_CONFIG}" --libs`" >> config.mak
-    echo "SDL_CFLAGS=`"${SDL_CONFIG}" --cflags`" >> config.mak
-fi
-if enabled texi2html; then
-    echo "BUILD_DOC=yes" >> config.mak
-fi
+cat > config.mak <<EOF
+# Automatically generated by configure - do not modify!
+ifndef FFMPEG_CONFIG_MAK
+FFMPEG_CONFIG_MAK=1
+FFMPEG_CONFIGURATION=$FFMPEG_CONFIGURATION
+prefix=$prefix
+LIBDIR=\$(DESTDIR)$libdir
+SHLIBDIR=\$(DESTDIR)$shlibdir
+INCDIR=\$(DESTDIR)$incdir
+BINDIR=\$(DESTDIR)$bindir
+DATADIR=\$(DESTDIR)$datadir
+MANDIR=\$(DESTDIR)$mandir
+SRC_PATH="$source_path"
+SRC_PATH_BARE=$source_path
+BUILD_ROOT="$PWD"
+ARCH=$arch
+CC=$cc
+AS=$as
+LD=$ld
+DEPCC=$dep_cc
+YASM=$yasmexe
+AR=$ar
+RANLIB=$ranlib
+LN_S=$ln_s
+STRIP=$strip
+CPPFLAGS=$CPPFLAGS
+CFLAGS=$CFLAGS
+ASFLAGS=$ASFLAGS
+CC_O=$CC_O
+LDFLAGS=$LDFLAGS
+FFSERVERLDFLAGS=$FFSERVERLDFLAGS
+SHFLAGS=$SHFLAGS
+YASMFLAGS=$YASMFLAGS
+BUILDSUF=$build_suffix
+FULLNAME=$FULLNAME
+LIBPREF=$LIBPREF
+LIBSUF=$LIBSUF
+LIBNAME=$LIBNAME
+SLIBPREF=$SLIBPREF
+SLIBSUF=$SLIBSUF
+EXESUF=$EXESUF
+EXTRA_VERSION=$extra_version
+DEPFLAGS=$DEPFLAGS
+CCDEP=$CCDEP
+ASDEP=$ASDEP
+CC_DEPFLAGS=$CC_DEPFLAGS
+AS_DEPFLAGS=$AS_DEPFLAGS
+HOSTCC=$host_cc
+HOSTCFLAGS=$host_cflags
+HOSTEXESUF=$HOSTEXESUF
+HOSTLDFLAGS=$host_ldflags
+HOSTLIBS=$host_libs
+TARGET_EXEC=$target_exec
+TARGET_PATH=$target_path
+SDL_LIBS=$sdl_libs
+SDL_CFLAGS=$sdl_cflags
+LIB_INSTALL_EXTRA_CMD=$LIB_INSTALL_EXTRA_CMD
+EXTRALIBS=$extralibs
+EOF
 
 get_version(){
     name=$1
@@ -2431,22 +2397,37 @@ get_version LIBAVFORMAT libavformat/avformat.h
 get_version LIBAVUTIL   libavutil/avutil.h
 get_version LIBAVFILTER libavfilter/avfilter.h
 
-if enabled shared; then
-    echo "BUILD_SHARED=yes" >> config.mak
-    echo "PIC=-fPIC -DPIC" >> config.mak
-    echo "LIBTARGET=${LIBTARGET}" >> config.mak
-    echo "SLIBNAME=${SLIBNAME}" >> config.mak
-    echo "SLIBNAME_WITH_VERSION=${SLIBNAME_WITH_VERSION}" >> config.mak
-    echo "SLIBNAME_WITH_MAJOR=${SLIBNAME_WITH_MAJOR}" >> config.mak
-    echo "SLIB_CREATE_DEF_CMD=${SLIB_CREATE_DEF_CMD}" >> config.mak
-    echo "SLIB_EXTRA_CMD=${SLIB_EXTRA_CMD}" >> config.mak
-    echo "SLIB_INSTALL_EXTRA_CMD=${SLIB_INSTALL_EXTRA_CMD}" >> config.mak
-    echo "SLIB_UNINSTALL_EXTRA_CMD=${SLIB_UNINSTALL_EXTRA_CMD}" >> config.mak
-fi
-echo "LIB_INSTALL_EXTRA_CMD=${LIB_INSTALL_EXTRA_CMD}" >> config.mak
-echo "EXTRALIBS=$extralibs" >> config.mak
+enabled shared && cat >> config.mak <<EOF
+LIBTARGET=${LIBTARGET}
+SLIBNAME=${SLIBNAME}
+SLIBNAME_WITH_VERSION=${SLIBNAME_WITH_VERSION}
+SLIBNAME_WITH_MAJOR=${SLIBNAME_WITH_MAJOR}
+SLIB_CREATE_DEF_CMD=${SLIB_CREATE_DEF_CMD}
+SLIB_EXTRA_CMD=${SLIB_EXTRA_CMD}
+SLIB_INSTALL_EXTRA_CMD=${SLIB_INSTALL_EXTRA_CMD}
+SLIB_UNINSTALL_EXTRA_CMD=${SLIB_UNINSTALL_EXTRA_CMD}
+EOF
 
-echo "ARCH=$arch" >> config.mak
+enabled asmalign_pot || align_shift="1 <<"
+
+cat > $TMPH <<EOF
+/* Automatically generated by configure - do not modify! */
+#ifndef FFMPEG_CONFIG_H
+#define FFMPEG_CONFIG_H
+#define FFMPEG_CONFIGURATION "$(c_escape $FFMPEG_CONFIGURATION)"
+#define FFMPEG_LICENSE "$(c_escape $license)"
+#define FFMPEG_DATADIR "$(eval c_escape $datadir)"
+#define CC_TYPE "$cc_type"
+#define CC_VERSION $cc_version
+#define restrict $_restrict
+#define ASMALIGN(ZEROBITS) ".align $align_shift " #ZEROBITS "\\n\\t"
+#define EXTERN_PREFIX "${extern_prefix}"
+#define EXTERN_ASM ${extern_prefix}
+EOF
+
+if enabled small || disabled optimizations; then
+    echo "#define av_always_inline"  >> $TMPH
+fi
 
 print_config ARCH_   $TMPH config.mak $ARCH_LIST
 print_config HAVE_   $TMPH config.mak $HAVE_LIST
@@ -2454,6 +2435,7 @@ print_config CONFIG_ $TMPH config.mak $CONFIG_LIST       \
                                       $CONFIG_EXTRA      \
                                       $DECODER_LIST      \
                                       $ENCODER_LIST      \
+                                      $HWACCEL_LIST      \
                                       $PARSER_LIST       \
                                       $BSF_LIST          \
                                       $DEMUXER_LIST      \
@@ -2463,68 +2445,44 @@ print_config CONFIG_ $TMPH config.mak $CONFIG_LIST       \
                                       $INDEV_LIST        \
                                       $OUTDEV_LIST       \
 
-echo "#define restrict $_restrict" >> $TMPH
-
-if enabled small; then
-    echo "#define av_always_inline"  >> $TMPH
-fi
-
-echo "SRC_PATH=\"$source_path\"" >> config.mak
-echo "SRC_PATH_BARE=$source_path" >> config.mak
-echo "BUILD_ROOT=\"$PWD\"" >> config.mak
-
-# Apparently it's not possible to portably echo a backslash.
-enabled asmalign_pot &&
-    printf '#define ASMALIGN(ZEROBITS) ".align " #ZEROBITS "\\n\\t"\n' >> $TMPH ||
-    printf '#define ASMALIGN(ZEROBITS) ".align 1 << " #ZEROBITS "\\n\\t"\n' >> $TMPH
-
-echo "#define EXTERN_PREFIX \"${extern_prefix}\"" >> $TMPH
-
 echo "#endif /* FFMPEG_CONFIG_H */" >> $TMPH
+echo "endif # FFMPEG_CONFIG_MAK" >> config.mak
 
 # Do not overwrite an unchanged config.h to avoid superfluous rebuilds.
 cmp -s $TMPH config.h &&
     echo "config.h is unchanged" ||
     mv -f $TMPH config.h
 
-rm -f $TMPC $TMPE $TMPH $TMPO $TMPS $TMPSH
-
 # build tree in object directory if source path is different from current one
 if enabled source_path_used; then
-    DIRS="\
-        doc               \
-        libavcodec        \
-        libavcodec/alpha  \
-        libavcodec/arm    \
-        libavcodec/bfin   \
-        libavcodec/mlib   \
-        libavcodec/ppc    \
-        libavcodec/sh4    \
-        libavcodec/sparc  \
-        libavcodec/x86    \
-        libavdevice       \
-        libavfilter       \
-        libavformat       \
-        libavutil         \
-        libpostproc       \
-        libswscale        \
-        tests             \
-        tools             \
-        vhook             \
-        "
-    FILES="\
-        Makefile             \
-        common.mak           \
-        subdir.mak           \
-        doc/texi2pod.pl      \
-        libavcodec/Makefile  \
-        libavdevice/Makefile \
-        libavfilter/Makefile \
-        libavformat/Makefile \
-        libavutil/Makefile   \
-        libpostproc/Makefile \
-        libswscale/Makefile  \
-        "
+    DIRS="
+        doc
+        libavcodec
+        libavcodec/$arch
+        libavdevice
+        libavfilter
+        libavformat
+        libavutil
+        libavutil/$arch
+        libpostproc
+        libswscale
+        libswscale/$arch
+        tests
+        tools
+    "
+    FILES="
+        Makefile
+        common.mak
+        subdir.mak
+        doc/texi2pod.pl
+        libavcodec/Makefile
+        libavdevice/Makefile
+        libavfilter/Makefile
+        libavformat/Makefile
+        libavutil/Makefile
+        libpostproc/Makefile
+        libswscale/Makefile
+    "
     for dir in $DIRS ; do
         mkdir -p $dir
     done
@@ -2552,10 +2510,10 @@ includedir=$incdir
 Name: $name
 Description: $comment
 Version: $version
-Requires: $(disabled shared && echo $requires)
+Requires: $(enabled shared || echo $requires)
 Requires.private: $(enabled shared && echo $requires)
 Conflicts:
-Libs: -L\${libdir} -l${shortname} $(disabled shared && echo $libs)
+Libs: -L\${libdir} -l${shortname} $(enabled shared || echo $libs)
 Libs.private: $(enabled shared && echo $libs)
 Cflags: -I\${includedir}
 EOF
@@ -2583,9 +2541,4 @@ enabled avfilter &&
     pkgconfig_generate libavfilter "FFmpeg video filtering library" "$LIBAVFILTER_VERSION" "$extralibs" "libavutil = $LIBAVUTIL_VERSION"
 enabled postproc &&
     pkgconfig_generate libpostproc "FFmpeg post processing library" "$LIBPOSTPROC_VERSION"
-if enabled swscale; then
-    pkgconfig_generate libswscale "FFmpeg image rescaling library" "$LIBSWSCALE_VERSION" "" "libavutil = $LIBAVUTIL_VERSION"
-else
-    pkgconfig_generate libswscale "FFmpeg image rescaling library" "$LIBSWSCALE_VERSION" "" "libavcodec = $LIBAVCODEC_VERSION"
-    apply libswscale/libswscale.pc sed s/^Libs:.*$/Libs:/
-fi
+pkgconfig_generate libswscale "FFmpeg image rescaling library" "$LIBSWSCALE_VERSION" "" "libavutil = $LIBAVUTIL_VERSION"
