@@ -500,6 +500,10 @@ add_cflags(){
     append CFLAGS "$@"
 }
 
+add_asflags(){
+    append ASFLAGS $($filter_asflags "$@")
+}
+
 add_ldflags(){
     append LDFLAGS "$@"
 }
