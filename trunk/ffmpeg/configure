@@ -274,6 +274,14 @@ c_escape(){
     echo "$*" | sed 's/["\\]/\\\0/g'
 }
 
+filter(){
+    pat=$1
+    shift
+    for v; do
+        eval "case $v in $pat) echo $v ;; esac"
+    done
+}
+
 set_all(){
     value=$1
     shift
