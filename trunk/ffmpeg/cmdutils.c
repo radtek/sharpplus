@@ -413,6 +413,16 @@ void show_license(void)
     );
 }
 
+void list_fmts(void (*get_fmt_string)(char *buf, int buf_size, int fmt), int nb_fmts)
+{
+    int i;
+    char fmt_str[128];
+    for (i=-1; i < nb_fmts; i++) {
+        get_fmt_string (fmt_str, sizeof(fmt_str), i);
+        fprintf(stdout, "%s\n", fmt_str);
+    }
+}
+
 void show_formats(void)
 {
     AVInputFormat *ifmt=NULL;
@@ -558,6 +568,17 @@ void show_protocols(void)
     printf("\n");
 
     printf("Frame size, frame rate abbreviations:\n ntsc pal qntsc qpal sntsc spal film ntsc-film sqcif qcif cif 4cif\n");
+}
+
+void show_filters(void)
+{
+    AVFilter **filter = NULL;
+
+    printf("Filters:\n");
+#if CONFIG_AVFILTER
+    while ((filter = av_filter_next(filter)) && *filter)
+        printf("%-16s %s\n", (*filter)->name, (*filter)->description);
+#endif
 }
 
 int read_yesno(void)

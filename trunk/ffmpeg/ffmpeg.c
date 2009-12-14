@@ -2564,16 +2564,6 @@ static void opt_frame_pad_right(const char *arg)
     }
 }
 
-static void list_fmts(void (*get_fmt_string)(char *buf, int buf_size, int fmt), int nb_fmts)
-{
-    int i;
-    char fmt_str[128];
-    for (i=-1; i < nb_fmts; i++) {
-        get_fmt_string (fmt_str, sizeof(fmt_str), i);
-        fprintf(stdout, "%s\n", fmt_str);
-    }
-}
-
 static void opt_frame_pix_fmt(const char *arg)
 {
     if (strcmp(arg, "list")) {
@@ -2931,7 +2921,8 @@ static void opt_input_file(const char *filename)
 
     /* update the current parameters so that they match the one of the input stream */
     for(i=0;i<ic->nb_streams;i++) {
-        AVCodecContext *enc = ic->streams[i]->codec;
+        AVStream *st = ic->streams[i];
+        AVCodecContext *enc = st->codec;
         if(thread_count>1)
             avcodec_thread_init(enc, thread_count);
         enc->thread_count= thread_count;
@@ -2945,7 +2936,7 @@ static void opt_input_file(const char *filename)
             audio_sample_fmt = enc->sample_fmt;
             input_codecs[nb_icodecs++] = avcodec_find_decoder_by_name(audio_codec_name);
             if(audio_disable)
-                ic->streams[i]->discard= AVDISCARD_ALL;
+                st->discard= AVDISCARD_ALL;
             break;
         case CODEC_TYPE_VIDEO:
             set_context_opts(enc, avcodec_opts[CODEC_TYPE_VIDEO], AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_DECODING_PARAM);
@@ -2981,16 +2972,16 @@ static void opt_input_file(const char *filename)
 
             input_codecs[nb_icodecs++] = avcodec_find_decoder_by_name(video_codec_name);
             if(video_disable)
-                ic->streams[i]->discard= AVDISCARD_ALL;
+                st->discard= AVDISCARD_ALL;
             else if(video_discard)
-                ic->streams[i]->discard= video_discard;
+                st->discard= video_discard;
             break;
         case CODEC_TYPE_DATA:
             break;
         case CODEC_TYPE_SUBTITLE:
             input_codecs[nb_icodecs++] = avcodec_find_decoder_by_name(subtitle_codec_name);
             if(subtitle_disable)
-                ic->streams[i]->discard = AVDISCARD_ALL;
+                st->discard = AVDISCARD_ALL;
             break;
         case CODEC_TYPE_ATTACHMENT:
         case CODEC_TYPE_UNKNOWN:
@@ -3994,6 +3985,9 @@ int main(int argc, char **argv)
 
     /* parse options */
     parse_options(argc, argv, options, opt_output_file);
+
+    if(nb_output_files <= 0 && nb_input_files == 0)
+        show_help();
 
     /* file converter / grab */
     if (nb_output_files <= 0) {

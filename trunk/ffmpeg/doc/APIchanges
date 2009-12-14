@@ -12,6 +12,18 @@ libavutil:   2009-03-08
 
 API changes, most recent first:
 
+2009-12-13 - r20834 - lavf 52.43.0 - metadata API
+  add av_metadata_set2(), AV_METADATA_DONT_STRDUP_KEY and AV_METADATA_DONT_STRDUP_VAL
+
+2009-12-13 - r20829 - lavu 50.7.0 - avstring.h API
+  add av_d2str()
+
+2009-12-13 - r20826 - lavc 52.42.0 - AVStream
+  add avg_frame_rate
+
+2009-12-12 - r20808 - lavu 50.6.0 - av_bmg_next()
+  Introduce the av_bmg_next() function.
+
 2009-12-05 - r20734 - lavfi 1.12.0 - avfilter_draw_slice()
   Add a slice_dir parameter to avfilter_draw_slice().
 

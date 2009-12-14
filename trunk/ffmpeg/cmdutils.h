@@ -131,6 +131,8 @@ void set_context_opts(void *ctx, void *opts_ctx, int flags);
 
 void print_error(const char *filename, int err);
 
+void list_fmts(void (*get_fmt_string)(char *buf, int buf_size, int fmt), int nb_fmts);
+
 /**
  * Prints the program banner to stderr. The banner contents depend on the
  * current version of the repository and of the libav* libraries used by
@@ -162,6 +164,12 @@ void show_formats(void);
  * program.
  */
 void show_codecs(void);
+
+/**
+ * Prints a listing containing all the filters supported by the
+ * program.
+ */
+void show_filters(void);
 
 /**
  * Prints a listing containing all the bit stream filters supported by the
