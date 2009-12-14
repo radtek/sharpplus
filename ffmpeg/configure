@@ -660,8 +660,7 @@ check_func_headers(){
     check_ld "$@" <<EOF && enable $func && enable_safe $headers
 $incs
 int main(int argc, char **argv){
-    (void) $func;
-    return 0;
+    return (long) $func;
 }
 EOF
 }
@@ -2336,9 +2335,6 @@ if enabled pthreads; then
         add_extralibs -pthreads
     elif check_func pthread_create -lpthreadGC2; then
         add_extralibs -lpthreadGC2
-    elif check_func pthread_create -lpthreadGC2 -lws2_32; then
-        add_cflags -DPTW32_STATIC_LIB
-        add_extralibs -lpthreadGC2 -lws2_32
     elif ! check_lib pthread.h pthread_create -lpthread; then
         die "ERROR: can't find pthreads library"
     fi
@@ -2381,7 +2377,7 @@ enabled libschroedinger && add_cflags $(pkg-config --cflags schroedinger-1.0) &&
 enabled libspeex   && require  libspeex speex/speex.h speex_decoder_init -lspeex
 enabled libtheora  && require  libtheora theora/theoraenc.h th_info_init -ltheoraenc -ltheoradec -logg
 enabled libvorbis  && require  libvorbis vorbis/vorbisenc.h vorbis_info_init -lvorbisenc -lvorbis -logg
-enabled libx264    && require2  libx264 "stdint.h x264.h" x264_encoder_encode -lx264 -lm &&
+enabled libx264    && require  libx264 x264.h x264_encoder_encode $(pkg-config --libs x264) &&
                       { check_cpp_condition x264.h "X264_BUILD >= 79" ||
                         die "ERROR: libx264 version must be >= 0.79."; }
 enabled libxvid    && require  libxvid xvid.h xvid_global -lxvidcore
@@ -2484,6 +2480,11 @@ check_header X11/extensions/Xfixes.h    &&
 check_func XOpenDisplay -lX11           &&
 check_func XShmCreateImage -lX11 -lXext &&
 check_func XFixesGetCursorImage -lX11 -lXext -lXfixes
+
+check_cpp_condition \
+    vdpau/vdpau.h "defined VDP_DECODER_PROFILE_MPEG4_PART2_ASP" ||
+    ( echolog "Please upgrade to libvdpau >= 0.2 if you would like vdpau support." &&
+      disable vdpau )
 
 enabled debug && add_cflags -g"$debuglevel" && add_asflags -g"$debuglevel"
 
