@@ -1239,6 +1239,8 @@ audio_beos_outdev_deps="audio_beos"
 audio_beos_outdev_extralibs="-lmedia -lbe"
 bktr_indev_deps_any="dev_bktr_ioctl_bt848_h machine_ioctl_bt848_h dev_video_bktr_ioctl_bt848_h dev_ic_bt8xx_h"
 dv1394_indev_deps="dv1394 dv_demuxer"
+gdi_indev_deps="GetDeviceCaps"
+gdi_indev_extralibs="-lgdi32"
 jack_indev_deps="jack_jack_h"
 jack_indev_extralibs="-ljack"
 libdc1394_indev_deps="libdc1394"
@@ -2455,6 +2457,7 @@ check_header linux/videodev.h
 check_header linux/videodev2.h
 check_header sys/videoio.h
 
+check_func_headers "windows.h wingdi.h" GetDeviceCaps -lgdi32
 check_func_headers "windows.h vfw.h" capCreateCaptureWindow -lvfw32
 
 # check for ioctl_meteor.h, ioctl_bt848.h and alternatives
