@@ -137,7 +137,7 @@ static int raw_decode(AVCodecContext *avctx,
         avctx->palctrl->palette_changed = 0;
     }
 
-    if(context->flip)
+    //if(context->flip)
         flip(avctx, picture);
 
     if (   avctx->codec_tag == MKTAG('Y', 'V', '1', '2')
