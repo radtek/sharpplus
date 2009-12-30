@@ -34,11 +34,24 @@ void avfilter_register_all(void)
         return;
     initialized = 1;
 
-    REGISTER_FILTER (CROP, crop, vf);
-    REGISTER_FILTER (FORMAT, format, vf);
-    REGISTER_FILTER (NOFORMAT, noformat, vf);
-    REGISTER_FILTER (NULL, null, vf);
-    REGISTER_FILTER (SCALE, scale, vf);
-    REGISTER_FILTER (SLICIFY, slicify, vf);
-    REGISTER_FILTER (VFLIP, vflip, vf);
+    REGISTER_FILTER(CROP,crop,vf);
+    REGISTER_FILTER(DRAWBOX,drawbox,vf);
+    REGISTER_FILTER(FIFO,fifo,vf);
+    REGISTER_FILTER(FORMAT,format,vf);
+    REGISTER_FILTER(FPS,fps,vf);
+    REGISTER_FILTER(HFLIP,hflip,vf);
+    REGISTER_FILTER(NEGATE,negate,vf);
+    REGISTER_FILTER(NOFORMAT,noformat,vf);
+    REGISTER_FILTER(NULL,null,vf);
+    REGISTER_FILTER(OVERLAY,overlay,vf);
+    REGISTER_FILTER(ROTATE,rotate,vf);
+    REGISTER_FILTER(SCALE,scale,vf);
+    REGISTER_FILTER(SETPTS,setpts,vf);
+    REGISTER_FILTER(SLICIFY,slicify,vf);
+    REGISTER_FILTER(SPLIT,split,vf);
+    REGISTER_FILTER(TRANSPOSE,transpose,vf);
+    REGISTER_FILTER(VFLIP,vflip,vf);
+
+    REGISTER_FILTER(BUFFER,buffer,vsrc);
+    REGISTER_FILTER(MOVIE,movie,vsrc);
 }
