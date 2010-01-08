@@ -1873,6 +1873,7 @@ refarg:
         "match" nm
       | "on" "delete" refact
       | "on" "update" refact
+      | "on" "insert" refact
       ;
 
 refact: "set" "null"

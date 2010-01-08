@@ -8678,6 +8678,25 @@ void SqliteParser::refarg() {
 		}
 		refarg_AST = currentAST.root;
 	}
+	else if ((LA(1) == SQL2RW_on) && (LA(2) == SQL2RW_insert)) {
+		RefAST tmp345_AST = nullAST;
+		if ( inputState->guessing == 0 ) {
+			tmp345_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp345_AST);
+		}
+		match(SQL2RW_on);
+		RefAST tmp346_AST = nullAST;
+		if ( inputState->guessing == 0 ) {
+			tmp346_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp346_AST);
+		}
+		match(SQL2RW_insert);
+		refact();
+		if (inputState->guessing==0) {
+			astFactory->addASTChild( currentAST, returnAST );
+		}
+		refarg_AST = currentAST.root;
+	}
 	else {
 		throw NoViableAltException(LT(1), getFilename());
 	}
@@ -8691,28 +8710,28 @@ void SqliteParser::like_kw() {
 	RefAST like_kw_AST = nullAST;
 	
 	if ((LA(1) == SQL2RW_like)) {
-		RefAST tmp345_AST = nullAST;
+		RefAST tmp347_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp345_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp345_AST);
+			tmp347_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp347_AST);
 		}
 		match(SQL2RW_like);
 		like_kw_AST = currentAST.root;
 	}
 	else if ((LA(1) == SQL2RW_glob)) {
-		RefAST tmp346_AST = nullAST;
+		RefAST tmp348_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp346_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp346_AST);
+			tmp348_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp348_AST);
 		}
 		match(SQL2RW_glob);
 		like_kw_AST = currentAST.root;
 	}
 	else if ((LA(1) == SQL2RW_regexp)) {
-		RefAST tmp347_AST = nullAST;
+		RefAST tmp349_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp347_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp347_AST);
+			tmp349_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp349_AST);
 		}
 		match(SQL2RW_regexp);
 		like_kw_AST = currentAST.root;
@@ -8730,21 +8749,6 @@ void SqliteParser::refact() {
 	RefAST refact_AST = nullAST;
 	
 	if ((LA(1) == SQL2RW_set) && (LA(2) == SQL2RW_null)) {
-		RefAST tmp348_AST = nullAST;
-		if ( inputState->guessing == 0 ) {
-			tmp348_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp348_AST);
-		}
-		match(SQL2RW_set);
-		RefAST tmp349_AST = nullAST;
-		if ( inputState->guessing == 0 ) {
-			tmp349_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp349_AST);
-		}
-		match(SQL2RW_null);
-		refact_AST = currentAST.root;
-	}
-	else if ((LA(1) == SQL2RW_set) && (LA(2) == SQL2RW_default)) {
 		RefAST tmp350_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp350_AST = astFactory->create(LT(1));
@@ -8756,38 +8760,53 @@ void SqliteParser::refact() {
 			tmp351_AST = astFactory->create(LT(1));
 			astFactory->addASTChild(currentAST, tmp351_AST);
 		}
-		match(SQL2RW_default);
+		match(SQL2RW_null);
 		refact_AST = currentAST.root;
 	}
-	else if ((LA(1) == SQL2RW_cascade)) {
+	else if ((LA(1) == SQL2RW_set) && (LA(2) == SQL2RW_default)) {
 		RefAST tmp352_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp352_AST = astFactory->create(LT(1));
 			astFactory->addASTChild(currentAST, tmp352_AST);
 		}
-		match(SQL2RW_cascade);
-		refact_AST = currentAST.root;
-	}
-	else if ((LA(1) == SQL2RW_restrict)) {
+		match(SQL2RW_set);
 		RefAST tmp353_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp353_AST = astFactory->create(LT(1));
 			astFactory->addASTChild(currentAST, tmp353_AST);
 		}
-		match(SQL2RW_restrict);
+		match(SQL2RW_default);
 		refact_AST = currentAST.root;
 	}
-	else if ((LA(1) == SQL2RW_no)) {
+	else if ((LA(1) == SQL2RW_cascade)) {
 		RefAST tmp354_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp354_AST = astFactory->create(LT(1));
 			astFactory->addASTChild(currentAST, tmp354_AST);
 		}
-		match(SQL2RW_no);
+		match(SQL2RW_cascade);
+		refact_AST = currentAST.root;
+	}
+	else if ((LA(1) == SQL2RW_restrict)) {
 		RefAST tmp355_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp355_AST = astFactory->create(LT(1));
 			astFactory->addASTChild(currentAST, tmp355_AST);
+		}
+		match(SQL2RW_restrict);
+		refact_AST = currentAST.root;
+	}
+	else if ((LA(1) == SQL2RW_no)) {
+		RefAST tmp356_AST = nullAST;
+		if ( inputState->guessing == 0 ) {
+			tmp356_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp356_AST);
+		}
+		match(SQL2RW_no);
+		RefAST tmp357_AST = nullAST;
+		if ( inputState->guessing == 0 ) {
+			tmp357_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp357_AST);
 		}
 		match(SQL2RW_action);
 		refact_AST = currentAST.root;
@@ -8941,18 +8960,18 @@ void SqliteParser::multiselect_op() {
 	RefAST multiselect_op_AST = nullAST;
 	
 	if ((LA(1) == SQL2RW_union)) {
-		RefAST tmp356_AST = nullAST;
+		RefAST tmp358_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp356_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp356_AST);
+			tmp358_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp358_AST);
 		}
 		match(SQL2RW_union);
 		{
 		if ((LA(1) == SQL2RW_all)) {
-			RefAST tmp357_AST = nullAST;
+			RefAST tmp359_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp357_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp357_AST);
+				tmp359_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp359_AST);
 			}
 			match(SQL2RW_all);
 		}
@@ -8966,19 +8985,19 @@ void SqliteParser::multiselect_op() {
 		multiselect_op_AST = currentAST.root;
 	}
 	else if ((LA(1) == SQL2RW_except)) {
-		RefAST tmp358_AST = nullAST;
+		RefAST tmp360_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp358_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp358_AST);
+			tmp360_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp360_AST);
 		}
 		match(SQL2RW_except);
 		multiselect_op_AST = currentAST.root;
 	}
 	else if ((LA(1) == SQL2RW_intersect)) {
-		RefAST tmp359_AST = nullAST;
+		RefAST tmp361_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp359_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp359_AST);
+			tmp361_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp361_AST);
 		}
 		match(SQL2RW_intersect);
 		multiselect_op_AST = currentAST.root;
@@ -9002,10 +9021,10 @@ void SqliteParser::selcollist() {
 	{ // ( ... )*
 	for (;;) {
 		if ((LA(1) == COMMA)) {
-			RefAST tmp360_AST = nullAST;
+			RefAST tmp362_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp360_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp360_AST);
+				tmp362_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp362_AST);
 			}
 			match(COMMA);
 			sclp();
@@ -9029,10 +9048,10 @@ void SqliteParser::from() {
 	ASTPair currentAST;
 	RefAST from_AST = nullAST;
 	
-	RefAST tmp361_AST = nullAST;
+	RefAST tmp363_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp361_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp361_AST);
+		tmp363_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp363_AST);
 	}
 	match(SQL2RW_from);
 	seltablist();
@@ -9048,16 +9067,16 @@ void SqliteParser::groupby_opt() {
 	ASTPair currentAST;
 	RefAST groupby_opt_AST = nullAST;
 	
-	RefAST tmp362_AST = nullAST;
+	RefAST tmp364_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp362_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp362_AST);
+		tmp364_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp364_AST);
 	}
 	match(SQL2RW_group);
-	RefAST tmp363_AST = nullAST;
+	RefAST tmp365_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp363_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp363_AST);
+		tmp365_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp365_AST);
 	}
 	match(SQL2RW_by);
 	exprlist();
@@ -9073,10 +9092,10 @@ void SqliteParser::having_opt() {
 	ASTPair currentAST;
 	RefAST having_opt_AST = nullAST;
 	
-	RefAST tmp364_AST = nullAST;
+	RefAST tmp366_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp364_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp364_AST);
+		tmp366_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp366_AST);
 	}
 	match(SQL2RW_having);
 	expr();
@@ -9092,16 +9111,16 @@ void SqliteParser::orderby_opt() {
 	ASTPair currentAST;
 	RefAST orderby_opt_AST = nullAST;
 	
-	RefAST tmp365_AST = nullAST;
+	RefAST tmp367_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp365_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp365_AST);
+		tmp367_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp367_AST);
 	}
 	match(SQL2RW_order);
-	RefAST tmp366_AST = nullAST;
+	RefAST tmp368_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp366_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp366_AST);
+		tmp368_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp368_AST);
 	}
 	match(SQL2RW_by);
 	sortlist();
@@ -9117,10 +9136,10 @@ void SqliteParser::limit_opt() {
 	ASTPair currentAST;
 	RefAST limit_opt_AST = nullAST;
 	
-	RefAST tmp367_AST = nullAST;
+	RefAST tmp369_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp367_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp367_AST);
+		tmp369_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp369_AST);
 	}
 	match(SQL2RW_limit);
 	expr();
@@ -9131,18 +9150,18 @@ void SqliteParser::limit_opt() {
 	if ((LA(1) == SQL2RW_offset || LA(1) == COMMA)) {
 		{
 		if ((LA(1) == SQL2RW_offset)) {
-			RefAST tmp368_AST = nullAST;
+			RefAST tmp370_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp368_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp368_AST);
+				tmp370_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp370_AST);
 			}
 			match(SQL2RW_offset);
 		}
 		else if ((LA(1) == COMMA)) {
-			RefAST tmp369_AST = nullAST;
+			RefAST tmp371_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp369_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp369_AST);
+				tmp371_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp371_AST);
 			}
 			match(COMMA);
 		}
@@ -9195,25 +9214,25 @@ void SqliteParser::sclp() {
 		if (inputState->guessing==0) {
 			astFactory->addASTChild( currentAST, returnAST );
 		}
-		RefAST tmp370_AST = nullAST;
+		RefAST tmp372_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp370_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp370_AST);
+			tmp372_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp372_AST);
 		}
 		match(DOT);
-		RefAST tmp371_AST = nullAST;
+		RefAST tmp373_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp371_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp371_AST);
+			tmp373_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp373_AST);
 		}
 		match(STAR);
 		sclp_AST = currentAST.root;
 	}
 	else if ((LA(1) == STAR)) {
-		RefAST tmp372_AST = nullAST;
+		RefAST tmp374_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp372_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp372_AST);
+			tmp374_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp374_AST);
 		}
 		match(STAR);
 		sclp_AST = currentAST.root;
@@ -9253,10 +9272,10 @@ void SqliteParser::sub_select_as() {
 	
 	{
 	if ((LA(1) == SQL2RW_as)) {
-		RefAST tmp373_AST = nullAST;
+		RefAST tmp375_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp373_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp373_AST);
+			tmp375_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp375_AST);
 		}
 		match(SQL2RW_as);
 		nm();
@@ -9299,10 +9318,10 @@ string  SqliteParser::table_as() {
 	
 	{
 	if ((LA(1) == SQL2RW_as)) {
-		RefAST tmp374_AST = nullAST;
+		RefAST tmp376_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp374_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp374_AST);
+			tmp376_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp376_AST);
 		}
 		match(SQL2RW_as);
 		szAlias=nm();
@@ -9450,20 +9469,20 @@ void SqliteParser::seltabitem() {
 		seltabitem_AST = currentAST.root;
 	}
 	else if ((LA(1) == LP)) {
-		RefAST tmp375_AST = nullAST;
+		RefAST tmp377_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp375_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp375_AST);
+			tmp377_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp377_AST);
 		}
 		match(LP);
 		seltablist_paren();
 		if (inputState->guessing==0) {
 			astFactory->addASTChild( currentAST, returnAST );
 		}
-		RefAST tmp376_AST = nullAST;
+		RefAST tmp378_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp376_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp376_AST);
+			tmp378_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp378_AST);
 		}
 		match(RP);
 		{
@@ -9523,10 +9542,10 @@ void SqliteParser::joinop() {
 	RefAST joinop_AST = nullAST;
 	
 	if ((LA(1) == COMMA)) {
-		RefAST tmp377_AST = nullAST;
+		RefAST tmp379_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp377_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp377_AST);
+			tmp379_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp379_AST);
 		}
 		match(COMMA);
 		joinop_AST = currentAST.root;
@@ -9563,10 +9582,10 @@ void SqliteParser::joinop() {
 			if (inputState->guessing==0) {
 				astFactory->addASTChild( currentAST, returnAST );
 			}
-			RefAST tmp378_AST = nullAST;
+			RefAST tmp380_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp378_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp378_AST);
+				tmp380_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp380_AST);
 			}
 			match(SQL2RW_join);
 			joinop_AST = currentAST.root;
@@ -9580,10 +9599,10 @@ void SqliteParser::joinop() {
 			if (inputState->guessing==0) {
 				astFactory->addASTChild( currentAST, returnAST );
 			}
-			RefAST tmp379_AST = nullAST;
+			RefAST tmp381_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp379_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp379_AST);
+				tmp381_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp381_AST);
 			}
 			match(SQL2RW_join);
 			joinop_AST = currentAST.root;
@@ -9593,19 +9612,19 @@ void SqliteParser::joinop() {
 			if (inputState->guessing==0) {
 				astFactory->addASTChild( currentAST, returnAST );
 			}
-			RefAST tmp380_AST = nullAST;
+			RefAST tmp382_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp380_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp380_AST);
+				tmp382_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp382_AST);
 			}
 			match(SQL2RW_join);
 			joinop_AST = currentAST.root;
 		}
 		else if ((LA(1) == SQL2RW_join)) {
-			RefAST tmp381_AST = nullAST;
+			RefAST tmp383_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp381_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp381_AST);
+				tmp383_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp383_AST);
 			}
 			match(SQL2RW_join);
 			joinop_AST = currentAST.root;
@@ -9622,10 +9641,10 @@ void SqliteParser::on_opt() {
 	ASTPair currentAST;
 	RefAST on_opt_AST = nullAST;
 	
-	RefAST tmp382_AST = nullAST;
+	RefAST tmp384_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp382_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp382_AST);
+		tmp384_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp384_AST);
 	}
 	match(SQL2RW_on);
 	expr();
@@ -9641,26 +9660,26 @@ void SqliteParser::using_opt() {
 	ASTPair currentAST;
 	RefAST using_opt_AST = nullAST;
 	
-	RefAST tmp383_AST = nullAST;
+	RefAST tmp385_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp383_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp383_AST);
+		tmp385_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp385_AST);
 	}
 	match(SQL2RW_using);
-	RefAST tmp384_AST = nullAST;
+	RefAST tmp386_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp384_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp384_AST);
+		tmp386_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp386_AST);
 	}
 	match(LP);
 	inscollist();
 	if (inputState->guessing==0) {
 		astFactory->addASTChild( currentAST, returnAST );
 	}
-	RefAST tmp385_AST = nullAST;
+	RefAST tmp387_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp385_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp385_AST);
+		tmp387_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp387_AST);
 	}
 	match(RP);
 	using_opt_AST = currentAST.root;
@@ -9705,10 +9724,10 @@ void SqliteParser::inscollist() {
 	{ // ( ... )*
 	for (;;) {
 		if ((LA(1) == COMMA)) {
-			RefAST tmp386_AST = nullAST;
+			RefAST tmp388_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp386_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp386_AST);
+				tmp388_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp388_AST);
 			}
 			match(COMMA);
 			nm();
@@ -9739,10 +9758,10 @@ void SqliteParser::sortlist() {
 	{ // ( ... )*
 	for (;;) {
 		if ((LA(1) == COMMA)) {
-			RefAST tmp387_AST = nullAST;
+			RefAST tmp389_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
-				tmp387_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp387_AST);
+				tmp389_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp389_AST);
 			}
 			match(COMMA);
 			sortitem();
@@ -9793,26 +9812,26 @@ void SqliteParser::init_deferred_pred_opt() {
 	ASTPair currentAST;
 	RefAST init_deferred_pred_opt_AST = nullAST;
 	
-	RefAST tmp388_AST = nullAST;
+	RefAST tmp390_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
-		tmp388_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp388_AST);
+		tmp390_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp390_AST);
 	}
 	match(SQL2RW_initially);
 	{
 	if ((LA(1) == SQL2RW_deferred)) {
-		RefAST tmp389_AST = nullAST;
+		RefAST tmp391_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp389_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp389_AST);
+			tmp391_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp391_AST);
 		}
 		match(SQL2RW_deferred);
 	}
 	else if ((LA(1) == SQL2RW_immediate)) {
-		RefAST tmp390_AST = nullAST;
+		RefAST tmp392_AST = nullAST;
 		if ( inputState->guessing == 0 ) {
-			tmp390_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp390_AST);
+			tmp392_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp392_AST);
 		}
 		match(SQL2RW_immediate);
 	}
