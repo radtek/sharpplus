@@ -10,8 +10,6 @@
 **
 *************************************************************************
 ** This file contains code used to help implement virtual tables.
-**
-** $Id: vtab.c,v 1.94 2009/08/08 18:01:08 drh Exp $
 */
 #ifndef SQLITE_OMIT_VIRTUALTABLE
 #include "sqliteInt.h"
@@ -671,11 +669,11 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
     pParse->declareVtab = 1;
     pParse->db = db;
   
-    if( 
-        SQLITE_OK == sqlite3RunParser(pParse, zCreateTable, &zErr) && 
-        pParse->pNewTable && 
-        !pParse->pNewTable->pSelect && 
-        (pParse->pNewTable->tabFlags & TF_Virtual)==0
+    if( SQLITE_OK==sqlite3RunParser(pParse, zCreateTable, &zErr) 
+     && pParse->pNewTable
+     && !db->mallocFailed
+     && !pParse->pNewTable->pSelect
+     && (pParse->pNewTable->tabFlags & TF_Virtual)==0
     ){
       if( !pTab->aCol ){
         pTab->aCol = pParse->pNewTable->aCol;
@@ -684,7 +682,7 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
         pParse->pNewTable->aCol = 0;
       }
       db->pVTab = 0;
-    } else {
+    }else{
       sqlite3Error(db, SQLITE_ERROR, zErr);
       sqlite3DbFree(db, zErr);
       rc = SQLITE_ERROR;
