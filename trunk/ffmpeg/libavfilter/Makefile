@@ -4,6 +4,10 @@ NAME = avfilter
 FFLIBS = avcodec avutil
 FFLIBS-$(CONFIG_SCALE_FILTER)  += swscale
 FFLIBS-$(CONFIG_AVFILTER_LAVF) += avformat
+FFLIBS-$(CONFIG_LOGO_FILTER)  += swscale
+FFLIBS-$(CONFIG_LOGO_FILTER) += avformat
+
+
 
 HEADERS = avfilter.h
 
@@ -20,6 +24,7 @@ OBJS-$(CONFIG_CROP_FILTER)       += vf_crop.o
 OBJS-$(CONFIG_DRAWBOX_FILTER)    += vf_drawbox.o
 OBJS-$(CONFIG_FPS_FILTER)        += vf_fps.o
 OBJS-$(CONFIG_HFLIP_FILTER)      += vf_hflip.o
+OBJS-$(CONFIG_LOGO_FILTER)       += vf_logo.o
 OBJS-$(CONFIG_NEGATE_FILTER)     += vf_negate.o
 OBJS-$(CONFIG_FIFO_FILTER)       += vf_fifo.o
 OBJS-$(CONFIG_FORMAT_FILTER)     += vf_format.o

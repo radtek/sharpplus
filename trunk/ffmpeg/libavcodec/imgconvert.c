@@ -377,6 +377,12 @@ static const PixFmtInfo pix_fmt_info[PIX_FMT_NB] = {
     },
 };
 
+uint8_t avcodec_get_channels(enum PixelFormat pix_fmt)
+{
+	return pix_fmt_info[pix_fmt].nb_channels;
+}
+
+
 void avcodec_get_chroma_sub_sample(enum PixelFormat pix_fmt, int *h_shift, int *v_shift)
 {
     *h_shift = av_pix_fmt_descriptors[pix_fmt].log2_chroma_w;
