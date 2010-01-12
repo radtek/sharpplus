@@ -40,6 +40,7 @@ void avfilter_register_all(void)
     REGISTER_FILTER(FORMAT,format,vf);
     REGISTER_FILTER(FPS,fps,vf);
     REGISTER_FILTER(HFLIP,hflip,vf);
+	REGISTER_FILTER(LOGO,logo,vf);
     REGISTER_FILTER(NEGATE,negate,vf);
     REGISTER_FILTER(NOFORMAT,noformat,vf);
     REGISTER_FILTER(NULL,null,vf);

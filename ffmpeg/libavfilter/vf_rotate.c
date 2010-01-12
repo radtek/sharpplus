@@ -65,6 +65,7 @@ static int query_formats(AVFilterContext *ctx)
     };
 
     avfilter_set_common_formats(ctx, avfilter_make_format_list(pix_fmts));
+	
     return 0;
 }
 
@@ -77,6 +78,7 @@ static int config_props_input(AVFilterLink *link)
     rot->backcolor[0] = 16;
     rot->backcolor[1] = 128;
     rot->backcolor[2] = 128;
+	
     return 0;
 }
 
@@ -92,12 +94,17 @@ static int config_props_output(AVFilterLink *link)
 
     rot->transy = FFMAX(0, -link->src->inputs[0]->h * rot->cosx) +
         FFMAX(0, -link->src->inputs[0]->w*rot->sinx);
-
+/*
     rot->output_w = rot->transx + FFMAX(0, rot->cosx*link->src->inputs[0]->w) +
         FFMAX(0, -rot->sinx*link->src->inputs[0]->h);
 
     rot->output_h = rot->transy + FFMAX(0, rot->cosx*link->src->inputs[0]->h) +
         FFMAX(0,  rot->sinx*link->src->inputs[0]->w);
+*/
+
+    rot->output_w = link->src->inputs[0]->w;
+
+    rot->output_h = link->src->inputs[0]->h;
 
     link->w = rot->output_w;
     link->h = rot->output_h;
@@ -154,6 +161,7 @@ static void draw_slice(AVFilterLink *link, int y, int h, int slice_dir)
             }
 
     avfilter_draw_slice(link->dst->outputs[0], y, h, slice_dir);
+
 }
 
 AVFilter avfilter_vf_rotate =

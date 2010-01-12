@@ -2966,6 +2966,7 @@ int avpicture_layout(const AVPicture* src, enum PixelFormat pix_fmt, int width, 
  * @return Image data size in bytes or -1 on error (e.g. too large dimensions).
  */
 int avpicture_get_size(enum PixelFormat pix_fmt, int width, int height);
+uint8_t avcodec_get_channels(enum PixelFormat pix_fmt);
 void avcodec_get_chroma_sub_sample(enum PixelFormat pix_fmt, int *h_shift, int *v_shift);
 const char *avcodec_get_pix_fmt_name(enum PixelFormat pix_fmt);
 void avcodec_set_dimensions(AVCodecContext *s, int width, int height);
