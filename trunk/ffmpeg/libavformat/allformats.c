@@ -53,6 +53,7 @@ void av_register_all(void)
     REGISTER_DEMUXER  (AEA, aea);
     REGISTER_MUXDEMUX (AIFF, aiff);
     REGISTER_MUXDEMUX (AMR, amr);
+    REGISTER_DEMUXER  (ANM, anm);
     REGISTER_DEMUXER  (APC, apc);
     REGISTER_DEMUXER  (APE, ape);
     REGISTER_MUXDEMUX (ASF, asf);
@@ -68,6 +69,7 @@ void av_register_all(void)
     REGISTER_DEMUXER  (C93, c93);
     REGISTER_DEMUXER  (CAF, caf);
     REGISTER_DEMUXER  (CAVSVIDEO, cavsvideo);
+    REGISTER_DEMUXER  (CDG, cdg);
     REGISTER_MUXER    (CRC, crc);
     REGISTER_MUXDEMUX (DAUD, daud);
     REGISTER_MUXDEMUX (DIRAC, dirac);
