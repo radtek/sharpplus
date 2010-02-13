@@ -65,7 +65,6 @@ static int query_formats(AVFilterContext *ctx)
     };
 
     avfilter_set_common_formats(ctx, avfilter_make_format_list(pix_fmts));
-	
     return 0;
 }
 
@@ -78,7 +77,6 @@ static int config_props_input(AVFilterLink *link)
     rot->backcolor[0] = 16;
     rot->backcolor[1] = 128;
     rot->backcolor[2] = 128;
-	
     return 0;
 }
 
@@ -161,7 +159,6 @@ static void draw_slice(AVFilterLink *link, int y, int h, int slice_dir)
             }
 
     avfilter_draw_slice(link->dst->outputs[0], y, h, slice_dir);
-
 }
 
 AVFilter avfilter_vf_rotate =
