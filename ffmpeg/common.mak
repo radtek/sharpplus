@@ -9,6 +9,7 @@ vpath %.c   $(SRC_DIR)
 vpath %.h   $(SRC_DIR)
 vpath %.S   $(SRC_DIR)
 vpath %.asm $(SRC_DIR)
+vpath %.v   $(SRC_DIR)
 
 ifeq ($(SRC_DIR),$(SRC_PATH_BARE))
 BUILD_ROOT_REL = .
@@ -19,6 +20,7 @@ endif
 ALLFFLIBS = avcodec avdevice avfilter avformat avutil postproc swscale
 
 CPPFLAGS := -DHAVE_AV_CONFIG_H -I$(BUILD_ROOT_REL) -I$(SRC_PATH) $(CPPFLAGS)
+CFLAGS   += $(ECFLAGS)
 
 %.o: %.c
 	$(CCDEP)
@@ -32,6 +34,9 @@ CPPFLAGS := -DHAVE_AV_CONFIG_H -I$(BUILD_ROOT_REL) -I$(SRC_PATH) $(CPPFLAGS)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Wno-unused -c -o $@ -x c $<
 
 %$(EXESUF): %.c
+
+%.ver: %.v
+	sed 's/$$MAJOR/$($(basename $(@F))_VERSION_MAJOR)/' $^ > $@
 
 SVN_ENTRIES = $(SRC_PATH_BARE)/.svn/entries
 ifeq ($(wildcard $(SVN_ENTRIES)),$(SVN_ENTRIES))
@@ -79,7 +84,7 @@ $(HOSTPROGS): %$(HOSTEXESUF): %.o
 DEPS := $(OBJS:.o=.d)
 depend dep: $(DEPS)
 
-CLEANSUFFIXES     = *.d *.o *~ *.ho *.map
+CLEANSUFFIXES     = *.d *.o *~ *.ho *.map *.ver
 DISTCLEANSUFFIXES = *.pc
 LIBSUFFIXES       = *.a *.lib *.so *.so.* *.dylib *.dll *.def *.dll.a *.exp
 
