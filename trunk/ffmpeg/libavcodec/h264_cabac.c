@@ -25,6 +25,8 @@
  * @author Michael Niedermayer <michaelni@gmx.at>
  */
 
+#define CABAC 1
+
 #include "internal.h"
 #include "dsputil.h"
 #include "avcodec.h"
@@ -704,21 +706,15 @@ void ff_h264_init_cabac_states(H264Context *h) {
 
 static int decode_cabac_field_decoding_flag(H264Context *h) {
     MpegEncContext * const s = &h->s;
-    const int mb_x = s->mb_x;
-    const int mb_y = s->mb_y & ~1;
-    const int mba_xy = mb_x - 1 +  mb_y   *s->mb_stride;
-    const int mbb_xy = mb_x     + (mb_y-2)*s->mb_stride;
+    const long mba_xy = h->mb_xy - 1L;
+    const long mbb_xy = h->mb_xy - 2L*s->mb_stride;
 
-    unsigned int ctx = 0;
+    unsigned long ctx = 0;
 
-    if( h->slice_table[mba_xy] == h->slice_num && IS_INTERLACED( s->current_picture.mb_type[mba_xy] ) ) {
-        ctx += 1;
-    }
-    if( h->slice_table[mbb_xy] == h->slice_num && IS_INTERLACED( s->current_picture.mb_type[mbb_xy] ) ) {
-        ctx += 1;
-    }
+    ctx += (s->current_picture.mb_type[mba_xy]>>7)&(h->slice_table[mba_xy] == h->slice_num);
+    ctx += (s->current_picture.mb_type[mbb_xy]>>7)&(h->slice_table[mbb_xy] == h->slice_num);
 
-    return get_cabac_noinline( &h->cabac, &h->cabac_state[70 + ctx] );
+    return get_cabac_noinline( &h->cabac, &(h->cabac_state+70)[ctx] );
 }
 
 static int decode_cabac_intra_mb_type(H264Context *h, int ctx_base, int intra_slice) {
@@ -738,7 +734,7 @@ static int decode_cabac_intra_mb_type(H264Context *h, int ctx_base, int intra_sl
             return 0;   /* I4x4 */
         state += 2;
     }else{
-        if( get_cabac_noinline( &h->cabac, &state[0] ) == 0 )
+        if( get_cabac_noinline( &h->cabac, state ) == 0 )
             return 0;   /* I4x4 */
     }
 
@@ -1039,7 +1035,7 @@ static av_always_inline int get_cabac_cbf_ctx( H264Context *h, int cat, int idx,
     return ctx + 4 * cat;
 }
 
-DECLARE_ASM_CONST(1, uint8_t, last_coeff_flag_offset_8x8[63]) = {
+DECLARE_ASM_CONST(1, uint8_t, last_coeff_flag_offset_8x8)[63] = {
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
     3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
@@ -1390,7 +1386,7 @@ decode_intra_mb:
         // In deblocking, the quantizer is 0
         s->current_picture.qscale_table[mb_xy]= 0;
         // All coeffs are present
-        memset(h->non_zero_count[mb_xy], 16, 16);
+        memset(h->non_zero_count[mb_xy], 16, 32);
         s->current_picture.mb_type[mb_xy]= mb_type;
         h->last_qscale_diff = 0;
         return 0;
@@ -1401,7 +1397,7 @@ decode_intra_mb:
         h->ref_count[1] <<= 1;
     }
 
-    fill_caches(h, mb_type, 0);
+    fill_decode_caches(h, mb_type);
 
     if( IS_INTRA( mb_type ) ) {
         int i, pred_mode;
