@@ -20,6 +20,7 @@ OBJS = allfilters.o                                                     \
 
 OBJS-$(CONFIG_CROP_FILTER)       += vf_crop.o
 OBJS-$(CONFIG_DRAWBOX_FILTER)    += vf_drawbox.o
+OBJS-$(CONFIG_WATERMARK_FILTER)  += vf_watermark.o
 OBJS-$(CONFIG_FPS_FILTER)        += vf_fps.o
 OBJS-$(CONFIG_HFLIP_FILTER)      += vf_hflip.o
 OBJS-$(CONFIG_LOGO_FILTER)       += vf_logo.o
