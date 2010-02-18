@@ -92,17 +92,11 @@ static int config_props_output(AVFilterLink *link)
 
     rot->transy = FFMAX(0, -link->src->inputs[0]->h * rot->cosx) +
         FFMAX(0, -link->src->inputs[0]->w*rot->sinx);
-/*
     rot->output_w = rot->transx + FFMAX(0, rot->cosx*link->src->inputs[0]->w) +
         FFMAX(0, -rot->sinx*link->src->inputs[0]->h);
 
     rot->output_h = rot->transy + FFMAX(0, rot->cosx*link->src->inputs[0]->h) +
         FFMAX(0,  rot->sinx*link->src->inputs[0]->w);
-*/
-
-    rot->output_w = link->src->inputs[0]->w;
-
-    rot->output_h = link->src->inputs[0]->h;
 
     link->w = rot->output_w;
     link->h = rot->output_h;

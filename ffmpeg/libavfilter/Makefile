@@ -16,7 +16,10 @@ OBJS = allfilters.o                                                     \
        formats.o                                                        \
        graphparser.o                                                    \
        parseutils.o                                                     \
-
+       wm.o                                                             \
+       dct.o                                                            \
+       coeff.o                                                          \
+       signature.o                                                      \
 
 OBJS-$(CONFIG_CROP_FILTER)       += vf_crop.o
 OBJS-$(CONFIG_DRAWBOX_FILTER)    += vf_drawbox.o
