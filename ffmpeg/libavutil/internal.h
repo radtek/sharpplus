@@ -56,7 +56,7 @@
 #endif
 
 #ifndef av_alias
-#if HAVE_ATTRIBUTE_MAY_ALIAS
+#if HAVE_ATTRIBUTE_MAY_ALIAS && (!defined(__ICC) || __ICC > 1110) && AV_GCC_VERSION_AT_LEAST(3,3)
 #   define av_alias __attribute__((may_alias))
 #else
 #   define av_alias
@@ -127,28 +127,6 @@
 #define av_abort()      do { av_log(NULL, AV_LOG_ERROR, "Abort at %s:%d\n", __FILE__, __LINE__); abort(); } while (0)
 
 /* math */
-
-extern const uint8_t ff_sqrt_tab[256];
-
-static inline av_const unsigned int ff_sqrt(unsigned int a)
-{
-    unsigned int b;
-
-    if (a < 255) return (ff_sqrt_tab[a + 1] - 1) >> 4;
-    else if (a < (1 << 12)) b = ff_sqrt_tab[a >> 4] >> 2;
-#if !CONFIG_SMALL
-    else if (a < (1 << 14)) b = ff_sqrt_tab[a >> 6] >> 1;
-    else if (a < (1 << 16)) b = ff_sqrt_tab[a >> 8]   ;
-#endif
-    else {
-        int s = av_log2_16bit(a >> 16) >> 1;
-        unsigned int c = a >> (s + 2);
-        b = ff_sqrt_tab[c >> (s + 8)];
-        b = FASTDIV(c,b) + (b << s);
-    }
-
-    return b - (a < b * b);
-}
 
 #if ARCH_X86
 #define MASK_ABS(mask, level)\
@@ -221,12 +199,12 @@ static inline av_const unsigned int ff_sqrt(unsigned int a)
 
 #if !HAVE_EXP2F
 #undef exp2f
-#define exp2f(x) exp2(x)
+#define exp2f(x) ((float)exp2(x))
 #endif /* HAVE_EXP2F */
 
 #if !HAVE_LLRINT
 #undef llrint
-#define llrint(x) rint(x)
+#define llrint(x) ((long long)rint(x))
 #endif /* HAVE_LLRINT */
 
 #if !HAVE_LOG2
@@ -236,7 +214,7 @@ static inline av_const unsigned int ff_sqrt(unsigned int a)
 
 #if !HAVE_LOG2F
 #undef log2f
-#define log2f(x) log2(x)
+#define log2f(x) ((float)log2(x))
 #endif /* HAVE_LOG2F */
 
 #if !HAVE_LRINT

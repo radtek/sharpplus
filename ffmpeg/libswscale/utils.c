@@ -150,8 +150,6 @@ int sws_isSupportedOutput(enum PixelFormat pix_fmt)
     return isSupportedOut(pix_fmt);
 }
 
-#define usePal(x) (av_pix_fmt_descriptors[x].flags & PIX_FMT_PAL)
-
 extern const int32_t ff_yuv2rgb_coeffs[8][4];
 
 const char *sws_format_name(enum PixelFormat format)
@@ -787,7 +785,6 @@ SwsContext *sws_getContext(int srcW, int srcH, enum PixelFormat srcFormat,
                            int dstW, int dstH, enum PixelFormat dstFormat, int flags,
                            SwsFilter *srcFilter, SwsFilter *dstFilter, const double *param)
 {
-
     SwsContext *c;
     int i;
     int usesVFilter, usesHFilter;
@@ -971,6 +968,8 @@ SwsContext *sws_getContext(int srcW, int srcH, enum PixelFormat srcFormat,
             c->chrMmx2FilterCode = av_malloc(c->chrMmx2FilterCodeSize);
 #endif
 
+            if (!c->lumMmx2FilterCode || !c->chrMmx2FilterCode)
+                goto fail;
             FF_ALLOCZ_OR_GOTO(c, c->hLumFilter   , (dstW        /8+8)*sizeof(int16_t), fail);
             FF_ALLOCZ_OR_GOTO(c, c->hChrFilter   , (c->chrDstW  /4+8)*sizeof(int16_t), fail);
             FF_ALLOCZ_OR_GOTO(c, c->hLumFilterPos, (dstW      /2/8+8)*sizeof(int32_t), fail);
@@ -1312,7 +1311,7 @@ SwsVector *sws_getIdentityVec(void)
     return sws_getConstVec(1.0, 1);
 }
 
-double sws_dcVec(SwsVector *a)
+static double sws_dcVec(SwsVector *a)
 {
     int i;
     double sum=0;
@@ -1541,8 +1540,8 @@ void sws_freeContext(SwsContext *c)
     if (c->lumMmx2FilterCode) munmap(c->lumMmx2FilterCode, c->lumMmx2FilterCodeSize);
     if (c->chrMmx2FilterCode) munmap(c->chrMmx2FilterCode, c->chrMmx2FilterCodeSize);
 #elif HAVE_VIRTUALALLOC
-    if (c->lumMmx2FilterCode) VirtualFree(c->lumMmx2FilterCode, c->lumMmx2FilterCodeSize, MEM_RELEASE);
-    if (c->chrMmx2FilterCode) VirtualFree(c->chrMmx2FilterCode, c->chrMmx2FilterCodeSize, MEM_RELEASE);
+    if (c->lumMmx2FilterCode) VirtualFree(c->lumMmx2FilterCode, 0, MEM_RELEASE);
+    if (c->chrMmx2FilterCode) VirtualFree(c->chrMmx2FilterCode, 0, MEM_RELEASE);
 #else
     av_free(c->lumMmx2FilterCode);
     av_free(c->chrMmx2FilterCode);
@@ -1566,17 +1565,20 @@ struct SwsContext *sws_getCachedContext(struct SwsContext *context,
     if (!param)
         param = default_param;
 
-    if (context) {
-        if (context->srcW != srcW || context->srcH != srcH ||
-            context->srcFormat != srcFormat ||
-            context->dstW != dstW || context->dstH != dstH ||
-            context->dstFormat != dstFormat || context->flags != flags ||
-            context->param[0] != param[0] || context->param[1] != param[1])
-        {
-            sws_freeContext(context);
-            context = NULL;
-        }
+    if (context &&
+        (context->srcW      != srcW      ||
+         context->srcH      != srcH      ||
+         context->srcFormat != srcFormat ||
+         context->dstW      != dstW      ||
+         context->dstH      != dstH      ||
+         context->dstFormat != dstFormat ||
+         context->flags     != flags     ||
+         context->param[0]  != param[0]  ||
+         context->param[1]  != param[1])) {
+        sws_freeContext(context);
+        context = NULL;
     }
+
     if (!context) {
         return sws_getContext(srcW, srcH, srcFormat,
                               dstW, dstH, dstFormat, flags,

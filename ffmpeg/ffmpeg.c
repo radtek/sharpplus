@@ -51,9 +51,14 @@
 
 #if HAVE_SYS_RESOURCE_H
 #include <sys/types.h>
+#include <sys/time.h>
 #include <sys/resource.h>
 #elif HAVE_GETPROCESSTIMES
 #include <windows.h>
+#endif
+#if HAVE_GETPROCESSMEMORYINFO
+#include <windows.h>
+#include <psapi.h>
 #endif
 
 #if HAVE_SYS_SELECT_H
@@ -68,15 +73,12 @@
 #elif HAVE_CONIO_H
 #include <conio.h>
 #endif
-#undef time //needed because HAVE_AV_CONFIG_H is defined on top
 #include <time.h>
 
 #include "cmdutils.h"
 
 #undef NDEBUG
 #include <assert.h>
-
-#undef exit
 
 const char program_name[] = "FFmpeg";
 const int program_birth_year = 2000;
@@ -552,6 +554,10 @@ static void term_init(void)
 
     signal(SIGINT , sigterm_handler); /* Interrupt (ANSI).  */
     signal(SIGTERM, sigterm_handler); /* Termination (ANSI).  */
+#ifdef SIGXCPU
+    signal(SIGXCPU, sigterm_handler);
+#endif
+
     /*
     register a function to be called at normal program termination
     */
@@ -1879,32 +1885,6 @@ static void print_sdp(AVFormatContext **avc, int n)
     fflush(stdout);
 }
 
-static int stream_index_from_inputs(AVFormatContext **input_files,
-                                    int nb_input_files,
-                                    AVInputFile *file_table,
-                                    AVInputStream **ist_table,
-                                    enum CodecType type,
-                                    int programid)
-{
-    int p, q, z;
-    for(z=0; z<nb_input_files; z++) {
-        AVFormatContext *ic = input_files[z];
-        for(p=0; p<ic->nb_programs; p++) {
-            AVProgram *program = ic->programs[p];
-            if(program->id != programid)
-                continue;
-            for(q=0; q<program->nb_stream_indexes; q++) {
-                int sidx = program->stream_index[q];
-                int ris = file_table[z].ist_index + sidx;
-                if(ist_table[ris]->discard && ic->streams[sidx]->codec->codec_type == type)
-                    return ris;
-            }
-        }
-    }
-
-    return -1;
-}
-
 /*
  * The following code is the main loop of the file converter
  */
@@ -2036,33 +2016,42 @@ static int av_encode(AVFormatContext **output_files,
                 }
 
             } else {
-                if(opt_programid) {
-                    found = 0;
-                    j = stream_index_from_inputs(input_files, nb_input_files, file_table, ist_table, ost->st->codec->codec_type, opt_programid);
-                    if(j != -1) {
-                        ost->source_index = j;
-                        found = 1;
-                    }
-                } else {
+                int best_nb_frames=-1;
                     /* get corresponding input stream index : we select the first one with the right type */
                     found = 0;
                     for(j=0;j<nb_istreams;j++) {
+                        int skip=0;
                         ist = ist_table[j];
-                        if (ist->discard &&
+                        if(opt_programid){
+                            int pi,si;
+                            AVFormatContext *f= input_files[ ist->file_index ];
+                            skip=1;
+                            for(pi=0; pi<f->nb_programs; pi++){
+                                AVProgram *p= f->programs[pi];
+                                if(p->id == opt_programid)
+                                    for(si=0; si<p->nb_stream_indexes; si++){
+                                        if(f->streams[ p->stream_index[si] ] == ist->st)
+                                            skip=0;
+                                    }
+                            }
+                        }
+                        if (ist->discard && ist->st->discard != AVDISCARD_ALL && !skip &&
                             ist->st->codec->codec_type == ost->st->codec->codec_type) {
-                            ost->source_index = j;
-                            found = 1;
-                            break;
+                            if(best_nb_frames < ist->st->codec_info_nb_frames){
+                                best_nb_frames= ist->st->codec_info_nb_frames;
+                                ost->source_index = j;
+                                found = 1;
+                            }
                         }
                     }
-                }
 
                 if (!found) {
                     if(! opt_programid) {
                         /* try again and reuse existing stream */
                         for(j=0;j<nb_istreams;j++) {
                             ist = ist_table[j];
-                            if (ist->st->codec->codec_type == ost->st->codec->codec_type) {
+                            if (   ist->st->codec->codec_type == ost->st->codec->codec_type
+                                && ist->st->discard != AVDISCARD_ALL) {
                                 ost->source_index = j;
                                 found = 1;
                             }
@@ -2087,7 +2076,7 @@ static int av_encode(AVFormatContext **output_files,
 
     /* for each output stream, we compute the right encoding parameters */
     for(i=0;i<nb_ostreams;i++) {
-        AVMetadataTag *lang;
+        AVMetadataTag *t = NULL, *lang = NULL;
         ost = ost_table[i];
         os = output_files[ost->file_index];
         ist = ist_table[ost->source_index];
@@ -2095,9 +2084,13 @@ static int av_encode(AVFormatContext **output_files,
         codec = ost->st->codec;
         icodec = ist->st->codec;
 
-        if ((lang=av_metadata_get(ist->st->metadata, "language", NULL, 0))
-            &&   !av_metadata_get(ost->st->metadata, "language", NULL, 0))
-            av_metadata_set(&ost->st->metadata, "language", lang->value);
+        if (av_metadata_get(ist->st->metadata, "language", NULL, 0))
+            lang = av_metadata_get(ost->st->metadata, "language", NULL, 0);
+        while ((t = av_metadata_get(ist->st->metadata, "", t, AV_METADATA_IGNORE_SUFFIX))) {
+            if (lang && !strcmp(t->key, "language"))
+                continue;
+            av_metadata_set2(&ost->st->metadata, t->key, t->value, 0);
+        }
 
         ost->st->disposition = ist->st->disposition;
         codec->bits_per_raw_sample= icodec->bits_per_raw_sample;
@@ -2348,8 +2341,10 @@ static int av_encode(AVFormatContext **output_files,
 
     /* init pts */
     for(i=0;i<nb_istreams;i++) {
+        AVStream *st;
         ist = ist_table[i];
-        ist->pts = 0;
+        st= ist->st;
+        ist->pts = st->avg_frame_rate.num ? - st->codec->has_b_frames*AV_TIME_BASE / av_q2d(st->avg_frame_rate) : 0;
         ist->next_pts = AV_NOPTS_VALUE;
         ist->is_start = 1;
     }
@@ -2498,10 +2493,6 @@ static int av_encode(AVFormatContext **output_files,
             break;
         }
 
-        /* finish if recording time exhausted */
-        if (opts_min >= (recording_time / 1000000.0))
-            break;
-
         /* finish if limit size exhausted */
         if (limit_filesize != 0 && limit_filesize < url_ftell(output_files[0]->pb))
             break;
@@ -2565,7 +2556,8 @@ static int av_encode(AVFormatContext **output_files,
         }
 
         /* finish if recording time exhausted */
-        if (av_compare_ts(pkt.pts, ist->st->time_base, recording_time, (AVRational){1, 1000000}) >= 0) {
+        if (recording_time != INT64_MAX &&
+            av_compare_ts(pkt.pts, ist->st->time_base, recording_time + start_time, (AVRational){1, 1000000}) >= 0) {
             ist->is_past_recording_time = 1;
             goto discard_packet;
         }
@@ -3113,7 +3105,10 @@ static void opt_input_file(const char *filename)
     int64_t timestamp;
 
     if (last_asked_format) {
-        file_iformat = av_find_input_format(last_asked_format);
+        if (!(file_iformat = av_find_input_format(last_asked_format))) {
+            fprintf(stderr, "Unknown input format: '%s'\n", last_asked_format);
+            av_exit(1);
+        }
         last_asked_format = NULL;
     }
 
@@ -3160,10 +3155,27 @@ static void opt_input_file(const char *filename)
         av_exit(1);
     }
     if(opt_programid) {
-        int i;
-        for(i=0; i<ic->nb_programs; i++)
-            if(ic->programs[i]->id != opt_programid)
-                ic->programs[i]->discard = AVDISCARD_ALL;
+        int i, j;
+        int found=0;
+        for(i=0; i<ic->nb_streams; i++){
+            ic->streams[i]->discard= AVDISCARD_ALL;
+        }
+        for(i=0; i<ic->nb_programs; i++){
+            AVProgram *p= ic->programs[i];
+            if(p->id != opt_programid){
+                p->discard = AVDISCARD_ALL;
+            }else{
+                found=1;
+                for(j=0; j<p->nb_stream_indexes; j++){
+                    ic->streams[p->stream_index[j]]->discard= 0;
+                }
+            }
+        }
+        if(!found){
+            fprintf(stderr, "Specified program id not found\n");
+            av_exit(1);
+        }
+        opt_programid=0;
     }
 
     ic->loop_input = loop_input;
@@ -3457,6 +3469,7 @@ static void new_video_stream(AVFormatContext *oc)
     video_disable = 0;
     av_freep(&video_codec_name);
     video_stream_copy = 0;
+    frame_pix_fmt = PIX_FMT_NONE;
 }
 
 static void new_audio_stream(AVFormatContext *oc)
@@ -3788,6 +3801,24 @@ static int64_t getutime(void)
     return ((int64_t) u.dwHighDateTime << 32 | u.dwLowDateTime) / 10;
 #else
     return av_gettime();
+#endif
+}
+
+static int64_t getmaxrss(void)
+{
+#if HAVE_GETRUSAGE && HAVE_STRUCT_RUSAGE_RU_MAXRSS
+    struct rusage rusage;
+    getrusage(RUSAGE_SELF, &rusage);
+    return (int64_t)rusage.ru_maxrss * 1024;
+#elif HAVE_GETPROCESSMEMORYINFO
+    HANDLE proc;
+    PROCESS_MEMORY_COUNTERS memcounters;
+    proc = GetCurrentProcess();
+    memcounters.cb = sizeof(memcounters);
+    GetProcessMemoryInfo(proc, &memcounters, sizeof(memcounters));
+    return memcounters.PeakPagefileUsage;
+#else
+    return 0;
 #endif
 }
 
@@ -4291,7 +4322,8 @@ int main(int argc, char **argv)
         av_exit(1);
     ti = getutime() - ti;
     if (do_benchmark) {
-        printf("bench: utime=%0.3fs\n", ti / 1000000.0);
+        int maxrss = getmaxrss() / 1024;
+        printf("bench: utime=%0.3fs maxrss=%ikB\n", ti / 1000000.0, maxrss);
     }
 
     return av_exit(0);

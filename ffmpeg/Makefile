@@ -6,6 +6,7 @@ vpath %.texi $(SRC_PATH_BARE)
 
 PROGS-$(CONFIG_FFMPEG)   += ffmpeg
 PROGS-$(CONFIG_FFPLAY)   += ffplay
+PROGS-$(CONFIG_FFPROBE)  += ffprobe
 PROGS-$(CONFIG_FFSERVER) += ffserver
 
 PROGS      := $(addsuffix   $(EXESUF), $(PROGS-yes))
@@ -15,7 +16,7 @@ MANPAGES    = $(addprefix doc/, $(addsuffix .1, $(PROGS-yes)))
 TOOLS       = $(addprefix tools/, $(addsuffix $(EXESUF), cws2fws pktdumper probetest qt-faststart trasher))
 HOSTPROGS   = $(addprefix tests/, audiogen videogen rotozoom tiny_psnr)
 
-BASENAMES   = ffmpeg ffplay ffserver
+BASENAMES   = ffmpeg ffplay ffprobe ffserver
 ALLPROGS    = $(addsuffix   $(EXESUF), $(BASENAMES))
 ALLPROGS_G  = $(addsuffix _g$(EXESUF), $(BASENAMES))
 ALLMANPAGES = $(addsuffix .1, $(BASENAMES))
@@ -30,6 +31,8 @@ FFLIBS-$(CONFIG_SWSCALE)  += swscale
 FFLIBS := avutil
 
 DATA_FILES := $(wildcard $(SRC_DIR)/ffpresets/*.ffpreset)
+
+SKIPHEADERS = cmdutils_common_opts.h
 
 include common.mak
 
@@ -48,12 +51,12 @@ INSTALL_PROGS_TARGETS-$(CONFIG_SHARED) = install-libs
 all: $(FF_DEP_LIBS) $(PROGS) $(ALL_TARGETS-yes)
 
 $(PROGS): %$(EXESUF): %_g$(EXESUF)
-	cp -p $< $@
+	$(CP) $< $@
 	$(STRIP) $@
 
 SUBDIR_VARS := OBJS FFLIBS CLEANFILES DIRS TESTPROGS EXAMPLES SKIPHEADERS \
                ALTIVEC-OBJS MMX-OBJS NEON-OBJS X86-OBJS YASM-OBJS-FFT YASM-OBJS \
-               HOSTPROGS BUILT_HEADERS
+               HOSTPROGS BUILT_HEADERS TESTOBJS ARCH_HEADERS
 
 define RESET
 $(1) :=
@@ -87,7 +90,7 @@ cmdutils.o cmdutils.d: version.h
 alltools: $(TOOLS)
 
 documentation: $(addprefix doc/, developer.html faq.html ffmpeg-doc.html \
-                                 ffplay-doc.html ffserver-doc.html       \
+                                 ffplay-doc.html ffprobe-doc.html ffserver-doc.html \
                                  general.html libavfilter.html $(ALLMANPAGES))
 
 doc/%.html: doc/%.texi
@@ -103,42 +106,43 @@ doc/%.1: doc/%.pod
 install: $(INSTALL_TARGETS-yes)
 
 install-progs: $(PROGS) $(INSTALL_PROGS_TARGETS-yes)
-	install -d "$(BINDIR)"
-	install -c -m 755 $(PROGS) "$(BINDIR)"
+	$(Q)mkdir -p "$(BINDIR)"
+	$(INSTALL) -c -m 755 $(PROGS) "$(BINDIR)"
 
 install-data: $(DATA_FILES)
-	install -d "$(DATADIR)"
-	install -m 644 $(DATA_FILES) "$(DATADIR)"
+	$(Q)mkdir -p "$(DATADIR)"
+	$(INSTALL) -m 644 $(DATA_FILES) "$(DATADIR)"
 
 install-man: $(MANPAGES)
-	install -d "$(MANDIR)/man1"
-	install -m 644 $(MANPAGES) "$(MANDIR)/man1"
+	$(Q)mkdir -p "$(MANDIR)/man1"
+	$(INSTALL) -m 644 $(MANPAGES) "$(MANDIR)/man1"
 
 uninstall: uninstall-progs uninstall-data uninstall-man
 
 uninstall-progs:
-	rm -f $(addprefix "$(BINDIR)/", $(ALLPROGS))
+	$(RM) $(addprefix "$(BINDIR)/", $(ALLPROGS))
 
 uninstall-data:
-	rm -rf "$(DATADIR)"
+	$(RM) -r "$(DATADIR)"
 
 uninstall-man:
-	rm -f $(addprefix "$(MANDIR)/man1/",$(ALLMANPAGES))
+	$(RM) $(addprefix "$(MANDIR)/man1/",$(ALLMANPAGES))
 
 testclean:
-	rm -rf tests/vsynth1 tests/vsynth2 tests/data tests/*~
+	$(RM) -r tests/vsynth1 tests/vsynth2 tests/data
+	$(RM) $(addprefix tests/,$(CLEANSUFFIXES))
+	$(RM) tests/seek_test$(EXESUF) tests/seek_test.o
+	$(RM) $(addprefix tests/,$(addsuffix $(HOSTEXESUF),audiogen videogen rotozoom tiny_psnr))
 
 clean:: testclean
-	rm -f $(ALLPROGS) $(ALLPROGS_G)
-	rm -f $(CLEANSUFFIXES)
-	rm -f doc/*.html doc/*.pod doc/*.1
-	rm -f tests/seek_test$(EXESUF) tests/seek_test.o
-	rm -f $(addprefix tests/,$(addsuffix $(HOSTEXESUF),audiogen videogen rotozoom tiny_psnr))
-	rm -f $(TOOLS)
+	$(RM) $(ALLPROGS) $(ALLPROGS_G)
+	$(RM) $(CLEANSUFFIXES)
+	$(RM) doc/*.html doc/*.pod doc/*.1
+	$(RM) $(TOOLS)
 
 distclean::
-	rm -f $(DISTCLEANSUFFIXES)
-	rm -f version.h config.*
+	$(RM) $(DISTCLEANSUFFIXES)
+	$(RM) version.h config.* libavutil/avconfig.h
 
 config:
 	$(SRC_PATH)/configure $(value FFMPEG_CONFIGURATION)
@@ -254,8 +258,8 @@ REFFILE = $(SRC_PATH)/tests/ref/$(1)/$(2:regtest-%=%)
 RESFILE = tests/data/$(2:regtest-%=%).$(1).regression
 
 define CODECTEST_CMD
-	$(SRC_PATH)/tests/codec-regression.sh $@ vsynth1 tests/vsynth1 a "$(TARGET_EXEC)" "$(TARGET_PATH)"
-	$(SRC_PATH)/tests/codec-regression.sh $@ vsynth2 tests/vsynth2 a "$(TARGET_EXEC)" "$(TARGET_PATH)"
+	$(SRC_PATH)/tests/codec-regression.sh $@ vsynth1 tests/vsynth1 "$(TARGET_EXEC)" "$(TARGET_PATH)"
+	$(SRC_PATH)/tests/codec-regression.sh $@ vsynth2 tests/vsynth2 "$(TARGET_EXEC)" "$(TARGET_PATH)"
 endef
 
 regtest-ref: regtest-aref regtest-vref
@@ -264,7 +268,7 @@ regtest-vref: ffmpeg$(EXESUF) tests/vsynth1/00.pgm tests/vsynth2/00.pgm
 	$(CODECTEST_CMD)
 
 regtest-aref: ffmpeg$(EXESUF) tests/data/asynth1.sw
-	@$(SRC_PATH)/tests/codec-regression.sh $@ acodec tests/acodec a "$(TARGET_EXEC)" "$(TARGET_PATH)"
+	@$(SRC_PATH)/tests/codec-regression.sh $@ acodec tests/acodec "$(TARGET_EXEC)" "$(TARGET_PATH)"
 
 $(VCODEC_TESTS): tests/tiny_psnr$(HOSTEXESUF)
 	@echo "TEST VCODEC $(@:regtest-%=%)"
@@ -274,21 +278,21 @@ $(VCODEC_TESTS): tests/tiny_psnr$(HOSTEXESUF)
 
 $(ACODEC_TESTS): tests/tiny_psnr$(HOSTEXESUF)
 	@echo "TEST ACODEC $(@:regtest-%=%)"
-	@$(SRC_PATH)/tests/codec-regression.sh $@ acodec tests/acodec a "$(TARGET_EXEC)" "$(TARGET_PATH)"
+	@$(SRC_PATH)/tests/codec-regression.sh $@ acodec tests/acodec "$(TARGET_EXEC)" "$(TARGET_PATH)"
 	@diff -u -w $(call REFFILE,acodec,$@) $(call RESFILE,acodec,$@)
 
 $(LAVF_TESTS):
 	@echo "TEST LAVF  $(@:regtest-%=%)"
-	@$(SRC_PATH)/tests/lavf-regression.sh $@ lavf tests/vsynth1 b "$(TARGET_EXEC)" "$(TARGET_PATH)"
+	@$(SRC_PATH)/tests/lavf-regression.sh $@ lavf tests/vsynth1 "$(TARGET_EXEC)" "$(TARGET_PATH)"
 	@diff -u -w $(call REFFILE,lavf,$@) $(call RESFILE,lavf,$@)
 
 $(LAVFI_TESTS):
 	@echo "TEST LAVFI $(@:regtest-%=%)"
-	@$(SRC_PATH)/tests/lavfi-regression.sh $@ lavfi tests/vsynth1 b "$(TARGET_EXEC)" "$(TARGET_PATH)"
+	@$(SRC_PATH)/tests/lavfi-regression.sh $@ lavfi tests/vsynth1 "$(TARGET_EXEC)" "$(TARGET_PATH)"
 	@diff -u -w $(call REFFILE,lavfi,$@) $(call RESFILE,lavfi,$@)
 
 seektest: codectest lavftest tests/seek_test$(EXESUF)
-	$(SRC_PATH)/tests/seek-regression.sh $(SEEK_REFFILE) "$(TARGET_EXEC)" "$(TARGET_PATH)"
+	$(SRC_PATH)/tests/seek-regression.sh $(SRC_PATH) "$(TARGET_EXEC)" "$(TARGET_PATH)"
 
 ffservertest: ffserver$(EXESUF) tests/vsynth1/00.pgm tests/data/asynth1.sw
 	@echo

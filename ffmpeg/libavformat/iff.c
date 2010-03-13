@@ -29,6 +29,7 @@
  */
 
 #include "libavutil/intreadwrite.h"
+#include "libavcodec/iff.h"
 #include "avformat.h"
 
 #define ID_8SVX       MKTAG('8','S','V','X')
@@ -51,6 +52,7 @@
 #define ID_NAME       MKTAG('N','A','M','E')
 #define ID_TEXT       MKTAG('T','E','X','T')
 #define ID_BODY       MKTAG('B','O','D','Y')
+#define ID_ANNO       MKTAG('A','N','N','O')
 
 #define LEFT    2
 #define RIGHT   4
@@ -99,6 +101,7 @@ static int iff_read_header(AVFormatContext *s,
     uint32_t chunk_id, data_size;
     int padding, done = 0;
     int compression = -1;
+    char *buf;
 
     st = av_new_stream(s, 0);
     if (!st)
@@ -156,6 +159,15 @@ static int iff_read_header(AVFormatContext *s,
             url_fskip(pb, 4); // source page width, height
             break;
 
+        case ID_ANNO:
+            buf = av_malloc(data_size + 1);
+            if (!buf)
+                break;
+            get_buffer(pb, buf, data_size);
+            buf[data_size] = 0;
+            av_metadata_set2(&s->metadata, "comment", buf, AV_METADATA_DONT_STRDUP_VAL);
+            break;
+
         default:
             url_fseek(pb, data_size + padding, SEEK_CUR);
             break;
@@ -211,8 +223,6 @@ static int iff_read_header(AVFormatContext *s,
 
     return 0;
 }
-
-int ff_cmap_read_palette(AVCodecContext *avctx, uint32_t *pal);
 
 static int iff_read_packet(AVFormatContext *s,
                            AVPacket *pkt)
