@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "libavutil/intmath.h"
 #include "avcodec.h"
 #include "dsputil.h"
 #include "snow.h"
@@ -26,6 +27,7 @@
 #include "mathops.h"
 
 #include "mpegvideo.h"
+#include "h263.h"
 
 #undef NDEBUG
 #include <assert.h>

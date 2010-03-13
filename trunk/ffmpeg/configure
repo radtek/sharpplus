@@ -82,6 +82,7 @@ Configuration options:
   --disable-doc            do not build documentation
   --disable-ffmpeg         disable ffmpeg build
   --disable-ffplay         disable ffplay build
+  --disable-ffprobe        disable ffprobe build
   --disable-ffserver       disable ffserver build
   --disable-avdevice       disable libavdevice build
   --disable-avcodec        disable libavcodec build
@@ -890,6 +891,7 @@ CONFIG_LIST="
     fastdiv
     ffmpeg
     ffplay
+    ffprobe
     ffserver
     fft
     golomb
@@ -915,6 +917,7 @@ CONFIG_LIST="
     libx264
     libxvid
     lpc
+    lsp
     mdct
     memalign_hack
     mlib
@@ -964,6 +967,7 @@ ARCH_LIST='
     sh4
     sparc
     sparc64
+    tomi
     x86
     x86_32
     x86_64
@@ -1025,8 +1029,10 @@ HAVE_LIST="
     fork
     getaddrinfo
     gethrtime
+    GetProcessMemoryInfo
     GetProcessTimes
     getrusage
+    struct_rusage_ru_maxrss
     inet_aton
     inline_asm
     isatty
@@ -1034,6 +1040,8 @@ HAVE_LIST="
     libdc1394_1
     libdc1394_2
     llrint
+    local_aligned_16
+    local_aligned_8
     log2
     log2f
     loongson
@@ -1128,6 +1136,7 @@ CMDLINE_SET="
     malloc_prefix
     nm
     source_path
+    strip
     sysinclude
     sysroot
     target_exec
@@ -1172,18 +1181,24 @@ fast_unaligned_if_any="armv6 ppc x86"
 need_memalign="altivec neon sse"
 inline_asm_deps="!tms470"
 
+# subsystems
+mdct_select="fft"
+rdft_select="fft"
+
 # decoders / encoders / hardware accelerators
-aac_decoder_select="fft mdct aac_parser"
-aac_encoder_select="fft mdct"
-ac3_decoder_select="fft mdct ac3_parser"
+aac_decoder_select="mdct rdft aac_parser"
+aac_encoder_select="mdct"
+ac3_decoder_select="mdct ac3_parser"
 alac_encoder_select="lpc"
-atrac3_decoder_select="fft mdct"
-binkaudio_dct_decoder_select="fft mdct rdft dct"
-binkaudio_rdft_decoder_select="fft mdct rdft"
+amrnb_decoder_select="lsp"
+atrac1_decoder_select="mdct"
+atrac3_decoder_select="mdct"
+binkaudio_dct_decoder_select="mdct rdft dct"
+binkaudio_rdft_decoder_select="mdct rdft"
 cavs_decoder_select="golomb"
-cook_decoder_select="fft mdct"
+cook_decoder_select="mdct"
 cscd_decoder_suggest="zlib"
-dca_decoder_select="fft mdct"
+dca_decoder_select="mdct"
 dnxhd_encoder_select="aandct"
 dxa_decoder_select="zlib"
 eac3_decoder_select="ac3_decoder"
@@ -1240,11 +1255,12 @@ msmpeg4v2_decoder_select="h263_decoder"
 msmpeg4v2_encoder_select="h263_encoder"
 msmpeg4v3_decoder_select="h263_decoder"
 msmpeg4v3_encoder_select="h263_encoder"
-nellymoser_decoder_select="fft mdct"
-nellymoser_encoder_select="fft mdct"
+nellymoser_decoder_select="mdct"
+nellymoser_encoder_select="mdct"
 png_decoder_select="zlib"
 png_encoder_select="zlib"
-qdm2_decoder_select="fft mdct rdft"
+qcelp_decoder_select="lsp"
+qdm2_decoder_select="mdct rdft"
 rv10_decoder_select="h263_decoder"
 rv10_encoder_select="h263_encoder"
 rv20_decoder_select="h263_decoder"
@@ -1252,9 +1268,12 @@ rv20_encoder_select="h263_encoder"
 rv30_decoder_select="golomb"
 rv40_decoder_select="golomb"
 shorten_decoder_select="golomb"
+sipr_decoder_select="lsp"
+snow_encoder_select="aandct"
 sonic_decoder_select="golomb"
 sonic_encoder_select="golomb"
 sonic_ls_encoder_select="golomb"
+svq1_encoder_select="aandct"
 svq3_decoder_select="golomb"
 svq3_decoder_suggest="zlib"
 theora_decoder_select="vp3_decoder"
@@ -1262,6 +1281,7 @@ tiff_decoder_suggest="zlib"
 tiff_encoder_suggest="zlib"
 truehd_decoder_select="mlp_decoder"
 tscc_decoder_select="zlib"
+twinvq_decoder_select="mdct lsp"
 vc1_decoder_select="h263_decoder"
 vc1_dxva2_hwaccel_deps="dxva2api_h DXVA_PictureParameters_wDecodedPictureIndex"
 vc1_dxva2_hwaccel_select="dxva2 vc1_decoder"
@@ -1269,14 +1289,16 @@ vc1_vaapi_hwaccel_deps="va_va_h"
 vc1_vaapi_hwaccel_select="vaapi vc1_decoder"
 vc1_vdpau_decoder_deps="vdpau_vdpau_h vdpau_vdpau_x11_h"
 vc1_vdpau_decoder_select="vdpau vc1_decoder"
-vorbis_decoder_select="fft mdct"
-vorbis_encoder_select="fft mdct"
+vorbis_decoder_select="mdct"
+vorbis_encoder_select="mdct"
 vp6a_decoder_select="vp6_decoder"
 vp6f_decoder_select="vp6_decoder"
-wmav1_decoder_select="fft mdct"
-wmav1_encoder_select="fft mdct"
-wmav2_decoder_select="fft mdct"
-wmav2_encoder_select="fft mdct"
+wmapro_decoder_select="mdct"
+wmav1_decoder_select="mdct"
+wmav1_encoder_select="mdct"
+wmav2_decoder_select="mdct"
+wmav2_encoder_select="mdct"
+wmavoice_decoder_select="lsp"
 wmv1_decoder_select="h263_decoder"
 wmv1_encoder_select="h263_encoder"
 wmv2_decoder_select="h263_decoder"
@@ -1338,6 +1360,8 @@ mxf_d10_muxer_select="mxf_muxer"
 ogg_demuxer_select="golomb"
 psp_muxer_select="mov_muxer"
 rtsp_demuxer_deps="sdp_demuxer"
+rtsp_muxer_deps="sdp_demuxer"
+rtsp_muxer_select="rtp_muxer"
 sdp_demuxer_deps="rtp_protocol mpegts_demuxer"
 spdif_muxer_select="aac_parser"
 tg2_muxer_select="mov_muxer"
@@ -1388,6 +1412,8 @@ avformat_deps="avcodec"
 # programs
 ffmpeg_deps="avcodec avformat swscale"
 ffplay_deps="avcodec avformat swscale sdl"
+ffplay_select="rdft"
+ffprobe_deps="avcodec avformat"
 ffserver_deps="avformat ffm_muxer rtp_protocol rtsp_demuxer"
 ffserver_extralibs='$ldl'
 
@@ -1415,18 +1441,18 @@ ln_s="ln -sf"
 nm_default="nm"
 objformat="elf"
 ranlib="ranlib"
-strip="strip"
+strip_default="strip"
 yasmexe="yasm"
 
 nm_opts='-g'
 
 # machine
-arch=$(uname -m)
+arch_default=$(uname -m)
 cpu="generic"
 
 # OS
-target_os=$(tolower $(uname -s))
-host_os=$target_os
+target_os_default=$(tolower $(uname -s))
+host_os=$target_os_default
 
 # configurable options
 enable avcodec
@@ -1439,6 +1465,7 @@ enable doc
 enable fastdiv
 enable ffmpeg
 enable ffplay
+enable ffprobe
 enable ffserver
 enable mpegaudio_hp
 enable network
@@ -1461,7 +1488,7 @@ SLIBSUF=".so"
 SLIBNAME='$(SLIBPREF)$(FULLNAME)$(SLIBSUF)'
 SLIBNAME_WITH_VERSION='$(SLIBNAME).$(LIBVERSION)'
 SLIBNAME_WITH_MAJOR='$(SLIBNAME).$(LIBMAJOR)'
-LIB_INSTALL_EXTRA_CMD='$(RANLIB) "$(LIBDIR)/$(LIBNAME)"'
+LIB_INSTALL_EXTRA_CMD='$$(RANLIB) "$(LIBDIR)/$(LIBNAME)"'
 
 CC_O='-o $@'
 
@@ -1600,15 +1627,22 @@ set >> $logfile
 
 test -n "$cross_prefix" && enable cross_compile
 
+if enabled cross_compile; then
+    test -n "$arch" && test -n "$target_os" ||
+        die "Must specify target arch and OS when cross-compiling"
+fi
+
+set_default arch target_os
+
 ar="${cross_prefix}${ar}"
 cc_default="${cross_prefix}${cc_default}"
 nm_default="${cross_prefix}${nm_default}"
 ranlib="${cross_prefix}${ranlib}"
-strip="${cross_prefix}${strip}"
+strip_default="${cross_prefix}${strip_default}"
 
 sysinclude_default="${sysroot}/usr/include"
 
-set_default cc nm sysinclude
+set_default cc nm strip sysinclude
 enabled cross_compile || host_cc_default=$cc
 set_default host_cc
 
@@ -1830,8 +1864,8 @@ if test -n "$sysroot"; then
             add_ldflags  --sysroot="$sysroot"
         ;;
         clang)
-            add_cppflags -isysroot="$sysroot"
-            add_ldflags -isysroot="$sysroot"
+            add_cppflags -isysroot "$sysroot"
+            add_ldflags -isysroot "$sysroot"
         ;;
     esac
 fi
@@ -2372,6 +2406,8 @@ elif enabled mips; then
 
 elif enabled ppc; then
 
+    enable local_aligned_8 local_aligned_16
+
     check_asm dcbzl     '"dcbzl 0, 1"'
     check_asm ppc4xx    '"maclhw r10, r11, r12"'
     check_asm xform_asm '"lwzx %1, %y0" :: "Z"(*(int*)0), "r"(0)'
@@ -2405,6 +2441,8 @@ elif enabled sparc; then
         add_cflags -mcpu=ultrasparc -mtune=ultrasparc
 
 elif enabled x86; then
+
+    enable local_aligned_8 local_aligned_16
 
     # check whether EBP is available on x86
     # As 'i' is stored on the stack, this program will crash
@@ -2470,6 +2508,7 @@ check_func  fork
 check_func  getaddrinfo $network_extralibs
 check_func  gethrtime
 check_func  getrusage
+check_struct "sys/time.h sys/resource.h" "struct rusage" ru_maxrss
 check_func  inet_aton $network_extralibs
 check_func  isatty
 check_func  ${malloc_prefix}memalign            && enable memalign
@@ -2478,6 +2517,7 @@ check_func  ${malloc_prefix}posix_memalign      && enable posix_memalign
 check_func  setrlimit
 check_func_headers io.h setmode
 check_func_headers lzo/lzo1x.h lzo1x_999_compress
+check_lib2 "windows.h psapi.h" GetProcessMemoryInfo -lpsapi
 check_func_headers windows.h GetProcessTimes
 check_func_headers windows.h VirtualAlloc
 
@@ -2713,11 +2753,13 @@ elif enabled ccc; then
     add_cflags -msg_disable unreachcode
 elif enabled gcc; then
     check_cflags -fno-tree-vectorize
+    check_cflags -Werror=implicit
 elif enabled clang; then
     check_cflags -Qunused-arguments
 elif enabled armcc; then
     # 2523: use of inline assembler is deprecated
     add_cflags -Wrvct,--diag_suppress=2523
+    add_cflags -Wrvct,--diag_suppress=1207
 elif enabled tms470; then
     add_cflags -pds=824 -pds=837
 fi
@@ -2927,8 +2969,10 @@ AS=$as
 LD=$ld
 DEPCC=$dep_cc
 YASM=$yasmexe
+YASMDEP=$yasmexe
 AR=$ar
 RANLIB=$ranlib
+CP=cp -p
 LN_S=$ln_s
 STRIP=$strip
 CPPFLAGS=$CPPFLAGS
@@ -2964,6 +3008,7 @@ SDL_LIBS=$sdl_libs
 SDL_CFLAGS=$sdl_cflags
 LIB_INSTALL_EXTRA_CMD=$LIB_INSTALL_EXTRA_CMD
 EXTRALIBS=$extralibs
+INSTALL=install
 EOF
 
 get_version(){

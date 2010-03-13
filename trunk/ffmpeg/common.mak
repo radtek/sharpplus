@@ -17,9 +17,21 @@ else
 BUILD_ROOT_REL = ..
 endif
 
+ifndef V
+Q      = @
+ECHO   = printf "$(1)\t%s\n" $(2)
+BRIEF  = CC AS YASM AR LD HOSTCC RANLIB STRIP CP
+SILENT = DEPCC YASMDEP RM
+MSG    = $@
+$(foreach VAR,$(BRIEF), \
+    $(eval $(VAR) = @$$(call ECHO,$(VAR),$$(MSG)); $($(VAR))))
+$(foreach VAR,$(SILENT),$(eval $(VAR) = @$($(VAR))))
+$(eval INSTALL = @$(call ECHO,INSTALL,$$(^:$(SRC_DIR)/%=%)); $(INSTALL))
+endif
+
 ALLFFLIBS = avcodec avdevice avfilter avformat avutil postproc swscale
 
-CPPFLAGS := -DHAVE_AV_CONFIG_H -I$(BUILD_ROOT_REL) -I$(SRC_PATH) $(CPPFLAGS)
+CPPFLAGS := -I$(BUILD_ROOT_REL) -I$(SRC_PATH) $(CPPFLAGS)
 CFLAGS   += $(ECFLAGS)
 
 %.o: %.c
@@ -36,7 +48,7 @@ CFLAGS   += $(ECFLAGS)
 %$(EXESUF): %.c
 
 %.ver: %.v
-	sed 's/$$MAJOR/$($(basename $(@F))_VERSION_MAJOR)/' $^ > $@
+	$(Q)sed 's/$$MAJOR/$($(basename $(@F))_VERSION_MAJOR)/' $^ > $@
 
 SVN_ENTRIES = $(SRC_PATH_BARE)/.svn/entries
 ifeq ($(wildcard $(SVN_ENTRIES)),$(SVN_ENTRIES))
@@ -51,6 +63,13 @@ install: install-libs install-headers
 uninstall: uninstall-libs uninstall-headers
 
 .PHONY: all depend dep *clean install* uninstall* examples testprogs
+
+# Disable suffix rules.  Most of the builtin rules are suffix rules,
+# so this saves some time on slow systems.
+.SUFFIXES:
+
+# Do not delete intermediate files from chains of implicit rules
+.SECONDARY:
 endif
 
 OBJS-$(HAVE_MMX) +=  $(MMX-OBJS-yes)
@@ -65,6 +84,7 @@ FFLDFLAGS   := $(addprefix -L$(BUILD_ROOT)/lib,$(ALLFFLIBS)) $(LDFLAGS)
 
 EXAMPLES  := $(addprefix $(SUBDIR),$(addsuffix -example$(EXESUF),$(EXAMPLES)))
 OBJS      := $(addprefix $(SUBDIR),$(OBJS))
+TESTOBJS  := $(addprefix $(SUBDIR),$(TESTOBJS))
 TESTPROGS := $(addprefix $(SUBDIR),$(addsuffix -test$(EXESUF),$(TESTPROGS)))
 HOSTOBJS  := $(addprefix $(SUBDIR),$(addsuffix .o,$(HOSTPROGS)))
 HOSTPROGS := $(addprefix $(SUBDIR),$(addsuffix $(HOSTEXESUF),$(HOSTPROGS)))
@@ -72,7 +92,8 @@ HOSTPROGS := $(addprefix $(SUBDIR),$(addsuffix $(HOSTEXESUF),$(HOSTPROGS)))
 DEP_LIBS := $(foreach NAME,$(FFLIBS),$(BUILD_ROOT_REL)/lib$(NAME)/$($(CONFIG_SHARED:yes=S)LIBNAME))
 
 ALLHEADERS := $(subst $(SRC_DIR)/,$(SUBDIR),$(wildcard $(SRC_DIR)/*.h $(SRC_DIR)/$(ARCH)/*.h))
-SKIPHEADERS = $(addprefix $(SUBDIR),$(SKIPHEADERS-))
+SKIPHEADERS += $(addprefix $(ARCH)/,$(ARCH_HEADERS))
+SKIPHEADERS := $(addprefix $(SUBDIR),$(SKIPHEADERS-) $(SKIPHEADERS))
 checkheaders: $(filter-out $(SKIPHEADERS:.h=.ho),$(ALLHEADERS:.h=.ho))
 
 $(HOSTOBJS): %.o: %.c

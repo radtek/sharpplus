@@ -22,7 +22,7 @@
 #define AVFORMAT_AVFORMAT_H
 
 #define LIBAVFORMAT_VERSION_MAJOR 52
-#define LIBAVFORMAT_VERSION_MINOR 52
+#define LIBAVFORMAT_VERSION_MINOR 55
 #define LIBAVFORMAT_VERSION_MICRO  0
 
 #define LIBAVFORMAT_VERSION_INT AV_VERSION_INT(LIBAVFORMAT_VERSION_MAJOR, \
@@ -63,7 +63,9 @@ struct AVFormatContext;
 /*
  * Public Metadata API.
  * The metadata API allows libavformat to export metadata tags to a client
- * application using a sequence of key/value pairs.
+ * application using a sequence of key/value pairs. Like all strings in FFmpeg,
+ * metadata must be stored as UTF-8 encoded Unicode. Note that metadata
+ * exported by demuxers isn't checked to be valid UTF-8 in most cases.
  * Important concepts to keep in mind:
  * 1. Keys are unique; there can never be 2 tags with the same key. This is
  *    also meant semantically, i.e., a demuxer should not knowingly produce
@@ -242,6 +244,7 @@ typedef struct AVFormatParameters {
 #define AVFMT_GENERIC_INDEX 0x0100 /**< Use generic index building code. */
 #define AVFMT_TS_DISCONT    0x0200 /**< Format allows timestamp discontinuities. */
 #define AVFMT_VARIABLE_FPS  0x0400 /**< Format allows variable fps. */
+#define AVFMT_NODIMENSIONS  0x0800 /**< Format does not need width/height */
 
 typedef struct AVOutputFormat {
     const char *name;
@@ -518,6 +521,11 @@ typedef struct AVStream {
      * Average framerate
      */
     AVRational avg_frame_rate;
+
+    /**
+     * Number of frames that have been demuxed during av_find_stream_info()
+     */
+    int codec_info_nb_frames;
 } AVStream;
 
 #define AV_PROGRAM_RUNNING 1
@@ -1331,23 +1339,58 @@ struct tm *brktimegm(time_t secs, struct tm *tm);
 const char *small_strptime(const char *p, const char *fmt,
                            struct tm *dt);
 
-struct in_addr;
-/* Deprecated, use getaddrinfo instead. */
-attribute_deprecated int resolve_host(struct in_addr *sin_addr, const char *hostname);
-
-void url_split(char *proto, int proto_size,
-               char *authorization, int authorization_size,
-               char *hostname, int hostname_size,
-               int *port_ptr,
-               char *path, int path_size,
-               const char *url);
-
-#if LIBAVFORMAT_VERSION_MAJOR < 53
 /**
- * @deprecated Use av_match_ext() instead.
+ * Splits a URL string into components. To reassemble components back into
+ * a URL, use ff_url_join instead of using snprintf directly.
+ *
+ * The pointers to buffers for storing individual components may be null,
+ * in order to ignore that component. Buffers for components not found are
+ * set to empty strings. If the port isn't found, it is set to a negative
+ * value.
+ *
+ * @see ff_url_join
+ *
+ * @param proto the buffer for the protocol
+ * @param proto_size the size of the proto buffer
+ * @param authorization the buffer for the authorization
+ * @param authorization_size the size of the authorization buffer
+ * @param hostname the buffer for the host name
+ * @param hostname_size the size of the hostname buffer
+ * @param port_ptr a pointer to store the port number in
+ * @param path the buffer for the path
+ * @param path_size the size of the path buffer
+ * @param url the URL to split
  */
-attribute_deprecated int match_ext(const char *filename, const char *extensions);
-#endif
+void ff_url_split(char *proto, int proto_size,
+                  char *authorization, int authorization_size,
+                  char *hostname, int hostname_size,
+                  int *port_ptr,
+                  char *path, int path_size,
+                  const char *url);
+
+/**
+ * Assembles a URL string from components. This is the reverse operation
+ * of ff_url_split.
+ *
+ * Note, this requires networking to be initialized, so the caller must
+ * ensure ff_network_init has been called.
+ *
+ * @see ff_url_split
+ *
+ * @param str the buffer to fill with the url
+ * @param size the size of the str buffer
+ * @param proto the protocol identifier, if null, the separator
+ *              after the identifier is left out, too
+ * @param authorization an optional authorization string, may be null
+ * @param hostname the host name string
+ * @param port the port number, left out from the string if negative
+ * @param fmt a generic format string for everything to add after the
+ *            host/port, may be null
+ * @return the number of characters written to the destination buffer
+ */
+int ff_url_join(char *str, int size, const char *proto,
+                const char *authorization, const char *hostname,
+                int port, const char *fmt, ...);
 
 /**
  * Returns a positive value if the given filename has one of the given

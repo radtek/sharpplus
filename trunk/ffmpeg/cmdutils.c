@@ -46,8 +46,6 @@
 #include <sys/resource.h>
 #endif
 
-#undef exit
-
 const char **opt_names;
 static int opt_name_count;
 AVCodecContext *avcodec_opts[CODEC_TYPE_NB];
@@ -200,7 +198,7 @@ int opt_default(const char *opt, const char *arg){
     }
     if(!o)
         ret = av_set_string3(avformat_opts, opt, arg, 1, &o);
-    if(!o)
+    if(!o && sws_opts)
         ret = av_set_string3(sws_opts, opt, arg, 1, &o);
     if(!o){
         if(opt[0] == 'a')
@@ -214,8 +212,10 @@ int opt_default(const char *opt, const char *arg){
         fprintf(stderr, "Invalid value '%s' for option '%s'\n", arg, opt);
         exit(1);
     }
-    if(!o)
-        return -1;
+    if (!o) {
+        fprintf(stderr, "Unrecognized option '%s'\n", opt);
+        exit(1);
+    }
 
 //    av_log(NULL, AV_LOG_ERROR, "%s:%s: %f 0x%0X\n", opt, arg, av_get_double(avcodec_opts, opt, NULL), (int)av_get_int(avcodec_opts, opt, NULL));
 
@@ -369,7 +369,7 @@ static void maybe_print_config(const char *lib, const char *cfg)
 
 void show_banner(void)
 {
-    fprintf(stderr, "%s version " FFMPEG_VERSION ", Copyright (c) %d-%d Fabrice Bellard, et al.\n",
+    fprintf(stderr, "%s version " FFMPEG_VERSION ", Copyright (c) %d-%d the FFmpeg developers\n",
             program_name, program_birth_year, this_year);
     fprintf(stderr, "  built on %s %s with %s %s\n",
             __DATE__, __TIME__, CC_TYPE, CC_VERSION);
