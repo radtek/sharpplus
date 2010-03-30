@@ -10,8 +10,6 @@
 **
 *************************************************************************
 ** This file implements that page cache.
-**
-** @(#) $Id: pcache.c,v 1.47 2009/07/25 11:46:49 danielk1977 Exp $
 */
 #include "sqliteInt.h"
 
@@ -191,6 +189,7 @@ void sqlite3PcacheSetPageSize(PCache *pCache, int szPage){
   if( pCache->pCache ){
     sqlite3GlobalConfig.pcache.xDestroy(pCache->pCache);
     pCache->pCache = 0;
+    pCache->pPage1 = 0;
   }
   pCache->szPage = szPage;
 }
@@ -244,6 +243,7 @@ int sqlite3PcacheFetch(
         pPg && (pPg->nRef || (pPg->flags&PGHDR_NEED_SYNC)); 
         pPg=pPg->pDirtyPrev
     );
+    pCache->pSynced = pPg;
     if( !pPg ){
       for(pPg=pCache->pDirtyTail; pPg && pPg->nRef; pPg=pPg->pDirtyPrev);
     }

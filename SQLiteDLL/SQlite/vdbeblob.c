@@ -11,8 +11,6 @@
 *************************************************************************
 **
 ** This file contains code used to implement incremental BLOB I/O.
-**
-** $Id: vdbeblob.c,v 1.35 2009/07/02 07:47:33 danielk1977 Exp $
 */
 
 #include "sqliteInt.h"
@@ -97,13 +95,6 @@ int sqlite3_blob_open(
     memset(pParse, 0, sizeof(Parse));
     pParse->db = db;
 
-    if( sqlite3SafetyOn(db) ){
-      sqlite3DbFree(db, zErr);
-      sqlite3StackFree(db, pParse);
-      sqlite3_mutex_leave(db->mutex);
-      return SQLITE_MISUSE;
-    }
-
     sqlite3BtreeEnterAll(db);
     pTab = sqlite3LocateTable(pParse, 0, zTable, zDb);
     if( pTab && IsVirtual(pTab) ){
@@ -123,7 +114,6 @@ int sqlite3_blob_open(
         pParse->zErrMsg = 0;
       }
       rc = SQLITE_ERROR;
-      (void)sqlite3SafetyOff(db);
       sqlite3BtreeLeaveAll(db);
       goto blob_open_out;
     }
@@ -138,7 +128,6 @@ int sqlite3_blob_open(
       sqlite3DbFree(db, zErr);
       zErr = sqlite3MPrintf(db, "no such column: \"%s\"", zColumn);
       rc = SQLITE_ERROR;
-      (void)sqlite3SafetyOff(db);
       sqlite3BtreeLeaveAll(db);
       goto blob_open_out;
     }
@@ -179,7 +168,6 @@ int sqlite3_blob_open(
         sqlite3DbFree(db, zErr);
         zErr = sqlite3MPrintf(db, "cannot open %s column for writing", zFault);
         rc = SQLITE_ERROR;
-        (void)sqlite3SafetyOff(db);
         sqlite3BtreeLeaveAll(db);
         goto blob_open_out;
       }
@@ -229,8 +217,7 @@ int sqlite3_blob_open(
     }
    
     sqlite3BtreeLeaveAll(db);
-    rc = sqlite3SafetyOff(db);
-    if( NEVER(rc!=SQLITE_OK) || db->mallocFailed ){
+    if( db->mallocFailed ){
       goto blob_open_out;
     }
 
@@ -331,7 +318,7 @@ static int blobReadWrite(
   Vdbe *v;
   sqlite3 *db;
 
-  if( p==0 ) return SQLITE_MISUSE;
+  if( p==0 ) return SQLITE_MISUSE_BKPT;
   db = p->db;
   sqlite3_mutex_enter(db->mutex);
   v = (Vdbe*)p->pStmt;

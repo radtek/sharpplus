@@ -12,8 +12,6 @@
 **
 ** This module implements the sqlite3_status() interface and related
 ** functionality.
-**
-** $Id: status.c,v 1.9 2008/09/02 00:52:52 drh Exp $
 */
 #include "sqliteInt.h"
 
@@ -85,7 +83,7 @@ void sqlite3StatusSet(int op, int X){
 int sqlite3_status(int op, int *pCurrent, int *pHighwater, int resetFlag){
   wsdStatInit;
   if( op<0 || op>=ArraySize(wsdStat.nowValue) ){
-    return SQLITE_MISUSE;
+    return SQLITE_MISUSE_BKPT;
   }
   *pCurrent = wsdStat.nowValue[op];
   *pHighwater = wsdStat.mxValue[op];

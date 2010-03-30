@@ -16,8 +16,6 @@
 ** sqlite3RegisterDateTimeFunctions() found at the bottom of the file.
 ** All other code has file scope.
 **
-** $Id: date.c,v 1.107 2009/05/03 20:23:53 drh Exp $
-**
 ** SQLite processes all times and dates as Julian Day numbers.  The
 ** dates and times are stored as the number of days since noon
 ** in Greenwich on November 24, 4714 B.C. according to the Gregorian
@@ -1094,8 +1092,8 @@ void sqlite3RegisterDateTimeFunctions(void){
     FUNCTION(current_date,      0, 0, 0, cdateFunc     ),
 #else
     STR_FUNCTION(current_time,      0, "%H:%M:%S",          0, currentTimeFunc),
-    STR_FUNCTION(current_timestamp, 0, "%Y-%m-%d",          0, currentTimeFunc),
-    STR_FUNCTION(current_date,      0, "%Y-%m-%d %H:%M:%S", 0, currentTimeFunc),
+    STR_FUNCTION(current_date,      0, "%Y-%m-%d",          0, currentTimeFunc),
+    STR_FUNCTION(current_timestamp, 0, "%Y-%m-%d %H:%M:%S", 0, currentTimeFunc),
 #endif
   };
   int i;

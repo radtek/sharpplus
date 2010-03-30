@@ -12,8 +12,6 @@
 ** This file contains the implementation of the sqlite3_prepare()
 ** interface, and routines that contribute to loading the database schema
 ** from disk.
-**
-** $Id: prepare.c,v 1.131 2009/08/06 17:43:31 drh Exp $
 */
 #include "sqliteInt.h"
 
@@ -194,9 +192,7 @@ static int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg){
   initData.iDb = iDb;
   initData.rc = SQLITE_OK;
   initData.pzErrMsg = pzErrMsg;
-  (void)sqlite3SafetyOff(db);
   sqlite3InitCallback(&initData, 3, (char **)azArg, 0);
-  (void)sqlite3SafetyOn(db);
   if( initData.rc ){
     rc = initData.rc;
     goto error_out;
@@ -317,9 +313,8 @@ static int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg){
   {
     char *zSql;
     zSql = sqlite3MPrintf(db, 
-        "SELECT name, rootpage, sql FROM '%q'.%s",
+        "SELECT name, rootpage, sql FROM '%q'.%s ORDER BY rowid",
         db->aDb[iDb].zName, zMasterName);
-    (void)sqlite3SafetyOff(db);
 #ifndef SQLITE_OMIT_AUTHORIZATION
     {
       int (*xAuth)(void*,int,const char*,const char*,const char*,const char*);
@@ -332,7 +327,6 @@ static int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg){
     }
 #endif
     if( rc==SQLITE_OK ) rc = initData.rc;
-    (void)sqlite3SafetyOn(db);
     sqlite3DbFree(db, zSql);
 #ifndef SQLITE_OMIT_ANALYZE
     if( rc==SQLITE_OK ){
@@ -471,7 +465,7 @@ static void schemaIsValid(Parse *pParse){
     }
 
     /* Read the schema cookie from the database. If it does not match the 
-    ** value stored as part of the in the in-memory schema representation,
+    ** value stored as part of the in-memory schema representation,
     ** set Parse.rc to SQLITE_SCHEMA. */
     sqlite3BtreeGetMeta(pBt, BTREE_SCHEMA_VERSION, (u32 *)&cookie);
     if( cookie!=db->aDb[iDb].pSchema->schema_cookie ){
@@ -541,11 +535,6 @@ static int sqlite3Prepare(
     goto end_prepare;
   }
   pParse->pReprepare = pReprepare;
-
-  if( sqlite3SafetyOn(db) ){
-    rc = SQLITE_MISUSE;
-    goto end_prepare;
-  }
   assert( ppStmt && *ppStmt==0 );
   assert( !db->mallocFailed );
   assert( sqlite3_mutex_held(db->mutex) );
@@ -581,7 +570,6 @@ static int sqlite3Prepare(
       if( rc ){
         const char *zDb = db->aDb[i].zName;
         sqlite3Error(db, rc, "database schema is locked: %s", zDb);
-        (void)sqlite3SafetyOff(db);
         testcase( db->flags & SQLITE_ReadUncommitted );
         goto end_prepare;
       }
@@ -598,7 +586,6 @@ static int sqlite3Prepare(
     testcase( nBytes==mxLen+1 );
     if( nBytes>mxLen ){
       sqlite3Error(db, SQLITE_TOOBIG, "statement too long");
-      (void)sqlite3SafetyOff(db);
       rc = sqlite3ApiExit(db, SQLITE_TOOBIG);
       goto end_prepare;
     }
@@ -655,10 +642,6 @@ static int sqlite3Prepare(
   }
 #endif
 
-  if( sqlite3SafetyOff(db) ){
-    rc = SQLITE_MISUSE;
-  }
-
   assert( db->init.busy==0 || saveSqlFlag==0 );
   if( db->init.busy==0 ){
     Vdbe *pVdbe = pParse->pVdbe;
@@ -706,7 +689,7 @@ static int sqlite3LockAndPrepare(
   assert( ppStmt!=0 );
   *ppStmt = 0;
   if( !sqlite3SafetyCheckOk(db) ){
-    return SQLITE_MISUSE;
+    return SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(db->mutex);
   sqlite3BtreeEnterAll(db);
@@ -745,7 +728,7 @@ int sqlite3Reprepare(Vdbe *p){
       db->mallocFailed = 1;
     }
     assert( pNew==0 );
-    return (rc==SQLITE_LOCKED) ? SQLITE_LOCKED : SQLITE_SCHEMA;
+    return rc;
   }else{
     assert( pNew!=0 );
   }
@@ -814,10 +797,10 @@ static int sqlite3Prepare16(
   assert( ppStmt );
   *ppStmt = 0;
   if( !sqlite3SafetyCheckOk(db) ){
-    return SQLITE_MISUSE;
+    return SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(db->mutex);
-  zSql8 = sqlite3Utf16to8(db, zSql, nBytes);
+  zSql8 = sqlite3Utf16to8(db, zSql, nBytes, SQLITE_UTF16NATIVE);
   if( zSql8 ){
     rc = sqlite3LockAndPrepare(db, zSql8, -1, saveSqlFlag, 0, ppStmt, &zTail8);
   }
