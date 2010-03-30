@@ -230,6 +230,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ctime.c"
+				>
+			</File>
+			<File
 				RelativePath=".\date.c"
 				>
 			</File>
@@ -271,10 +275,6 @@
 			</File>
 			<File
 				RelativePath=".\func.c"
-				>
-			</File>
-			<File
-				RelativePath=".\genfkey.c"
 				>
 			</File>
 			<File

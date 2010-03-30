@@ -239,17 +239,30 @@ static VdbeCursor *allocateCursor(
 static void applyNumericAffinity(Mem *pRec){
   if( (pRec->flags & (MEM_Real|MEM_Int))==0 ){
     int realnum;
+    u8 enc = pRec->enc;
     sqlite3VdbeMemNulTerminate(pRec);
-    if( (pRec->flags&MEM_Str)
-         && sqlite3IsNumber(pRec->z, &realnum, pRec->enc) ){
+    if( (pRec->flags&MEM_Str) && sqlite3IsNumber(pRec->z, &realnum, enc) ){
       i64 value;
-      sqlite3VdbeChangeEncoding(pRec, SQLITE_UTF8);
-      if( !realnum && sqlite3Atoi64(pRec->z, &value) ){
+      char *zUtf8 = pRec->z;
+#ifndef SQLITE_OMIT_UTF16
+      if( enc!=SQLITE_UTF8 ){
+        assert( pRec->db );
+        zUtf8 = sqlite3Utf16to8(pRec->db, pRec->z, pRec->n, enc);
+        if( !zUtf8 ) return;
+      }
+#endif
+      if( !realnum && sqlite3Atoi64(zUtf8, &value) ){
         pRec->u.i = value;
         MemSetTypeFlag(pRec, MEM_Int);
       }else{
-        sqlite3VdbeMemRealify(pRec);
+        sqlite3AtoF(zUtf8, &pRec->r);
+        MemSetTypeFlag(pRec, MEM_Real);
       }
+#ifndef SQLITE_OMIT_UTF16
+      if( enc!=SQLITE_UTF8 ){
+        sqlite3DbFree(pRec->db, zUtf8);
+      }
+#endif
     }
   }
 }
@@ -538,7 +551,7 @@ static int checkSavepointCount(sqlite3 *db){
 int sqlite3VdbeExec(
   Vdbe *p                    /* The VDBE */
 ){
-  int pc;                    /* The program counter */
+  int pc=0;                  /* The program counter */
   Op *aOp = p->aOp;          /* Copy of p->aOp */
   Op *pOp;                   /* Current operation */
   int rc = SQLITE_OK;        /* Value to return */
@@ -612,6 +625,8 @@ int sqlite3VdbeExec(
     struct OP_Ge_stack_vars {
       int res;            /* Result of the comparison of pIn1 against pIn3 */
       char affinity;      /* Affinity to use for comparison */
+      u16 flags1;         /* Copy of initial value of pIn1->flags */
+      u16 flags3;         /* Copy of initial value of pIn3->flags */
     } ai;
     struct OP_Compare_stack_vars {
       int n;
@@ -649,7 +664,7 @@ int sqlite3VdbeExec(
       u8 *zIdx;          /* Index into header */
       u8 *zEndHdr;       /* Pointer to first byte after the header */
       u32 offset;        /* Offset into the data */
-      u64 offset64;      /* 64-bit offset.  64 bits needed to catch overflow */
+      u32 szField;       /* Number of bytes in the content of a field */
       int szHdr;         /* Size of the header size field at start of record */
       int avail;         /* Number of bytes of available data */
       Mem *pReg;         /* PseudoTable input register */
@@ -961,7 +976,6 @@ int sqlite3VdbeExec(
   ********************************************************************/
 
   assert( p->magic==VDBE_MAGIC_RUN );  /* sqlite3_step() verifies this */
-  assert( db->magic==SQLITE_MAGIC_BUSY );
   sqlite3VdbeMutexArrayEnter(p);
   if( p->rc==SQLITE_NOMEM ){
     /* This happens if a malloc() inside a call to sqlite3_column_text() or
@@ -1046,9 +1060,7 @@ int sqlite3VdbeExec(
     if( checkProgress ){
       if( db->nProgressOps==nProgressOps ){
         int prc;
-        if( sqlite3SafetyOff(db) ) goto abort_due_to_misuse;
-        prc =db->xProgress(db->pProgressArg);
-        if( sqlite3SafetyOn(db) ) goto abort_due_to_misuse;
+        prc = db->xProgress(db->pProgressArg);
         if( prc!=0 ){
           rc = SQLITE_INTERRUPT;
           goto vdbe_error_halt;
@@ -1250,7 +1262,13 @@ case OP_Halt: {
   p->errorAction = (u8)pOp->p2;
   p->pc = pc;
   if( pOp->p4.z ){
+    assert( p->rc!=SQLITE_OK );
     sqlite3SetString(&p->zErrMsg, db, "%s", pOp->p4.z);
+    testcase( sqlite3GlobalConfig.xLog!=0 );
+    sqlite3_log(pOp->p1, "abort at %d in [%s]: %s", pc, p->zSql, pOp->p4.z);
+  }else if( p->rc ){
+    testcase( sqlite3GlobalConfig.xLog!=0 );
+    sqlite3_log(pOp->p1, "constraint failed at %d in [%s]", pc, p->zSql);
   }
   rc = sqlite3VdbeHalt(p);
   assert( rc==SQLITE_BUSY || rc==SQLITE_OK || rc==SQLITE_ERROR );
@@ -1284,6 +1302,7 @@ case OP_Int64: {           /* out2-prerelease */
   break;
 }
 
+#ifndef SQLITE_OMIT_FLOATING_POINT
 /* Opcode: Real * P2 * P4 *
 **
 ** P4 is a pointer to a 64-bit floating point value.
@@ -1295,6 +1314,7 @@ case OP_Real: {            /* same as TK_FLOAT, out2-prerelease */
   pOut->r = *pOp->p4.pReal;
   break;
 }
+#endif
 
 /* Opcode: String8 * P2 * P4 *
 **
@@ -1705,6 +1725,10 @@ case OP_Remainder: {           /* same as TK_REM, in1, in2, out3 */
         break;
       }
     }
+#ifdef SQLITE_OMIT_FLOATING_POINT
+    pOut->u.i = u.af.rB;
+    MemSetTypeFlag(pOut, MEM_Int);
+#else
     if( sqlite3IsNaN(u.af.rB) ){
       goto arithmetic_result_is_null;
     }
@@ -1713,6 +1737,7 @@ case OP_Remainder: {           /* same as TK_REM, in1, in2, out3 */
     if( (u.af.flags & MEM_Real)==0 ){
       sqlite3VdbeIntegerAffinity(pOut);
     }
+#endif
   }
   break;
 
@@ -1805,21 +1830,12 @@ case OP_Function: {
     assert( pOp[-1].opcode==OP_CollSeq );
     u.ag.ctx.pColl = pOp[-1].p4.pColl;
   }
-  if( sqlite3SafetyOff(db) ) goto abort_due_to_misuse;
   (*u.ag.ctx.pFunc->xFunc)(&u.ag.ctx, u.ag.n, u.ag.apVal);
-  if( sqlite3SafetyOn(db) ){
-    sqlite3VdbeMemRelease(&u.ag.ctx.s);
-    goto abort_due_to_misuse;
-  }
   if( db->mallocFailed ){
     /* Even though a malloc() has failed, the implementation of the
     ** user function may have called an sqlite3_result_XXX() function
     ** to return a value. The following call releases any resources
     ** associated with such a value.
-    **
-    ** Note: Maybe MemRelease() should be called if sqlite3SafetyOn()
-    ** fails also (the if(...) statement above). But if people are
-    ** misusing sqlite, they have bigger problems than a leaked value.
     */
     sqlite3VdbeMemRelease(&u.ag.ctx.s);
     goto no_mem;
@@ -1944,6 +1960,7 @@ case OP_MustBeInt: {            /* jump, in1 */
   break;
 }
 
+#ifndef SQLITE_OMIT_FLOATING_POINT
 /* Opcode: RealAffinity P1 * * * *
 **
 ** If register P1 holds an integer convert it to a real value.
@@ -1960,6 +1977,7 @@ case OP_RealAffinity: {                  /* in1 */
   }
   break;
 }
+#endif
 
 #ifndef SQLITE_OMIT_CAST
 /* Opcode: ToText P1 * * * *
@@ -2043,7 +2061,7 @@ case OP_ToInt: {                  /* same as TK_TO_INT, in1 */
   break;
 }
 
-#ifndef SQLITE_OMIT_CAST
+#if !defined(SQLITE_OMIT_CAST) && !defined(SQLITE_OMIT_FLOATING_POINT)
 /* Opcode: ToReal P1 * * * *
 **
 ** Force the value in register P1 to be a floating point number.
@@ -2060,7 +2078,7 @@ case OP_ToReal: {                  /* same as TK_TO_REAL, in1 */
   }
   break;
 }
-#endif /* SQLITE_OMIT_CAST */
+#endif /* !defined(SQLITE_OMIT_CAST) && !defined(SQLITE_OMIT_FLOATING_POINT) */
 
 /* Opcode: Lt P1 P2 P3 P4 P5
 **
@@ -2143,10 +2161,14 @@ case OP_Ge: {             /* same as TK_GE, jump, in1, in3 */
 #if 0  /* local variables moved into u.ai */
   int res;            /* Result of the comparison of pIn1 against pIn3 */
   char affinity;      /* Affinity to use for comparison */
+  u16 flags1;         /* Copy of initial value of pIn1->flags */
+  u16 flags3;         /* Copy of initial value of pIn3->flags */
 #endif /* local variables moved into u.ai */
 
   pIn1 = &aMem[pOp->p1];
   pIn3 = &aMem[pOp->p3];
+  u.ai.flags1 = pIn1->flags;
+  u.ai.flags3 = pIn3->flags;
   if( (pIn1->flags | pIn3->flags)&MEM_Null ){
     /* One or both operands are NULL */
     if( pOp->p5 & SQLITE_NULLEQ ){
@@ -2201,6 +2223,10 @@ case OP_Ge: {             /* same as TK_GE, jump, in1, in3 */
   }else if( u.ai.res ){
     pc = pOp->p2-1;
   }
+
+  /* Undo any changes made by applyAffinity() to the input registers. */
+  pIn1->flags = (pIn1->flags&~MEM_TypeMask) | (u.ai.flags1&MEM_TypeMask);
+  pIn3->flags = (pIn3->flags&~MEM_TypeMask) | (u.ai.flags3&MEM_TypeMask);
   break;
 }
 
@@ -2482,7 +2508,7 @@ case OP_Column: {
   u8 *zIdx;          /* Index into header */
   u8 *zEndHdr;       /* Pointer to first byte after the header */
   u32 offset;        /* Offset into the data */
-  u64 offset64;      /* 64-bit offset.  64 bits needed to catch overflow */
+  u32 szField;       /* Number of bytes in the content of a field */
   int szHdr;         /* Size of the header size field at start of record */
   int avail;         /* Number of bytes of available data */
   Mem *pReg;         /* PseudoTable input register */
@@ -2658,12 +2684,16 @@ case OP_Column: {
     ** column and u.am.aOffset[u.am.i] will contain the u.am.offset from the beginning
     ** of the record to the start of the data for the u.am.i-th column
     */
-    u.am.offset64 = u.am.offset;
     for(u.am.i=0; u.am.i<u.am.nField; u.am.i++){
       if( u.am.zIdx<u.am.zEndHdr ){
-        u.am.aOffset[u.am.i] = (u32)u.am.offset64;
+        u.am.aOffset[u.am.i] = u.am.offset;
         u.am.zIdx += getVarint32(u.am.zIdx, u.am.aType[u.am.i]);
-        u.am.offset64 += sqlite3VdbeSerialTypeLen(u.am.aType[u.am.i]);
+        u.am.szField = sqlite3VdbeSerialTypeLen(u.am.aType[u.am.i]);
+        u.am.offset += u.am.szField;
+        if( u.am.offset<u.am.szField ){  /* True if u.am.offset overflows */
+          u.am.zIdx = &u.am.zEndHdr[1];  /* Forces SQLITE_CORRUPT return below */
+          break;
+        }
       }else{
         /* If u.am.i is less that u.am.nField, then there are less fields in this
         ** record than SetNumColumns indicated there are columns in the
@@ -2683,8 +2713,8 @@ case OP_Column: {
     ** of the record (when all fields present), then we must be dealing
     ** with a corrupt database.
     */
-    if( (u.am.zIdx > u.am.zEndHdr)|| (u.am.offset64 > u.am.payloadSize)
-     || (u.am.zIdx==u.am.zEndHdr && u.am.offset64!=(u64)u.am.payloadSize) ){
+    if( (u.am.zIdx > u.am.zEndHdr) || (u.am.offset > u.am.payloadSize)
+         || (u.am.zIdx==u.am.zEndHdr && u.am.offset!=u.am.payloadSize) ){
       rc = SQLITE_CORRUPT_BKPT;
       goto op_column_out;
     }
@@ -3552,7 +3582,7 @@ case OP_OpenEphemeral: {
 ** register P2.  In other words, cursor P1 becomes an alias for the 
 ** MEM_Blob content contained in register P2.
 **
-** A pseudo-table created by this opcode is used to hold the a single
+** A pseudo-table created by this opcode is used to hold a single
 ** row output from the sorter so that the row can be decomposed into
 ** individual columns using the OP_Column opcode.  The OP_Column opcode
 ** is the only cursor opcode that works with a pseudo-table.
@@ -4123,7 +4153,7 @@ case OP_NewRowid: {           /* out2-prerelease */
           goto abort_due_to_error;
         }
         if( u.be.res ){
-          u.be.v = 1;
+          u.be.v = 1;   /* IMP: R-61914-48074 */
         }else{
           assert( sqlite3BtreeCursorIsValid(u.be.pC->pCursor) );
           rc = sqlite3BtreeKeySize(u.be.pC->pCursor, &u.be.v);
@@ -4131,7 +4161,7 @@ case OP_NewRowid: {           /* out2-prerelease */
           if( u.be.v==MAX_ROWID ){
             u.be.pC->useRandomRowid = 1;
           }else{
-            u.be.v++;
+            u.be.v++;   /* IMP: R-29538-34987 */
           }
         }
       }
@@ -4155,7 +4185,7 @@ case OP_NewRowid: {           /* out2-prerelease */
         sqlite3VdbeMemIntegerify(u.be.pMem);
         assert( (u.be.pMem->flags & MEM_Int)!=0 );  /* mem(P3) holds an integer */
         if( u.be.pMem->u.i==MAX_ROWID || u.be.pC->useRandomRowid ){
-          rc = SQLITE_FULL;
+          rc = SQLITE_FULL;   /* IMP: R-12275-61338 */
           goto abort_due_to_error;
         }
         if( u.be.v<u.be.pMem->u.i+1 ){
@@ -4168,6 +4198,11 @@ case OP_NewRowid: {           /* out2-prerelease */
       sqlite3BtreeSetCachedRowid(u.be.pC->pCursor, u.be.v<MAX_ROWID ? u.be.v+1 : 0);
     }
     if( u.be.pC->useRandomRowid ){
+      /* IMPLEMENTATION-OF: R-48598-02938 If the largest ROWID is equal to the
+      ** largest possible integer (9223372036854775807) then the database
+      ** engine starts picking candidate ROWIDs at random until it finds one
+      ** that is not previously used.
+      */
       assert( pOp->p3==0 );  /* We cannot be in random rowid mode if this is
                              ** an AUTOINCREMENT table. */
       u.be.v = db->lastRowid;
@@ -4183,7 +4218,7 @@ case OP_NewRowid: {           /* out2-prerelease */
         u.be.cnt++;
       }while( u.be.cnt<100 && rc==SQLITE_OK && u.be.res==0 );
       if( rc==SQLITE_OK && u.be.res==0 ){
-        rc = SQLITE_FULL;
+        rc = SQLITE_FULL;   /* IMP: R-38219-53002 */
         goto abort_due_to_error;
       }
     }
@@ -4499,12 +4534,10 @@ case OP_Rowid: {                 /* out2-prerelease */
     u.bi.pVtab = u.bi.pC->pVtabCursor->pVtab;
     u.bi.pModule = u.bi.pVtab->pModule;
     assert( u.bi.pModule->xRowid );
-    if( sqlite3SafetyOff(db) ) goto abort_due_to_misuse;
     rc = u.bi.pModule->xRowid(u.bi.pC->pVtabCursor, &u.bi.v);
     sqlite3DbFree(db, p->zErrMsg);
     p->zErrMsg = u.bi.pVtab->zErrMsg;
     u.bi.pVtab->zErrMsg = 0;
-    if( sqlite3SafetyOn(db) ) goto abort_due_to_misuse;
 #endif /* SQLITE_OMIT_VIRTUALTABLE */
   }else{
     assert( u.bi.pC->pCursor!=0 );
@@ -5059,12 +5092,11 @@ case OP_ParseSchema: {
     u.bu.initData.iDb = pOp->p1;
     u.bu.initData.pzErrMsg = &p->zErrMsg;
     u.bu.zSql = sqlite3MPrintf(db,
-       "SELECT name, rootpage, sql FROM '%q'.%s WHERE %s",
+       "SELECT name, rootpage, sql FROM '%q'.%s WHERE %s ORDER BY rowid",
        db->aDb[u.bu.iDb].zName, u.bu.zMaster, pOp->p4.z);
     if( u.bu.zSql==0 ){
       rc = SQLITE_NOMEM;
     }else{
-      (void)sqlite3SafetyOff(db);
       assert( db->init.busy==0 );
       db->init.busy = 1;
       u.bu.initData.rc = SQLITE_OK;
@@ -5073,7 +5105,6 @@ case OP_ParseSchema: {
       if( rc==SQLITE_OK ) rc = u.bu.initData.rc;
       sqlite3DbFree(db, u.bu.zSql);
       db->init.busy = 0;
-      (void)sqlite3SafetyOn(db);
     }
   }
   sqlite3BtreeLeaveAll(db);
@@ -5659,9 +5690,7 @@ case OP_AggFinal: {
 ** a transaction.
 */
 case OP_Vacuum: {
-  if( sqlite3SafetyOff(db) ) goto abort_due_to_misuse; 
   rc = sqlite3RunVacuum(&p->zErrMsg, db);
-  if( sqlite3SafetyOn(db) ) goto abort_due_to_misuse;
   break;
 }
 #endif
@@ -5811,12 +5840,10 @@ case OP_VOpen: {
   u.cf.pVtab = pOp->p4.pVtab->pVtab;
   u.cf.pModule = (sqlite3_module *)u.cf.pVtab->pModule;
   assert(u.cf.pVtab && u.cf.pModule);
-  if( sqlite3SafetyOff(db) ) goto abort_due_to_misuse;
   rc = u.cf.pModule->xOpen(u.cf.pVtab, &u.cf.pVtabCursor);
   sqlite3DbFree(db, p->zErrMsg);
   p->zErrMsg = u.cf.pVtab->zErrMsg;
   u.cf.pVtab->zErrMsg = 0;
-  if( sqlite3SafetyOn(db) ) goto abort_due_to_misuse;
   if( SQLITE_OK==rc ){
     /* Initialize sqlite3_vtab_cursor base class */
     u.cf.pVtabCursor->pVtab = u.cf.pVtab;
@@ -5892,7 +5919,6 @@ case OP_VFilter: {   /* jump */
       sqlite3VdbeMemStoreType(u.cg.apArg[u.cg.i]);
     }
 
-    if( sqlite3SafetyOff(db) ) goto abort_due_to_misuse;
     p->inVtabMethod = 1;
     rc = u.cg.pModule->xFilter(u.cg.pVtabCursor, u.cg.iQuery, pOp->p4.z, u.cg.nArg, u.cg.apArg);
     p->inVtabMethod = 0;
@@ -5902,7 +5928,6 @@ case OP_VFilter: {   /* jump */
     if( rc==SQLITE_OK ){
       u.cg.res = u.cg.pModule->xEof(u.cg.pVtabCursor);
     }
-    if( sqlite3SafetyOn(db) ) goto abort_due_to_misuse;
 
     if( u.cg.res ){
       pc = pOp->p2 - 1;
@@ -5950,7 +5975,6 @@ case OP_VColumn: {
   sqlite3VdbeMemMove(&u.ch.sContext.s, u.ch.pDest);
   MemSetTypeFlag(&u.ch.sContext.s, MEM_Null);
 
-  if( sqlite3SafetyOff(db) ) goto abort_due_to_misuse;
   rc = u.ch.pModule->xColumn(pCur->pVtabCursor, &u.ch.sContext, pOp->p2);
   sqlite3DbFree(db, p->zErrMsg);
   p->zErrMsg = u.ch.pVtab->zErrMsg;
@@ -5968,9 +5992,6 @@ case OP_VColumn: {
   REGISTER_TRACE(pOp->p3, u.ch.pDest);
   UPDATE_MAX_BLOBSIZE(u.ch.pDest);
 
-  if( sqlite3SafetyOn(db) ){
-    goto abort_due_to_misuse;
-  }
   if( sqlite3VdbeMemTooBig(u.ch.pDest) ){
     goto too_big;
   }
@@ -6009,7 +6030,6 @@ case OP_VNext: {   /* jump */
   ** data is available) and the error code returned when xColumn or
   ** some other method is next invoked on the save virtual table cursor.
   */
-  if( sqlite3SafetyOff(db) ) goto abort_due_to_misuse;
   p->inVtabMethod = 1;
   rc = u.ci.pModule->xNext(u.ci.pCur->pVtabCursor);
   p->inVtabMethod = 0;
@@ -6019,7 +6039,6 @@ case OP_VNext: {   /* jump */
   if( rc==SQLITE_OK ){
     u.ci.res = u.ci.pModule->xEof(u.ci.pCur->pVtabCursor);
   }
-  if( sqlite3SafetyOn(db) ) goto abort_due_to_misuse;
 
   if( !u.ci.res ){
     /* If there is data, jump to P2 */
@@ -6047,12 +6066,10 @@ case OP_VRename: {
   assert( u.cj.pVtab->pModule->xRename );
   REGISTER_TRACE(pOp->p1, u.cj.pName);
   assert( u.cj.pName->flags & MEM_Str );
-  if( sqlite3SafetyOff(db) ) goto abort_due_to_misuse;
   rc = u.cj.pVtab->pModule->xRename(u.cj.pVtab, u.cj.pName->z);
   sqlite3DbFree(db, p->zErrMsg);
   p->zErrMsg = u.cj.pVtab->zErrMsg;
   u.cj.pVtab->zErrMsg = 0;
-  if( sqlite3SafetyOn(db) ) goto abort_due_to_misuse;
 
   break;
 }
@@ -6105,12 +6122,10 @@ case OP_VUpdate: {
       u.ck.apArg[u.ck.i] = u.ck.pX;
       u.ck.pX++;
     }
-    if( sqlite3SafetyOff(db) ) goto abort_due_to_misuse;
     rc = u.ck.pModule->xUpdate(u.ck.pVtab, u.ck.nArg, u.ck.apArg, &u.ck.rowid);
     sqlite3DbFree(db, p->zErrMsg);
     p->zErrMsg = u.ck.pVtab->zErrMsg;
     u.ck.pVtab->zErrMsg = 0;
-    if( sqlite3SafetyOn(db) ) goto abort_due_to_misuse;
     if( rc==SQLITE_OK && pOp->p1 ){
       assert( u.ck.nArg>1 && u.ck.apArg[0] && (u.ck.apArg[0]->flags&MEM_Null) );
       db->lastRowid = u.ck.rowid;
@@ -6187,6 +6202,7 @@ case OP_Trace: {
 ** the same as a no-op.  This opcodesnever appears in a real VM program.
 */
 default: {          /* This is really OP_Noop and OP_Explain */
+  assert( pOp->opcode==OP_Noop || pOp->opcode==OP_Explain );
   break;
 }
 
@@ -6238,6 +6254,9 @@ default: {          /* This is really OP_Noop and OP_Explain */
 vdbe_error_halt:
   assert( rc );
   p->rc = rc;
+  testcase( sqlite3GlobalConfig.xLog!=0 );
+  sqlite3_log(rc, "statement aborts at %d: [%s] %s", 
+                   pc, p->zSql, p->zErrMsg);
   sqlite3VdbeHalt(p);
   if( rc==SQLITE_IOERR_NOMEM ) db->mallocFailed = 1;
   rc = SQLITE_ERROR;
@@ -6265,12 +6284,6 @@ no_mem:
   sqlite3SetString(&p->zErrMsg, db, "out of memory");
   rc = SQLITE_NOMEM;
   goto vdbe_error_halt;
-
-  /* Jump to here for an SQLITE_MISUSE error.
-  */
-abort_due_to_misuse:
-  rc = SQLITE_MISUSE;
-  /* Fall thru into abort_due_to_error */
 
   /* Jump to here for any other kind of fatal error.  The "rc" variable
   ** should hold the error number.

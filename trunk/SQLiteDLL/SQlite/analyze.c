@@ -10,8 +10,6 @@
 **
 *************************************************************************
 ** This file contains code associated with the ANALYZE command.
-**
-** @(#) $Id: analyze.c,v 1.52 2009/04/16 17:45:48 drh Exp $
 */
 #ifndef SQLITE_OMIT_ANALYZE
 #include "sqliteInt.h"
@@ -561,9 +559,7 @@ int sqlite3AnalysisLoad(sqlite3 *db, int iDb){
   if( zSql==0 ){
     rc = SQLITE_NOMEM;
   }else{
-    (void)sqlite3SafetyOff(db);
     rc = sqlite3_exec(db, zSql, analysisLoader, &sInfo, 0);
-    (void)sqlite3SafetyOn(db);
     sqlite3DbFree(db, zSql);
   }
 
@@ -581,14 +577,11 @@ int sqlite3AnalysisLoad(sqlite3 *db, int iDb){
     if( !zSql ){
       rc = SQLITE_NOMEM;
     }else{
-      (void)sqlite3SafetyOff(db);
       rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
-      (void)sqlite3SafetyOn(db);
       sqlite3DbFree(db, zSql);
     }
 
     if( rc==SQLITE_OK ){
-      (void)sqlite3SafetyOff(db);
       while( sqlite3_step(pStmt)==SQLITE_ROW ){
         char *zIndex = (char *)sqlite3_column_text(pStmt, 0);
         Index *pIdx = sqlite3FindIndex(db, zIndex, sInfo.zDatabase);
@@ -638,7 +631,6 @@ int sqlite3AnalysisLoad(sqlite3 *db, int iDb){
         }
       }
       rc = sqlite3_finalize(pStmt);
-      (void)sqlite3SafetyOn(db);
     }
   }
 #endif

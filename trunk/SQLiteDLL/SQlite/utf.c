@@ -12,8 +12,6 @@
 ** This file contains routines used to translate between UTF-8, 
 ** UTF-16, UTF-16BE, and UTF-16LE.
 **
-** $Id: utf.c,v 1.73 2009/04/01 18:40:32 drh Exp $
-**
 ** Notes on UTF-8:
 **
 **   Byte-0    Byte-1    Byte-2    Byte-3    Value
@@ -439,11 +437,11 @@ int sqlite3Utf8To8(unsigned char *zIn){
 **
 ** NULL is returned if there is an allocation error.
 */
-char *sqlite3Utf16to8(sqlite3 *db, const void *z, int nByte){
+char *sqlite3Utf16to8(sqlite3 *db, const void *z, int nByte, u8 enc){
   Mem m;
   memset(&m, 0, sizeof(m));
   m.db = db;
-  sqlite3VdbeMemSetStr(&m, z, nByte, SQLITE_UTF16NATIVE, SQLITE_STATIC);
+  sqlite3VdbeMemSetStr(&m, z, nByte, enc, SQLITE_STATIC);
   sqlite3VdbeChangeEncoding(&m, SQLITE_UTF8);
   if( db->mallocFailed ){
     sqlite3VdbeMemRelease(&m);
@@ -451,7 +449,9 @@ char *sqlite3Utf16to8(sqlite3 *db, const void *z, int nByte){
   }
   assert( (m.flags & MEM_Term)!=0 || db->mallocFailed );
   assert( (m.flags & MEM_Str)!=0 || db->mallocFailed );
-  return (m.flags & MEM_Dyn)!=0 ? m.z : sqlite3DbStrDup(db, m.z);
+  assert( (m.flags & MEM_Dyn)!=0 || db->mallocFailed );
+  assert( m.z || db->mallocFailed );
+  return m.z;
 }
 
 /*

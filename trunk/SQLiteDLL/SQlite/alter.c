@@ -11,8 +11,6 @@
 *************************************************************************
 ** This file contains C code routines that used to generate VDBE code
 ** that implements the ALTER TABLE command.
-**
-** $Id: alter.c,v 1.62 2009/07/24 17:58:53 danielk1977 Exp $
 */
 #include "sqliteInt.h"
 
@@ -481,9 +479,9 @@ void sqlite3AlterRenameTable(
     ** for which the renamed table is the parent table.  */
     if( (zWhere=whereForeignKeys(pParse, pTab))!=0 ){
       sqlite3NestedParse(pParse, 
-          "UPDATE sqlite_master SET "
+          "UPDATE \"%w\".%s SET "
               "sql = sqlite_rename_parent(sql, %Q, %Q) "
-              "WHERE %s;", zTabName, zName, zWhere);
+              "WHERE %s;", zDb, SCHEMA_TABLE(iDb), zTabName, zName, zWhere);
       sqlite3DbFree(db, zWhere);
     }
   }
