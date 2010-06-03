@@ -368,12 +368,14 @@ static int vfw_read_header(AVFormatContext *s, AVFormatParameters *ap)
         codec->bits_per_coded_sample = biBitCount;
     } else {
         codec->codec_id = CODEC_ID_RAWVIDEO;
-        codec->extradata_size = 9;
-        codec->extradata= av_realloc(codec->extradata, codec->extradata_size + FF_INPUT_BUFFER_PADDING_SIZE);
-        if(codec->extradata)
-            memcpy(codec->extradata + codec->extradata_size - 9, "BottomUp", 9);
-        if(biCompression == BI_RGB)
+        if(biCompression == BI_RGB) {
             codec->bits_per_coded_sample = biBitCount;
+            codec->extradata = av_malloc(9 + FF_INPUT_BUFFER_PADDING_SIZE);
+            if (codec->extradata) {
+                codec->extradata_size = 9;
+                memcpy(codec->extradata, "BottomUp", 9);
+            }
+        }
     }
 
     av_set_pts_info(st, 32, 1, 1000);
