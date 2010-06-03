@@ -7,6 +7,12 @@ Here is what to do to try it out:
 3) make
 4) run it!
 
+Note: in order to enable the movie filter you need to add the
+--enable-avfilter-lavf to the configure command.
+
+ffmpeg -filters will show you the list of filters/sources/sinks
+enabled.
+
 WRITING FILTERS:
 
 There is some documentation on writing basic filters over at the multimedia
@@ -61,9 +67,8 @@ could use this command:
 ./ffplay -vfilters scale=640:480 input_video.avi
 
 Be aware that some filters, notably the crop filter, interpret the parameters
-differently than mplayer does.  There's currently no documentation about this
-except the source of those particular filters.  Sorry.  Play around with some
-of the filters.
+differently than mplayer does.  Documentation for each filter is provided in the
+doc/libavfilter.html file.
 
 One of the interesting features of libavfilter is the ability for filters to
 have multiple inputs and multiple outputs.  Unfortunately, ffplay cannot feed
@@ -71,6 +76,11 @@ multiple video streams to the filter system, and cannot handle multiple output
 streams.
 
 KNOWN ISSUES:
+- the -padtop, -padbottom, -padleft, -padright, -padcolor options of
+  ffmgeg do not work correctly when libavfilter is enabled, and they
+  are going to be deprecated/dropped when libavfilter will be
+  integrated in the main repository. Use the pad filter instead.
+
 - if for some reason the filter chain cannot be setup (due to an unknown
   filter, bad parameters to a filter, or for some reason two filters cannot
   be linked together successfully, for example), ffplay will not display any

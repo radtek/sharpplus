@@ -43,7 +43,7 @@ typedef struct {
     AVFilterPicRef *pic;
 } MovieContext;
 
-int movie_init(AVFilterContext *ctx)
+static int movie_init(AVFilterContext *ctx)
 {
     AVInputFormat  *file_iformat = NULL;
     int             i;
@@ -86,7 +86,7 @@ int movie_init(AVFilterContext *ctx)
     // TODO: allow to choose the video stream
     mv->video_stream = -1;
     for(i = 0; i < mv->format_ctx->nb_streams; i++)
-        if(mv->format_ctx->streams[i]->codec->codec_type==CODEC_TYPE_VIDEO) {
+        if(mv->format_ctx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO) {
             mv->video_stream = i;
             break;
         }
@@ -140,9 +140,8 @@ static av_cold int init(AVFilterContext *ctx, const char *args, void *opaque)
             // sanity check parms
             if (mv->seek_point >= 0 && *mv->file_name)
                 return movie_init(ctx);
-        }
-        else
-            av_log(ctx, AV_LOG_ERROR, "init() expected 3 arguments:'%s'\n", args);
+    }
+    av_log(ctx, AV_LOG_ERROR, "init() expected 3 arguments:'%s'\n", args);
     return -1;
 }
 
@@ -165,7 +164,7 @@ static int config_props(AVFilterLink *link)
     return 0;
 }
 
-int movie_get_frame(AVFilterLink *link)
+static int movie_get_frame(AVFilterLink *link)
 {
     AVPacket packet;
     int      frame_finished;
@@ -264,7 +263,7 @@ AVFilter avfilter_vsrc_movie =
 
     .inputs    = (AVFilterPad[]) {{ .name = NULL }},
     .outputs   = (AVFilterPad[]) {{ .name            = "default",
-                                    .type            = CODEC_TYPE_VIDEO,
+                                    .type            = AVMEDIA_TYPE_VIDEO,
                                     .request_frame   = request_frame,
                                     .config_props    = config_props, },
                                   { .name = NULL}},

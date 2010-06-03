@@ -24,7 +24,7 @@
  */
 
 /**
- * @file libavcodec/huffyuv.c
+ * @file
  * huffyuv codec for libavcodec.
  */
 
@@ -32,6 +32,7 @@
 #include "get_bits.h"
 #include "put_bits.h"
 #include "dsputil.h"
+#include "thread.h"
 
 #define VLC_BITS 11
 
@@ -193,7 +194,7 @@ static int read_len_table(uint8_t *dst, GetBitContext *gb){
     return 0;
 }
 
-static int generate_bits_table(uint32_t *dst, uint8_t *len_table){
+static int generate_bits_table(uint32_t *dst, const uint8_t *len_table){
     int len, index;
     uint32_t bits=0;
 
@@ -231,7 +232,7 @@ static void heap_sift(HeapElem *h, int root, int size)
     }
 }
 
-static void generate_len_table(uint8_t *dst, uint64_t *stats, int size){
+static void generate_len_table(uint8_t *dst, const uint64_t *stats, int size){
     HeapElem h[size];
     int up[2*size];
     int len[2*size];
@@ -338,7 +339,7 @@ static void generate_joint_tables(HYuvContext *s){
     }
 }
 
-static int read_huffman_tables(HYuvContext *s, uint8_t *src, int length){
+static int read_huffman_tables(HYuvContext *s, const uint8_t *src, int length){
     GetBitContext gb;
     int i;
 
@@ -452,6 +453,9 @@ s->bgr32=1;
     if(s->version==2){
         int method, interlace;
 
+        if (avctx->extradata_size < 4)
+            return -1;
+
         method= ((uint8_t*)avctx->extradata)[0];
         s->decorrelate= method&64 ? 1 : 0;
         s->predictor= method&63;
@@ -462,7 +466,7 @@ s->bgr32=1;
         s->interlaced= (interlace==1) ? 1 : (interlace==2) ? 0 : s->interlaced;
         s->context= ((uint8_t*)avctx->extradata)[2] & 0x40 ? 1 : 0;
 
-        if(read_huffman_tables(s, ((uint8_t*)avctx->extradata)+4, avctx->extradata_size) < 0)
+        if(read_huffman_tables(s, ((uint8_t*)avctx->extradata)+4, avctx->extradata_size-4) < 0)
             return -1;
     }else{
         switch(avctx->bits_per_coded_sample&7){
@@ -523,10 +527,32 @@ s->bgr32=1;
 
     return 0;
 }
+
+static av_cold int decode_init_thread_copy(AVCodecContext *avctx)
+{
+    HYuvContext *s = avctx->priv_data;
+    int i;
+
+    avctx->coded_frame= &s->picture;
+    alloc_temp(s);
+
+    for (i = 0; i < 6; i++)
+        s->vlc[i].table = NULL;
+
+    if(s->version==2){
+        if(read_huffman_tables(s, ((uint8_t*)avctx->extradata)+4, avctx->extradata_size) < 0)
+            return -1;
+    }else{
+        if(read_old_huffman_tables(s) < 0)
+            return -1;
+    }
+
+    return 0;
+}
 #endif /* CONFIG_HUFFYUV_DECODER || CONFIG_FFVHUFF_DECODER */
 
 #if CONFIG_HUFFYUV_ENCODER || CONFIG_FFVHUFF_ENCODER
-static int store_table(HYuvContext *s, uint8_t *len, uint8_t *buf){
+static int store_table(HYuvContext *s, const uint8_t *len, uint8_t *buf){
     int i;
     int index= 0;
 
@@ -946,10 +972,10 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *data_size, AVPac
     s->dsp.bswap_buf((uint32_t*)s->bitstream_buffer, (const uint32_t*)buf, buf_size/4);
 
     if(p->data[0])
-        avctx->release_buffer(avctx, p);
+        ff_thread_release_buffer(avctx, p);
 
     p->reference= 0;
-    if(avctx->get_buffer(avctx, p) < 0){
+    if(ff_thread_get_buffer(avctx, p) < 0){
         av_log(avctx, AV_LOG_ERROR, "get_buffer() failed\n");
         return -1;
     }
@@ -1414,15 +1440,16 @@ static av_cold int encode_end(AVCodecContext *avctx)
 #if CONFIG_HUFFYUV_DECODER
 AVCodec huffyuv_decoder = {
     "huffyuv",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_HUFFYUV,
     sizeof(HYuvContext),
     decode_init,
     NULL,
     decode_end,
     decode_frame,
-    CODEC_CAP_DR1 | CODEC_CAP_DRAW_HORIZ_BAND,
+    CODEC_CAP_DR1 | CODEC_CAP_DRAW_HORIZ_BAND | CODEC_CAP_FRAME_THREADS,
     NULL,
+    .init_thread_copy = ONLY_IF_THREADS_ENABLED(decode_init_thread_copy),
     .long_name = NULL_IF_CONFIG_SMALL("Huffyuv / HuffYUV"),
 };
 #endif
@@ -1430,15 +1457,16 @@ AVCodec huffyuv_decoder = {
 #if CONFIG_FFVHUFF_DECODER
 AVCodec ffvhuff_decoder = {
     "ffvhuff",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_FFVHUFF,
     sizeof(HYuvContext),
     decode_init,
     NULL,
     decode_end,
     decode_frame,
-    CODEC_CAP_DR1 | CODEC_CAP_DRAW_HORIZ_BAND,
+    CODEC_CAP_DR1 | CODEC_CAP_DRAW_HORIZ_BAND | CODEC_CAP_FRAME_THREADS,
     NULL,
+    .init_thread_copy = ONLY_IF_THREADS_ENABLED(decode_init_thread_copy),
     .long_name = NULL_IF_CONFIG_SMALL("Huffyuv FFmpeg variant"),
 };
 #endif
@@ -1446,7 +1474,7 @@ AVCodec ffvhuff_decoder = {
 #if CONFIG_HUFFYUV_ENCODER
 AVCodec huffyuv_encoder = {
     "huffyuv",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_HUFFYUV,
     sizeof(HYuvContext),
     encode_init,
@@ -1460,7 +1488,7 @@ AVCodec huffyuv_encoder = {
 #if CONFIG_FFVHUFF_ENCODER
 AVCodec ffvhuff_encoder = {
     "ffvhuff",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_FFVHUFF,
     sizeof(HYuvContext),
     encode_init,

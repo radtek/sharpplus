@@ -22,7 +22,7 @@
 #define AVFORMAT_AVFORMAT_H
 
 #define LIBAVFORMAT_VERSION_MAJOR 52
-#define LIBAVFORMAT_VERSION_MINOR 55
+#define LIBAVFORMAT_VERSION_MINOR 61
 #define LIBAVFORMAT_VERSION_MICRO  0
 
 #define LIBAVFORMAT_VERSION_INT AV_VERSION_INT(LIBAVFORMAT_VERSION_MAJOR, \
@@ -119,6 +119,7 @@ struct AVFormatContext;
 #define AV_METADATA_IGNORE_SUFFIX   2
 #define AV_METADATA_DONT_STRDUP_KEY 4
 #define AV_METADATA_DONT_STRDUP_VAL 8
+#define AV_METADATA_DONT_OVERWRITE 16   ///< Don't overwrite existing tags.
 
 typedef struct {
     char *key;
@@ -131,6 +132,7 @@ typedef struct AVMetadataConv AVMetadataConv;
 /**
  * Gets a metadata element with matching key.
  * @param prev Set to the previous matching element to find the next.
+ *             If set to NULL the first matching element is returned.
  * @param flags Allows case as well as suffix-insensitive comparisons.
  * @return Found tag or NULL, changing key or value leads to undefined behavior.
  */
@@ -610,8 +612,9 @@ typedef struct AVFormatContext {
        It is deduced from the AVStream values.  */
     int64_t start_time;
     /** Decoding: duration of the stream, in AV_TIME_BASE fractional
-       seconds. NEVER set this value directly: it is deduced from the
-       AVStream values.  */
+       seconds. Only set this value if you know none of the individual stream
+       durations and also dont set any of them. This is deduced from the
+       AVStream values if not set.  */
     int64_t duration;
     /** decoding: total file size, 0 if unknown */
     int64_t file_size;
@@ -647,6 +650,8 @@ typedef struct AVFormatContext {
 #define AVFMT_FLAG_IGNIDX       0x0002 ///< Ignore index.
 #define AVFMT_FLAG_NONBLOCK     0x0004 ///< Do not block when reading packets from input.
 #define AVFMT_FLAG_IGNDTS       0x0008 ///< Ignore DTS on frames that contain both DTS & PTS
+#define AVFMT_FLAG_NOFILLIN     0x0010 ///< Do not infer any values from other values, just return what is stored in the container
+#define AVFMT_FLAG_NOPARSE      0x0020 ///< Do not use AVParsers, you also must set AVFMT_FLAG_NOFILLIN as the fillin code works on frames and no parsing -> no frames. Also seeking to frames can not work if parsing to find frame boundaries has been disabled
 
     int loop_input;
     /** decoding: size of data to probe; encoding: unused. */
@@ -726,6 +731,15 @@ typedef struct AVFormatContext {
      */
 #define RAW_PACKET_BUFFER_SIZE 2500000
     int raw_packet_buffer_remaining_size;
+
+    /**
+     * Start time of the stream in real world time, in microseconds
+     * since the unix epoch (00:00 1st January 1970). That is, pts=0
+     * in the stream was captured at this real world time.
+     * - encoding: Set by user.
+     * - decoding: Unused.
+     */
+    int64_t start_time_realtime;
 } AVFormatContext;
 
 typedef struct AVPacketList {
@@ -794,7 +808,7 @@ AVOutputFormat *av_guess_format(const char *short_name,
  */
 enum CodecID av_guess_codec(AVOutputFormat *fmt, const char *short_name,
                             const char *filename, const char *mime_type,
-                            enum CodecType type);
+                            enum AVMediaType type);
 
 /**
  * Sends a nice hexadecimal dump of a buffer to the specified file stream.
@@ -993,7 +1007,7 @@ int av_seek_frame(AVFormatContext *s, int stream_index, int64_t timestamp,
  * @param ts target timestamp
  * @param max_ts largest acceptable timestamp
  * @param flags flags
- * @returns >=0 on success, error code otherwise
+ * @return >=0 on success, error code otherwise
  *
  * @NOTE This is part of the new seek API which is still under construction.
  *       Thus do not use this yet. It may change at any time, do not expect
@@ -1315,83 +1329,6 @@ int av_filename_number_test(const char *filename);
  */
 int avf_sdp_create(AVFormatContext *ac[], int n_files, char *buff, int size);
 
-#ifdef HAVE_AV_CONFIG_H
-
-void ff_dynarray_add(intptr_t **tab_ptr, int *nb_ptr, intptr_t elem);
-
-#ifdef __GNUC__
-#define dynarray_add(tab, nb_ptr, elem)\
-do {\
-    __typeof__(tab) _tab = (tab);\
-    __typeof__(elem) _elem = (elem);\
-    (void)sizeof(**_tab == _elem); /* check that types are compatible */\
-    ff_dynarray_add((intptr_t **)_tab, nb_ptr, (intptr_t)_elem);\
-} while(0)
-#else
-#define dynarray_add(tab, nb_ptr, elem)\
-do {\
-    ff_dynarray_add((intptr_t **)(tab), nb_ptr, (intptr_t)(elem));\
-} while(0)
-#endif
-
-time_t mktimegm(struct tm *tm);
-struct tm *brktimegm(time_t secs, struct tm *tm);
-const char *small_strptime(const char *p, const char *fmt,
-                           struct tm *dt);
-
-/**
- * Splits a URL string into components. To reassemble components back into
- * a URL, use ff_url_join instead of using snprintf directly.
- *
- * The pointers to buffers for storing individual components may be null,
- * in order to ignore that component. Buffers for components not found are
- * set to empty strings. If the port isn't found, it is set to a negative
- * value.
- *
- * @see ff_url_join
- *
- * @param proto the buffer for the protocol
- * @param proto_size the size of the proto buffer
- * @param authorization the buffer for the authorization
- * @param authorization_size the size of the authorization buffer
- * @param hostname the buffer for the host name
- * @param hostname_size the size of the hostname buffer
- * @param port_ptr a pointer to store the port number in
- * @param path the buffer for the path
- * @param path_size the size of the path buffer
- * @param url the URL to split
- */
-void ff_url_split(char *proto, int proto_size,
-                  char *authorization, int authorization_size,
-                  char *hostname, int hostname_size,
-                  int *port_ptr,
-                  char *path, int path_size,
-                  const char *url);
-
-/**
- * Assembles a URL string from components. This is the reverse operation
- * of ff_url_split.
- *
- * Note, this requires networking to be initialized, so the caller must
- * ensure ff_network_init has been called.
- *
- * @see ff_url_split
- *
- * @param str the buffer to fill with the url
- * @param size the size of the str buffer
- * @param proto the protocol identifier, if null, the separator
- *              after the identifier is left out, too
- * @param authorization an optional authorization string, may be null
- * @param hostname the host name string
- * @param port the port number, left out from the string if negative
- * @param fmt a generic format string for everything to add after the
- *            host/port, may be null
- * @return the number of characters written to the destination buffer
- */
-int ff_url_join(char *str, int size, const char *proto,
-                const char *authorization, const char *hostname,
-                int port, const char *fmt, ...);
-
 /**
  * Returns a positive value if the given filename has one of the given
  * extensions, 0 otherwise.
@@ -1399,7 +1336,5 @@ int ff_url_join(char *str, int size, const char *proto,
  * @param extensions a comma-separated list of filename extensions
  */
 int av_match_ext(const char *filename, const char *extensions);
-
-#endif /* HAVE_AV_CONFIG_H */
 
 #endif /* AVFORMAT_AVFORMAT_H */

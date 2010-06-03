@@ -4,53 +4,37 @@ include $(SUBDIR)../common.mak
 
 LIBVERSION := $(lib$(NAME)_VERSION)
 LIBMAJOR   := $(lib$(NAME)_VERSION_MAJOR)
+INCINSTDIR := $(INCDIR)/lib$(NAME)
+THIS_LIB   := $(SUBDIR)$($(CONFIG_SHARED:yes=S)LIBNAME)
+
+all-$(CONFIG_STATIC): $(SUBDIR)$(LIBNAME)
+all-$(CONFIG_SHARED): $(SUBDIR)$(SLIBNAME)
+
+$(SUBDIR)%-test.o: $(SUBDIR)%.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DTEST -c $(CC_O) $^
+
+$(SUBDIR)%-test.o: $(SUBDIR)%-test.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DTEST -c $(CC_O) $^
+
+$(SUBDIR)x86/%.o: $(SUBDIR)x86/%.asm
+	$(YASMDEP) $(YASMFLAGS) -I $(<D)/ -M -o $@ $< > $(@:.o=.d)
+	$(YASM) $(YASMFLAGS) -I $(<D)/ -o $@ $<
 
 $(OBJS) $(SUBDIR)%.ho $(SUBDIR)%-test.o $(TESTOBJS): CPPFLAGS += -DHAVE_AV_CONFIG_H
-
-ifdef CONFIG_STATIC
-all: $(SUBDIR)$(LIBNAME)
-
-install-libs: install-lib$(NAME)-static
 
 $(SUBDIR)$(LIBNAME): $(OBJS)
 	$(RM) $@
 	$(AR) rc $@ $^ $(EXTRAOBJS)
 	$(RANLIB) $@
-endif
 
 install-headers: install-lib$(NAME)-headers install-lib$(NAME)-pkgconfig
 
-INCINSTDIR := $(INCDIR)/lib$(NAME)
-
-THIS_LIB := $(SUBDIR)$($(CONFIG_SHARED:yes=S)LIBNAME)
+install-libs-$(CONFIG_STATIC): install-lib$(NAME)-static
+install-libs-$(CONFIG_SHARED): install-lib$(NAME)-shared
 
 define RULES
 $(SUBDIR)%$(EXESUF): $(SUBDIR)%.o
 	$$(LD) $(FFLDFLAGS) -o $$@ $$^ -l$(FULLNAME) $(FFEXTRALIBS) $$(ELIBS)
-
-$(SUBDIR)%-test.o: $(SUBDIR)%.c
-	$$(CC) $$(CPPFLAGS) $(CFLAGS) -DTEST -c $$(CC_O) $$^
-
-$(SUBDIR)%-test.o: $(SUBDIR)%-test.c
-	$$(CC) $$(CPPFLAGS) $(CFLAGS) -DTEST -c $$(CC_O) $$^
-
-$(SUBDIR)x86/%.o: $(SUBDIR)x86/%.asm
-	$$(YASMDEP) $(YASMFLAGS) -I $$(<D)/ -M -o $$@ $$< > $$(@:.o=.d)
-	$$(YASM) $(YASMFLAGS) -I $$(<D)/ -o $$@ $$<
-
-clean::
-	$(RM) $(addprefix $(SUBDIR),*-example$(EXESUF) *-test$(EXESUF) $(CLEANFILES) $(CLEANSUFFIXES) $(LIBSUFFIXES)) \
-	    $(addprefix $(SUBDIR), $(foreach suffix,$(CLEANSUFFIXES),$(addsuffix /$(suffix),$(DIRS)))) \
-	    $(HOSTOBJS) $(HOSTPROGS)
-
-distclean:: clean
-	$(RM)  $(addprefix $(SUBDIR),$(DISTCLEANSUFFIXES)) \
-            $(addprefix $(SUBDIR), $(foreach suffix,$(DISTCLEANSUFFIXES),$(addsuffix /$(suffix),$(DIRS))))
-
-ifdef CONFIG_SHARED
-all: $(SUBDIR)$(SLIBNAME)
-
-install-libs: install-lib$(NAME)-shared
 
 $(SUBDIR)$(SLIBNAME): $(SUBDIR)$(SLIBNAME_WITH_MAJOR)
 	$(Q)cd ./$(SUBDIR) && $(LN_S) $(SLIBNAME_WITH_MAJOR) $(SLIBNAME)
@@ -63,7 +47,15 @@ $(SUBDIR)$(SLIBNAME_WITH_MAJOR): $(OBJS) $(SUBDIR)lib$(NAME).ver
 ifdef SUBDIR
 $(SUBDIR)$(SLIBNAME_WITH_MAJOR): $(DEP_LIBS)
 endif
-endif
+
+clean::
+	$(RM) $(addprefix $(SUBDIR),*-example$(EXESUF) *-test$(EXESUF) $(CLEANFILES) $(CLEANSUFFIXES) $(LIBSUFFIXES)) \
+	    $(addprefix $(SUBDIR), $(foreach suffix,$(CLEANSUFFIXES),$(addsuffix /$(suffix),$(DIRS)))) \
+	    $(HOSTOBJS) $(HOSTPROGS)
+
+distclean:: clean
+	$(RM)  $(addprefix $(SUBDIR),$(DISTCLEANSUFFIXES)) \
+            $(addprefix $(SUBDIR), $(foreach suffix,$(DISTCLEANSUFFIXES),$(addsuffix /$(suffix),$(DIRS))))
 
 install-lib$(NAME)-shared: $(SUBDIR)$(SLIBNAME)
 	$(Q)mkdir -p "$(SHLIBDIR)"
@@ -74,9 +66,6 @@ install-lib$(NAME)-shared: $(SUBDIR)$(SLIBNAME)
 	$(Q)cd "$(SHLIBDIR)" && \
 		$(LN_S) $(SLIBNAME_WITH_VERSION) $(SLIBNAME)
 	$(SLIB_INSTALL_EXTRA_CMD)
-
-install-lib$(NAME)-static: MSG = $(LIBDIR)/$(LIBNAME)
-install-lib$(NAME)-shared: MSG = $(LIBDIR)/$(SLIBNAME)
 
 install-lib$(NAME)-static: $(SUBDIR)$(LIBNAME)
 	$(Q)mkdir -p "$(LIBDIR)"

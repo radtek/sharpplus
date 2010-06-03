@@ -21,7 +21,7 @@
  */
 
 /**
- * @file libavcodec/binkaudio.c
+ * @file
  * Bink Audio decoder
  *
  * Technical details here:
@@ -127,7 +127,7 @@ static av_cold int decode_init(AVCodecContext *avctx)
     if (CONFIG_BINKAUDIO_RDFT_DECODER && avctx->codec->id == CODEC_ID_BINKAUDIO_RDFT)
         ff_rdft_init(&s->trans.rdft, frame_len_bits, DFT_C2R);
     else if (CONFIG_BINKAUDIO_DCT_DECODER)
-        ff_dct_init(&s->trans.dct, frame_len_bits, 1);
+        ff_dct_init(&s->trans.dct, frame_len_bits, DCT_III);
     else
         return -1;
 
@@ -222,6 +222,11 @@ static void decode_block(BinkAudioContext *s, short *out, int use_dct)
             ff_rdft_calc(&s->trans.rdft, coeffs);
     }
 
+    if (s->dsp.float_to_int16_interleave == ff_float_to_int16_interleave_c) {
+        for (i = 0; i < s->channels; i++)
+            for (j = 0; j < s->frame_len; j++)
+                s->coeffs_ptr[i][j] = 385.0 + s->coeffs_ptr[i][j]*(1.0/32767.0);
+    }
     s->dsp.float_to_int16_interleave(out, (const float **)s->coeffs_ptr, s->frame_len, s->channels);
 
     if (!s->first) {
@@ -283,7 +288,7 @@ static int decode_frame(AVCodecContext *avctx,
 
 AVCodec binkaudio_rdft_decoder = {
     "binkaudio_rdft",
-    CODEC_TYPE_AUDIO,
+    AVMEDIA_TYPE_AUDIO,
     CODEC_ID_BINKAUDIO_RDFT,
     sizeof(BinkAudioContext),
     decode_init,
@@ -295,7 +300,7 @@ AVCodec binkaudio_rdft_decoder = {
 
 AVCodec binkaudio_dct_decoder = {
     "binkaudio_dct",
-    CODEC_TYPE_AUDIO,
+    AVMEDIA_TYPE_AUDIO,
     CODEC_ID_BINKAUDIO_DCT,
     sizeof(BinkAudioContext),
     decode_init,
