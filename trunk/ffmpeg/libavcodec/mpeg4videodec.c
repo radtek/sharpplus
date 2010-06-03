@@ -23,6 +23,7 @@
 #include "mpegvideo.h"
 #include "mpeg4video.h"
 #include "h263.h"
+#include "thread.h"
 
 // The defines below define the number of bits that are read at once for
 // reading vlc values. Changing these may improve speed and data cache needs
@@ -373,7 +374,13 @@ int mpeg4_decode_video_packet_header(MpegEncContext *s)
         return -1;
     }
     if(s->pict_type == FF_B_TYPE){
-        while(s->next_picture.mbskip_table[ s->mb_index2xy[ mb_num ] ]) mb_num++;
+        int mb_x = 0, mb_y = 0;
+
+        while(s->next_picture.mbskip_table[ s->mb_index2xy[ mb_num ] ]) {
+            if (!mb_x) ff_thread_await_progress((AVFrame*)s->next_picture_ptr, mb_y++, 0);
+            mb_num++;
+            if (++mb_x == s->mb_width) mb_x = 0;
+        }
         if(mb_num >= s->mb_num) return -1; // slice contains just skipped MBs which where already decoded
     }
 
@@ -435,7 +442,7 @@ int mpeg4_decode_video_packet_header(MpegEncContext *s)
 /**
  * gets the average motion vector for a GMC MB.
  * @param n either 0 for the x component or 1 for y
- * @returns the average MV for a GMC MB
+ * @return the average MV for a GMC MB
  */
 static inline int get_amv(MpegEncContext *s, int n){
     int x, y, mb_v, sum, dx, dy, shift;
@@ -1313,6 +1320,8 @@ static int mpeg4_decode_mb(MpegEncContext *s,
                 s->last_mv[i][1][0]=
                 s->last_mv[i][1][1]= 0;
             }
+
+            ff_thread_await_progress((AVFrame*)s->next_picture_ptr, s->mb_y, 0);
         }
 
         /* if we skipped it in the future P Frame than skip it now too */
@@ -1492,6 +1501,12 @@ end:
     if(s->codec_id==CODEC_ID_MPEG4){
         if(mpeg4_is_resync(s)){
             const int delta= s->mb_x + 1 == s->mb_width ? 2 : 1;
+
+            if(s->pict_type==FF_B_TYPE){
+                ff_thread_await_progress((AVFrame*)s->next_picture_ptr,
+                                        (s->mb_x + delta >= s->mb_width) ? FFMIN(s->mb_y+1, s->mb_height-1) : s->mb_y, 0);
+            }
+
             if(s->pict_type==FF_B_TYPE && s->next_picture.mbskip_table[xy + delta])
                 return SLICE_OK;
             return SLICE_END;
@@ -2236,7 +2251,7 @@ static av_cold int decode_init(AVCodecContext *avctx)
 
 AVCodec mpeg4_decoder = {
     "mpeg4",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_MPEG4,
     sizeof(MpegEncContext),
     decode_init,
@@ -2247,13 +2262,14 @@ AVCodec mpeg4_decoder = {
     .flush= ff_mpeg_flush,
     .long_name= NULL_IF_CONFIG_SMALL("MPEG-4 part 2"),
     .pix_fmts= ff_hwaccel_pixfmt_list_420,
+    .update_thread_context= ONLY_IF_THREADS_ENABLED(ff_mpeg_update_thread_context)
 };
 
 
 #if CONFIG_MPEG4_VDPAU_DECODER
 AVCodec mpeg4_vdpau_decoder = {
     "mpeg4_vdpau",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_MPEG4,
     sizeof(MpegEncContext),
     decode_init,

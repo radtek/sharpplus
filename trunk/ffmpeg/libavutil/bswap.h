@@ -19,7 +19,7 @@
  */
 
 /**
- * @file libavutil/bswap.h
+ * @file
  * byte swapping routines
  */
 
@@ -28,7 +28,7 @@
 
 #include <stdint.h>
 #include "config.h"
-#include "common.h"
+#include "attributes.h"
 
 #if   ARCH_ARM
 #   include "arm/bswap.h"

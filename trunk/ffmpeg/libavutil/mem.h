@@ -19,14 +19,14 @@
  */
 
 /**
- * @file libavutil/mem.h
+ * @file
  * memory handling functions
  */
 
 #ifndef AVUTIL_MEM_H
 #define AVUTIL_MEM_H
 
-#include "common.h"
+#include "attributes.h"
 
 #if defined(__ICC) || defined(__SUNPRO_C)
     #define DECLARE_ALIGNED(n,t,v)      t __attribute__ ((aligned (n))) v

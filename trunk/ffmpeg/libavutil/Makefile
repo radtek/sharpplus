@@ -9,6 +9,7 @@ HEADERS = adler32.h                                                     \
           base64.h                                                      \
           common.h                                                      \
           crc.h                                                         \
+          error.h                                                       \
           fifo.h                                                        \
           intfloat_readwrite.h                                          \
           log.h                                                         \
@@ -29,6 +30,7 @@ OBJS = adler32.o                                                        \
        base64.o                                                         \
        crc.o                                                            \
        des.o                                                            \
+       error.o                                                          \
        fifo.o                                                           \
        intfloat_readwrite.o                                             \
        lfg.o                                                            \

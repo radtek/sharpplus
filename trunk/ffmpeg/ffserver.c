@@ -204,6 +204,7 @@ typedef struct FFStream {
     AVInputFormat *ifmt;       /* if non NULL, force input format */
     AVOutputFormat *fmt;
     IPAddressACL *acl;
+    char dynamic_acl[1024];
     int nb_streams;
     int prebuffer;      /* Number of millseconds early to start */
     int64_t max_time;      /* Number of milliseconds to run */
@@ -1257,14 +1258,129 @@ static void get_arg(char *buf, int buf_size, const char **pp)
     *pp = p;
 }
 
-static int validate_acl(FFStream *stream, HTTPContext *c)
+static void parse_acl_row(FFStream *stream, FFStream* feed, IPAddressACL *ext_acl,
+                         const char *p, const char *filename, int line_num)
+{
+    char arg[1024];
+    IPAddressACL acl;
+    int errors = 0;
+
+    get_arg(arg, sizeof(arg), &p);
+    if (strcasecmp(arg, "allow") == 0)
+        acl.action = IP_ALLOW;
+    else if (strcasecmp(arg, "deny") == 0)
+        acl.action = IP_DENY;
+    else {
+        fprintf(stderr, "%s:%d: ACL action '%s' is not ALLOW or DENY\n",
+                filename, line_num, arg);
+        errors++;
+    }
+
+    get_arg(arg, sizeof(arg), &p);
+
+    if (resolve_host(&acl.first, arg) != 0) {
+        fprintf(stderr, "%s:%d: ACL refers to invalid host or ip address '%s'\n",
+                filename, line_num, arg);
+        errors++;
+    } else
+        acl.last = acl.first;
+
+    get_arg(arg, sizeof(arg), &p);
+
+    if (arg[0]) {
+        if (resolve_host(&acl.last, arg) != 0) {
+            fprintf(stderr, "%s:%d: ACL refers to invalid host or ip address '%s'\n",
+                    filename, line_num, arg);
+            errors++;
+        }
+    }
+
+    if (!errors) {
+        IPAddressACL *nacl = av_mallocz(sizeof(*nacl));
+        IPAddressACL **naclp = 0;
+
+        acl.next = 0;
+        *nacl = acl;
+
+        if (stream)
+            naclp = &stream->acl;
+        else if (feed)
+            naclp = &feed->acl;
+        else if (ext_acl)
+            naclp = &ext_acl;
+        else {
+            fprintf(stderr, "%s:%d: ACL found not in <stream> or <feed>\n",
+                    filename, line_num);
+            errors++;
+        }
+
+        if (naclp) {
+            while (*naclp)
+                naclp = &(*naclp)->next;
+
+            *naclp = nacl;
+        }
+    }
+}
+
+
+static IPAddressACL* parse_dynamic_acl(FFStream *stream, HTTPContext *c)
+{
+    FILE* f;
+    char line[1024];
+    char  cmd[1024];
+    IPAddressACL *acl = NULL;
+    int line_num = 0;
+    const char *p;
+
+    f = fopen(stream->dynamic_acl, "r");
+    if (!f) {
+        perror(stream->dynamic_acl);
+        return NULL;
+    }
+
+    acl = av_mallocz(sizeof(IPAddressACL));
+
+    /* Build ACL */
+    for(;;) {
+        if (fgets(line, sizeof(line), f) == NULL)
+            break;
+        line_num++;
+        p = line;
+        while (isspace(*p))
+            p++;
+        if (*p == '\0' || *p == '#')
+            continue;
+        get_arg(cmd, sizeof(cmd), &p);
+
+        if (!strcasecmp(cmd, "ACL"))
+            parse_acl_row(NULL, NULL, acl, p, stream->dynamic_acl, line_num);
+    }
+    fclose(f);
+    return acl;
+}
+
+
+static void free_acl_list(IPAddressACL *in_acl)
+{
+    IPAddressACL *pacl,*pacl2;
+
+    pacl = in_acl;
+    while(pacl) {
+        pacl2 = pacl;
+        pacl = pacl->next;
+        av_freep(pacl2);
+    }
+}
+
+static int validate_acl_list(IPAddressACL *in_acl, HTTPContext *c)
 {
     enum IPAddressAction last_action = IP_DENY;
     IPAddressACL *acl;
     struct in_addr *src = &c->from_addr.sin_addr;
     unsigned long src_addr = src->s_addr;
 
-    for (acl = stream->acl; acl; acl = acl->next) {
+    for (acl = in_acl; acl; acl = acl->next) {
         if (src_addr >= acl->first.s_addr && src_addr <= acl->last.s_addr)
             return (acl->action == IP_ALLOW) ? 1 : 0;
         last_action = acl->action;
@@ -1272,6 +1388,26 @@ static int validate_acl(FFStream *stream, HTTPContext *c)
 
     /* Nothing matched, so return not the last action */
     return (last_action == IP_DENY) ? 1 : 0;
+}
+
+static int validate_acl(FFStream *stream, HTTPContext *c)
+{
+    int ret = 0;
+    IPAddressACL *acl;
+
+
+    /* if stream->acl is null validate_acl_list will return 1 */
+    ret = validate_acl_list(stream->acl, c);
+
+    if (stream->dynamic_acl[0]) {
+        acl = parse_dynamic_acl(stream, c);
+
+        ret = validate_acl_list(acl, c);
+
+        free_acl_list(acl);
+    }
+
+    return ret;
 }
 
 /* compute the real filename of a file by matching it without its
@@ -1805,7 +1941,7 @@ static void compute_status(HTTPContext *c)
                         AVStream *st = stream->streams[i];
                         AVCodec *codec = avcodec_find_encoder(st->codec->codec_id);
                         switch(st->codec->codec_type) {
-                        case CODEC_TYPE_AUDIO:
+                        case AVMEDIA_TYPE_AUDIO:
                             audio_bit_rate += st->codec->bit_rate;
                             if (codec) {
                                 if (*audio_codec_name)
@@ -1813,7 +1949,7 @@ static void compute_status(HTTPContext *c)
                                 audio_codec_name = codec->name;
                             }
                             break;
-                        case CODEC_TYPE_VIDEO:
+                        case AVMEDIA_TYPE_VIDEO:
                             video_bit_rate += st->codec->bit_rate;
                             if (codec) {
                                 if (*video_codec_name)
@@ -1821,7 +1957,7 @@ static void compute_status(HTTPContext *c)
                                 video_codec_name = codec->name;
                             }
                             break;
-                        case CODEC_TYPE_DATA:
+                        case AVMEDIA_TYPE_DATA:
                             video_bit_rate += st->codec->bit_rate;
                             break;
                         default:
@@ -1894,11 +2030,11 @@ static void compute_status(HTTPContext *c)
                 parameters[0] = 0;
 
                 switch(st->codec->codec_type) {
-                case CODEC_TYPE_AUDIO:
+                case AVMEDIA_TYPE_AUDIO:
                     type = "audio";
                     snprintf(parameters, sizeof(parameters), "%d channel(s), %d Hz", st->codec->channels, st->codec->sample_rate);
                     break;
-                case CODEC_TYPE_VIDEO:
+                case AVMEDIA_TYPE_VIDEO:
                     type = "video";
                     snprintf(parameters, sizeof(parameters), "%dx%d, q=%d-%d, fps=%d", st->codec->width, st->codec->height,
                                 st->codec->qmin, st->codec->qmax, st->codec->time_base.den / st->codec->time_base.num);
@@ -2047,7 +2183,7 @@ static int open_input_stream(HTTPContext *c, const char *info)
     c->pts_stream_index = 0;
     for(i=0;i<c->stream->nb_streams;i++) {
         if (c->pts_stream_index == 0 &&
-            c->stream->streams[i]->codec->codec_type == CODEC_TYPE_VIDEO) {
+            c->stream->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
             c->pts_stream_index = i;
         }
     }
@@ -2199,7 +2335,7 @@ static int http_prepare_data(HTTPContext *c)
                         c->switch_pending = 0;
                         for(i=0;i<c->stream->nb_streams;i++) {
                             if (c->switch_feed_streams[i] == pkt.stream_index)
-                                if (pkt.flags & PKT_FLAG_KEY)
+                                if (pkt.flags & AV_PKT_FLAG_KEY)
                                     do_switch_stream(c, i);
                             if (c->switch_feed_streams[i] >= 0)
                                 c->switch_pending = 1;
@@ -2209,8 +2345,8 @@ static int http_prepare_data(HTTPContext *c)
                         if (c->feed_streams[i] == pkt.stream_index) {
                             AVStream *st = c->fmt_in->streams[source_index];
                             pkt.stream_index = i;
-                            if (pkt.flags & PKT_FLAG_KEY &&
-                                (st->codec->codec_type == CODEC_TYPE_VIDEO ||
+                            if (pkt.flags & AV_PKT_FLAG_KEY &&
+                                (st->codec->codec_type == AVMEDIA_TYPE_VIDEO ||
                                  c->stream->nb_streams == 1))
                                 c->got_key_frame = 1;
                             if (!c->stream->send_on_key || c->got_key_frame)
@@ -2756,7 +2892,7 @@ static int rtsp_parse_request(HTTPContext *c)
             len = sizeof(line) - 1;
         memcpy(line, p, len);
         line[len] = '\0';
-        ff_rtsp_parse_line(header, line);
+        ff_rtsp_parse_line(header, line, NULL);
         p = p1 + 1;
     }
 
@@ -2906,7 +3042,7 @@ static void rtsp_cmd_setup(HTTPContext *c, const char *url,
                            RTSPMessageHeader *h)
 {
     FFStream *stream;
-    int stream_index, port;
+    int stream_index, rtp_port, rtcp_port;
     char buf[1024];
     char path1[1024];
     const char *path;
@@ -3020,11 +3156,12 @@ static void rtsp_cmd_setup(HTTPContext *c, const char *url,
 
     switch(rtp_c->rtp_protocol) {
     case RTSP_LOWER_TRANSPORT_UDP:
-        port = rtp_get_local_port(rtp_c->rtp_handles[stream_index]);
+        rtp_port = rtp_get_local_rtp_port(rtp_c->rtp_handles[stream_index]);
+        rtcp_port = rtp_get_local_rtcp_port(rtp_c->rtp_handles[stream_index]);
         url_fprintf(c->pb, "Transport: RTP/AVP/UDP;unicast;"
                     "client_port=%d-%d;server_port=%d-%d",
-                    th->client_port_min, th->client_port_min + 1,
-                    port, port + 1);
+                    th->client_port_min, th->client_port_max,
+                    rtp_port, rtcp_port);
         break;
     case RTSP_LOWER_TRANSPORT_TCP:
         url_fprintf(c->pb, "Transport: RTP/AVP/TCP;interleaved=%d-%d",
@@ -3346,12 +3483,12 @@ static int add_av_stream(FFStream *feed, AVStream *st)
             av1->bit_rate == av->bit_rate) {
 
             switch(av->codec_type) {
-            case CODEC_TYPE_AUDIO:
+            case AVMEDIA_TYPE_AUDIO:
                 if (av1->channels == av->channels &&
                     av1->sample_rate == av->sample_rate)
                     goto found;
                 break;
-            case CODEC_TYPE_VIDEO:
+            case AVMEDIA_TYPE_VIDEO:
                 if (av1->width == av->width &&
                     av1->height == av->height &&
                     av1->time_base.den == av->time_base.den &&
@@ -3549,7 +3686,7 @@ static void build_feed_streams(void)
                             } else if (CHECK_CODEC(bit_rate) || CHECK_CODEC(flags)) {
                                 http_log("Codec bitrates do not match for stream %d\n", i);
                                 matches = 0;
-                            } else if (ccf->codec_type == CODEC_TYPE_VIDEO) {
+                            } else if (ccf->codec_type == AVMEDIA_TYPE_VIDEO) {
                                 if (CHECK_CODEC(time_base.den) ||
                                     CHECK_CODEC(time_base.num) ||
                                     CHECK_CODEC(width) ||
@@ -3557,7 +3694,7 @@ static void build_feed_streams(void)
                                     http_log("Codec width, height and framerate do not match for stream %d\n", i);
                                     matches = 0;
                                 }
-                            } else if (ccf->codec_type == CODEC_TYPE_AUDIO) {
+                            } else if (ccf->codec_type == AVMEDIA_TYPE_AUDIO) {
                                 if (CHECK_CODEC(sample_rate) ||
                                     CHECK_CODEC(channels) ||
                                     CHECK_CODEC(frame_size)) {
@@ -3651,8 +3788,8 @@ static void compute_bandwidth(void)
         for(i=0;i<stream->nb_streams;i++) {
             AVStream *st = stream->streams[i];
             switch(st->codec->codec_type) {
-            case CODEC_TYPE_AUDIO:
-            case CODEC_TYPE_VIDEO:
+            case AVMEDIA_TYPE_AUDIO:
+            case AVMEDIA_TYPE_VIDEO:
                 bandwidth += st->codec->bit_rate;
                 break;
             default:
@@ -3670,7 +3807,7 @@ static void add_codec(FFStream *stream, AVCodecContext *av)
 
     /* compute default parameters */
     switch(av->codec_type) {
-    case CODEC_TYPE_AUDIO:
+    case AVMEDIA_TYPE_AUDIO:
         if (av->bit_rate == 0)
             av->bit_rate = 64000;
         if (av->sample_rate == 0)
@@ -3678,7 +3815,7 @@ static void add_codec(FFStream *stream, AVCodecContext *av)
         if (av->channels == 0)
             av->channels = 1;
         break;
-    case CODEC_TYPE_VIDEO:
+    case AVMEDIA_TYPE_VIDEO:
         if (av->bit_rate == 0)
             av->bit_rate = 64000;
         if (av->time_base.num == 0){
@@ -3742,7 +3879,7 @@ static enum CodecID opt_audio_codec(const char *arg)
 {
     AVCodec *p= avcodec_find_encoder_by_name(arg);
 
-    if (p == NULL || p->type != CODEC_TYPE_AUDIO)
+    if (p == NULL || p->type != AVMEDIA_TYPE_AUDIO)
         return CODEC_ID_NONE;
 
     return p->id;
@@ -3752,7 +3889,7 @@ static enum CodecID opt_video_codec(const char *arg)
 {
     AVCodec *p= avcodec_find_encoder_by_name(arg);
 
-    if (p == NULL || p->type != CODEC_TYPE_VIDEO)
+    if (p == NULL || p->type != AVMEDIA_TYPE_VIDEO)
         return CODEC_ID_NONE;
 
     return p->id;
@@ -4039,7 +4176,6 @@ static int parse_ffconfig(const char *filename)
                         filename, line_num);
             } else {
                 FFStream *s;
-                const AVClass *class;
                 stream = av_mallocz(sizeof(FFStream));
                 get_arg(stream->filename, sizeof(stream->filename), &p);
                 q = strrchr(stream->filename, '>');
@@ -4055,15 +4191,8 @@ static int parse_ffconfig(const char *filename)
                 }
 
                 stream->fmt = ffserver_guess_format(NULL, stream->filename, NULL);
-                /* fetch avclass so AVOption works
-                 * FIXME try to use avcodec_get_context_defaults2
-                 * without changing defaults too much */
-                avcodec_get_context_defaults(&video_enc);
-                class = video_enc.av_class;
-                memset(&audio_enc, 0, sizeof(AVCodecContext));
-                memset(&video_enc, 0, sizeof(AVCodecContext));
-                audio_enc.av_class = class;
-                video_enc.av_class = class;
+                avcodec_get_context_defaults2(&video_enc, AVMEDIA_TYPE_VIDEO);
+                avcodec_get_context_defaults2(&audio_enc, AVMEDIA_TYPE_AUDIO);
                 audio_id = CODEC_ID_NONE;
                 video_id = CODEC_ID_NONE;
                 if (stream->fmt) {
@@ -4353,61 +4482,10 @@ static int parse_ffconfig(const char *filename)
         } else if (!strcasecmp(cmd, "NoAudio")) {
             audio_id = CODEC_ID_NONE;
         } else if (!strcasecmp(cmd, "ACL")) {
-            IPAddressACL acl;
-
-            get_arg(arg, sizeof(arg), &p);
-            if (strcasecmp(arg, "allow") == 0)
-                acl.action = IP_ALLOW;
-            else if (strcasecmp(arg, "deny") == 0)
-                acl.action = IP_DENY;
-            else {
-                fprintf(stderr, "%s:%d: ACL action '%s' is not ALLOW or DENY\n",
-                        filename, line_num, arg);
-                errors++;
-            }
-
-            get_arg(arg, sizeof(arg), &p);
-
-            if (resolve_host(&acl.first, arg) != 0) {
-                fprintf(stderr, "%s:%d: ACL refers to invalid host or ip address '%s'\n",
-                        filename, line_num, arg);
-                errors++;
-            } else
-                acl.last = acl.first;
-
-            get_arg(arg, sizeof(arg), &p);
-
-            if (arg[0]) {
-                if (resolve_host(&acl.last, arg) != 0) {
-                    fprintf(stderr, "%s:%d: ACL refers to invalid host or ip address '%s'\n",
-                            filename, line_num, arg);
-                    errors++;
-                }
-            }
-
-            if (!errors) {
-                IPAddressACL *nacl = av_mallocz(sizeof(*nacl));
-                IPAddressACL **naclp = 0;
-
-                acl.next = 0;
-                *nacl = acl;
-
-                if (stream)
-                    naclp = &stream->acl;
-                else if (feed)
-                    naclp = &feed->acl;
-                else {
-                    fprintf(stderr, "%s:%d: ACL found not in <stream> or <feed>\n",
-                            filename, line_num);
-                    errors++;
-                }
-
-                if (naclp) {
-                    while (*naclp)
-                        naclp = &(*naclp)->next;
-
-                    *naclp = nacl;
-                }
+            parse_acl_row(stream, feed, NULL, p, filename, line_num);
+        } else if (!strcasecmp(cmd, "DynamicACL")) {
+            if (stream) {
+                get_arg(stream->dynamic_acl, sizeof(stream->dynamic_acl), &p);
             }
         } else if (!strcasecmp(cmd, "RTSPOption")) {
             get_arg(arg, sizeof(arg), &p);
@@ -4445,12 +4523,12 @@ static int parse_ffconfig(const char *filename)
             } else {
                 if (stream->feed && stream->fmt && strcmp(stream->fmt->name, "ffm") != 0) {
                     if (audio_id != CODEC_ID_NONE) {
-                        audio_enc.codec_type = CODEC_TYPE_AUDIO;
+                        audio_enc.codec_type = AVMEDIA_TYPE_AUDIO;
                         audio_enc.codec_id = audio_id;
                         add_codec(stream, &audio_enc);
                     }
                     if (video_id != CODEC_ID_NONE) {
-                        video_enc.codec_type = CODEC_TYPE_VIDEO;
+                        video_enc.codec_type = AVMEDIA_TYPE_VIDEO;
                         video_enc.codec_id = video_id;
                         add_codec(stream, &video_enc);
                     }

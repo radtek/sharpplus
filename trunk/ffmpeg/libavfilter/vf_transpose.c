@@ -64,29 +64,34 @@ static int config_props_output(AVFilterLink *link)
     return 0;
 }
 
-static void draw_slice(AVFilterLink *link, int y, int h, int slice_dir)
+static void end_frame(AVFilterLink *link)
 {
     TransContext *trans = link->dst->priv;
     AVFilterPicRef *in  = link->cur_pic;
     AVFilterPicRef *out = link->dst->outputs[0]->outpic;
+    AVFilterPicRef *pic = link->cur_pic;
+    AVFilterLink *output = link->dst->outputs[0];
     int i, j, plane;
 
     /* luma plane */
-    for(i = y; i < h; i ++)
-        for(j = 0; j < link->w; j ++)
+    for(i = 0; i < pic->h; i ++)
+        for(j = 0; j < pic->w; j ++)
             *(out->data[0] +   j *out->linesize[0] + i) =
                 *(in->data[0]+ i * in->linesize[0] + j);
 
     /* chroma planes */
     for(plane = 1; plane < 3; plane ++) {
-        for(i = y >> trans->vsub; i < h >> trans->vsub; i++) {
-            for(j = 0; j < link->w >> trans->hsub; j++)
+        for(i = 0; i < pic->h >> trans->vsub; i++) {
+            for(j = 0; j < pic->w >> trans->hsub; j++)
                 *(out->data[plane] +   j *out->linesize[plane] + i) =
                     *(in->data[plane]+ i * in->linesize[plane] + j);
         }
     }
 
-    avfilter_draw_slice(link->dst->outputs[0], y, h, slice_dir);
+    avfilter_unref_pic(in);
+    avfilter_draw_slice(output, 0, out->h, 1);
+    avfilter_end_frame(output);
+    avfilter_unref_pic(out);
 }
 
 static void start_frame(AVFilterLink *link, AVFilterPicRef *picref)
@@ -96,8 +101,12 @@ static void start_frame(AVFilterLink *link, AVFilterPicRef *picref)
     out->outpic      = avfilter_get_video_buffer(out, AV_PERM_WRITE, out->w, out->h);
     out->outpic->pts = picref->pts;
 
-    out->outpic->pixel_aspect.num = picref->pixel_aspect.den;
-    out->outpic->pixel_aspect.den = picref->pixel_aspect.num;
+    if(picref->pixel_aspect.num == 0) {
+        out->outpic->pixel_aspect = picref->pixel_aspect;
+    } else {
+        out->outpic->pixel_aspect.num = picref->pixel_aspect.den;
+        out->outpic->pixel_aspect.den = picref->pixel_aspect.num;
+    }
 
     avfilter_start_frame(out, avfilter_ref_pic(out->outpic, ~0));
 }
@@ -111,15 +120,15 @@ AVFilter avfilter_vf_transpose =
     .query_formats = query_formats,
 
     .inputs    = (AVFilterPad[]) {{ .name            = "default",
-                                    .type            = CODEC_TYPE_VIDEO,
+                                    .type            = AVMEDIA_TYPE_VIDEO,
                                     .start_frame     = start_frame,
-                                    .draw_slice      = draw_slice,
+                                    .end_frame       = end_frame,
                                     .config_props    = config_props_input,
                                     .min_perms       = AV_PERM_READ, },
                                   { .name = NULL}},
     .outputs   = (AVFilterPad[]) {{ .name            = "default",
                                     .config_props    = config_props_output,
-                                    .type            = CODEC_TYPE_VIDEO, },
+                                    .type            = AVMEDIA_TYPE_VIDEO, },
                                   { .name = NULL}},
 };
 

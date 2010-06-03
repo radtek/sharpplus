@@ -92,18 +92,6 @@ static int config_input(AVFilterLink *link)
     return 0;
 }
 
-static AVFilterPicRef *get_video_buffer(AVFilterLink *link, int perms,
-                                        int w, int h)
-{
-    return avfilter_get_video_buffer(link->dst->outputs[0], perms, w, h);
-}
-
-static void start_frame(AVFilterLink *link, AVFilterPicRef *picref)
-{
-    avfilter_start_frame(link->dst->outputs[0], picref);
-}
-
-
 static void draw_box(AVFilterPicRef *pic, BoxContext* context, box_color color)
 {
     int x, y;
@@ -149,17 +137,16 @@ AVFilter avfilter_vf_drawbox=
 
     .query_formats   = query_formats,
     .inputs    = (AVFilterPad[]) {{ .name            = "default",
-                                    .type            = CODEC_TYPE_VIDEO,
-                                    .get_video_buffer= get_video_buffer,
-                                    .start_frame     = start_frame,
+                                    .type            = AVMEDIA_TYPE_VIDEO,
+                                    .get_video_buffer= avfilter_null_get_video_buffer,
+                                    .start_frame     = avfilter_null_start_frame,
                                     .end_frame       = end_frame,
                                     .config_props    = config_input,
                                     .min_perms       = AV_PERM_WRITE |
                                                        AV_PERM_READ,
-                                    .rej_perms       = AV_PERM_REUSE |
-                                                       AV_PERM_REUSE2},
+                                    .rej_perms       = AV_PERM_PRESERVE },
                                   { .name = NULL}},
     .outputs   = (AVFilterPad[]) {{ .name            = "default",
-                                    .type            = CODEC_TYPE_VIDEO, },
+                                    .type            = AVMEDIA_TYPE_VIDEO, },
                                   { .name = NULL}},
 };

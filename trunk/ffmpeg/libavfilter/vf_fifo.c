@@ -53,12 +53,6 @@ static av_cold void uninit(AVFilterContext *ctx)
     }
 }
 
-static AVFilterPicRef *get_video_buffer(AVFilterLink *link, int perms,
-                                        int w, int h)
-{
-    return avfilter_get_video_buffer(link->dst->outputs[0], perms, w, h);
-}
-
 static void start_frame(AVFilterLink *link, AVFilterPicRef *picref)
 {
     BufferContext *buf = link->dst->priv;
@@ -112,15 +106,15 @@ AVFilter avfilter_vf_fifo =
     .priv_size = sizeof(BufferContext),
 
     .inputs    = (AVFilterPad[]) {{ .name            = "default",
-                                    .type            = CODEC_TYPE_VIDEO,
-                                    .get_video_buffer= get_video_buffer,
+                                    .type            = AVMEDIA_TYPE_VIDEO,
+                                    .get_video_buffer= avfilter_null_get_video_buffer,
                                     .start_frame     = start_frame,
                                     .draw_slice      = draw_slice,
                                     .end_frame       = end_frame,
                                     .rej_perms       = AV_PERM_REUSE2, },
                                   { .name = NULL}},
     .outputs   = (AVFilterPad[]) {{ .name            = "default",
-                                    .type            = CODEC_TYPE_VIDEO,
+                                    .type            = AVMEDIA_TYPE_VIDEO,
                                     .request_frame   = request_frame, },
                                   { .name = NULL}},
 };

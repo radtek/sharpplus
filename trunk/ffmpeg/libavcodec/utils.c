@@ -21,7 +21,7 @@
  */
 
 /**
- * @file libavcodec/utils.c
+ * @file
  * utils.
  */
 
@@ -36,6 +36,7 @@
 #include "dsputil.h"
 #include "opt.h"
 #include "imgconvert.h"
+#include "thread.h"
 #include "audioconvert.h"
 #include "libxvid_internal.h"
 #include "internal.h"
@@ -100,6 +101,11 @@ void register_avcodec(AVCodec *codec)
     avcodec_register(codec);
 }
 #endif
+
+unsigned avcodec_get_edge_width(void)
+{
+    return EDGE_WIDTH;
+}
 
 void avcodec_set_dimensions(AVCodecContext *s, int width, int height){
     s->coded_width = width;
@@ -257,6 +263,11 @@ int avcodec_default_get_buffer(AVCodecContext *s, AVFrame *pic){
     (*picture_number)++;
 
     if(buf->base[0] && (buf->width != w || buf->height != h || buf->pix_fmt != s->pix_fmt)){
+        if(s->active_thread_type&FF_THREAD_FRAME) {
+            av_log_missing_feature(s, "Width/height changing with frame threads is", 0);
+            return -1;
+        }
+
         for(i=0; i<4; i++){
             av_freep(&buf->base[i]);
             buf->data[i]= NULL;
@@ -355,6 +366,7 @@ void avcodec_default_release_buffer(AVCodecContext *s, AVFrame *pic){
     assert(pic->type==FF_BUFFER_TYPE_INTERNAL);
     assert(s->internal_buffer_count);
 
+    if(s->internal_buffer){
     buf = NULL; /* avoids warning */
     for(i=0; i<s->internal_buffer_count; i++){ //just 3-5 checks so is not worth to optimize
         buf= &((InternalBuffer*)s->internal_buffer)[i];
@@ -366,6 +378,7 @@ void avcodec_default_release_buffer(AVCodecContext *s, AVFrame *pic){
     last = &((InternalBuffer*)s->internal_buffer)[s->internal_buffer_count];
 
     FFSWAP(InternalBuffer, *buf, *last);
+    }
 
     for(i=0; i<4; i++){
         pic->data[i]=NULL;
@@ -497,7 +510,7 @@ int attribute_align_arg avcodec_open(AVCodecContext *avctx, AVCodec *codec)
     }
 
     avctx->codec = codec;
-    if ((avctx->codec_type == CODEC_TYPE_UNKNOWN || avctx->codec_type == codec->type) &&
+    if ((avctx->codec_type == AVMEDIA_TYPE_UNKNOWN || avctx->codec_type == codec->type) &&
         avctx->codec_id == CODEC_ID_NONE) {
         avctx->codec_type = codec->type;
         avctx->codec_id   = codec->id;
@@ -507,7 +520,17 @@ int attribute_align_arg avcodec_open(AVCodecContext *avctx, AVCodec *codec)
         goto free_and_end;
     }
     avctx->frame_number = 0;
-    if(avctx->codec->init){
+
+    if (HAVE_THREADS && !avctx->thread_opaque) {
+        ret = avcodec_thread_init(avctx, avctx->thread_count);
+        if (ret < 0) {
+            av_freep(&avctx->priv_data);
+            avctx->codec= NULL;
+            goto end;
+        }
+    }
+
+    if(avctx->codec->init && !(avctx->active_thread_type&FF_THREAD_FRAME)){
         ret = avctx->codec->init(avctx);
         if (ret < 0) {
             goto free_and_end;
@@ -598,12 +621,15 @@ int attribute_align_arg avcodec_decode_video2(AVCodecContext *avctx, AVFrame *pi
                          AVPacket *avpkt)
 {
     int ret;
+    int threaded = HAVE_PTHREADS && avctx->active_thread_type&FF_THREAD_FRAME;
 
     *got_picture_ptr= 0;
     if((avctx->coded_width||avctx->coded_height) && avcodec_check_dimensions(avctx,avctx->coded_width,avctx->coded_height))
         return -1;
-    if((avctx->codec->capabilities & CODEC_CAP_DELAY) || avpkt->size){
-        ret = avctx->codec->decode(avctx, picture, got_picture_ptr,
+    if((avctx->codec->capabilities & CODEC_CAP_DELAY) || avpkt->size || threaded){
+        if (threaded) ret = ff_thread_decode_frame(avctx, picture,
+                                got_picture_ptr, avpkt);
+        else ret = avctx->codec->decode(avctx, picture, got_picture_ptr,
                                 avpkt);
 
         emms_c(); //needed to avoid an emms_c() call before every return;
@@ -701,13 +727,14 @@ av_cold int avcodec_close(AVCodecContext *avctx)
 
     if (HAVE_THREADS && avctx->thread_opaque)
         avcodec_thread_free(avctx);
-    if (avctx->codec && avctx->codec->close)
+    if (avctx->codec && avctx->codec->close && !(avctx->active_thread_type&FF_THREAD_FRAME))
         avctx->codec->close(avctx);
     avcodec_default_free_buffers(avctx);
     av_freep(&avctx->priv_data);
-    if(avctx->codec->encode)
+    if(avctx->codec && avctx->codec->encode)
         av_freep(&avctx->extradata);
     avctx->codec = NULL;
+    avctx->active_thread_type = 0;
     entangled_thread_counter--;
 
     /* Release any user-supplied mutex. */
@@ -775,21 +802,15 @@ static int get_bit_rate(AVCodecContext *ctx)
     int bits_per_sample;
 
     switch(ctx->codec_type) {
-    case CODEC_TYPE_VIDEO:
+    case AVMEDIA_TYPE_VIDEO:
+    case AVMEDIA_TYPE_DATA:
+    case AVMEDIA_TYPE_SUBTITLE:
+    case AVMEDIA_TYPE_ATTACHMENT:
         bit_rate = ctx->bit_rate;
         break;
-    case CODEC_TYPE_AUDIO:
+    case AVMEDIA_TYPE_AUDIO:
         bits_per_sample = av_get_bits_per_sample(ctx->codec_id);
         bit_rate = bits_per_sample ? ctx->sample_rate * ctx->channels * bits_per_sample : ctx->bit_rate;
-        break;
-    case CODEC_TYPE_DATA:
-        bit_rate = ctx->bit_rate;
-        break;
-    case CODEC_TYPE_SUBTITLE:
-        bit_rate = ctx->bit_rate;
-        break;
-    case CODEC_TYPE_ATTACHMENT:
-        bit_rate = ctx->bit_rate;
         break;
     default:
         bit_rate = 0;
@@ -836,7 +857,7 @@ void avcodec_string(char *buf, int buf_size, AVCodecContext *enc, int encode)
     }
 
     switch(enc->codec_type) {
-    case CODEC_TYPE_VIDEO:
+    case AVMEDIA_TYPE_VIDEO:
         snprintf(buf, buf_size,
                  "Video: %s%s",
                  codec_name, enc->mb_decision ? " (hq)" : "");
@@ -871,7 +892,7 @@ void avcodec_string(char *buf, int buf_size, AVCodecContext *enc, int encode)
                      ", q=%d-%d", enc->qmin, enc->qmax);
         }
         break;
-    case CODEC_TYPE_AUDIO:
+    case AVMEDIA_TYPE_AUDIO:
         snprintf(buf, buf_size,
                  "Audio: %s",
                  codec_name);
@@ -886,13 +907,13 @@ void avcodec_string(char *buf, int buf_size, AVCodecContext *enc, int encode)
                      ", %s", avcodec_get_sample_fmt_name(enc->sample_fmt));
         }
         break;
-    case CODEC_TYPE_DATA:
+    case AVMEDIA_TYPE_DATA:
         snprintf(buf, buf_size, "Data: %s", codec_name);
         break;
-    case CODEC_TYPE_SUBTITLE:
+    case AVMEDIA_TYPE_SUBTITLE:
         snprintf(buf, buf_size, "Subtitle: %s", codec_name);
         break;
-    case CODEC_TYPE_ATTACHMENT:
+    case AVMEDIA_TYPE_ATTACHMENT:
         snprintf(buf, buf_size, "Attachment: %s", codec_name);
         break;
     default:
@@ -943,6 +964,8 @@ void avcodec_init(void)
 
 void avcodec_flush_buffers(AVCodecContext *avctx)
 {
+    if(HAVE_PTHREADS && avctx->active_thread_type&FF_THREAD_FRAME)
+        ff_thread_flush(avctx);
     if(avctx->codec->flush)
         avctx->codec->flush(avctx);
 }
@@ -1294,3 +1317,34 @@ int av_lockmgr_register(int (*cb)(void **mutex, enum AVLockOp op))
     }
     return 0;
 }
+
+#if !HAVE_PTHREADS
+
+int ff_thread_get_buffer(AVCodecContext *avctx, AVFrame *f)
+{
+    f->owner = avctx;
+    return avctx->get_buffer(avctx, f);
+}
+
+void ff_thread_release_buffer(AVCodecContext *avctx, AVFrame *f)
+{
+    f->owner->release_buffer(f->owner, f);
+}
+
+void ff_thread_finish_setup(AVCodecContext *avctx)
+{
+}
+
+void ff_thread_report_progress(AVFrame *f, int progress, int field)
+{
+}
+
+void ff_thread_await_progress(AVFrame *f, int progress, int field)
+{
+}
+
+void ff_thread_finish_frame(AVFrame *f)
+{
+}
+
+#endif

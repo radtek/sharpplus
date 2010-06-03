@@ -20,7 +20,7 @@
  */
 
 /**
- * @file libavformat/flic.c
+ * @file
  * FLI/FLC file demuxer
  * by Mike Melanson (melanson@pcisys.net)
  * for more information on the .fli/.flc file format and all of its many
@@ -103,7 +103,7 @@ static int flic_read_header(AVFormatContext *s,
     if (!st)
         return AVERROR(ENOMEM);
     flic->video_stream_index = st->index;
-    st->codec->codec_type = CODEC_TYPE_VIDEO;
+    st->codec->codec_type = AVMEDIA_TYPE_VIDEO;
     st->codec->codec_id = CODEC_ID_FLIC;
     st->codec->codec_tag = 0;  /* no fourcc */
     st->codec->width = AV_RL16(&header[0x08]);

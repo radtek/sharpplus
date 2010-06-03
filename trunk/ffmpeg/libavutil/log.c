@@ -20,7 +20,7 @@
  */
 
 /**
- * @file libavutil/log.c
+ * @file
  * logging functions
  */
 
@@ -38,6 +38,8 @@ void av_log_default_callback(void* ptr, int level, const char* fmt, va_list vl)
     static int count;
     static char line[1024], prev[1024];
     AVClass* avc= ptr ? *(AVClass**)ptr : NULL;
+    char buf[1024];
+    int prefix_length=0;
     if(level>av_log_level)
         return;
 #undef fprintf

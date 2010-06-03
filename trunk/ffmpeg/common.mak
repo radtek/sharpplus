@@ -2,7 +2,8 @@
 # common bits used by all libraries
 #
 
-all: # make "all" default target
+# first so "all" becomes default target
+all: all-yes
 
 ifndef SUBDIR
 vpath %.c   $(SRC_DIR)
@@ -20,9 +21,10 @@ endif
 ifndef V
 Q      = @
 ECHO   = printf "$(1)\t%s\n" $(2)
-BRIEF  = CC AS YASM AR LD HOSTCC RANLIB STRIP CP
-SILENT = DEPCC YASMDEP RM
+BRIEF  = CC AS YASM AR LD HOSTCC STRIP CP
+SILENT = DEPCC YASMDEP RM RANLIB
 MSG    = $@
+M      = @$(call ECHO,$(TAG),$@);
 $(foreach VAR,$(BRIEF), \
     $(eval $(VAR) = @$$(call ECHO,$(VAR),$$(MSG)); $($(VAR))))
 $(foreach VAR,$(SILENT),$(eval $(VAR) = @$($(VAR))))
@@ -50,15 +52,10 @@ CFLAGS   += $(ECFLAGS)
 %.ver: %.v
 	$(Q)sed 's/$$MAJOR/$($(basename $(@F))_VERSION_MAJOR)/' $^ > $@
 
-SVN_ENTRIES = $(SRC_PATH_BARE)/.svn/entries
-ifeq ($(wildcard $(SVN_ENTRIES)),$(SVN_ENTRIES))
-$(BUILD_ROOT_REL)/version.h: $(SVN_ENTRIES)
-endif
-
-$(BUILD_ROOT_REL)/version.h: $(SRC_PATH_BARE)/version.sh config.mak
-	$< $(SRC_PATH) $@ $(EXTRA_VERSION)
+%.c %.h: TAG = GEN
 
 install: install-libs install-headers
+install-libs: install-libs-yes
 
 uninstall: uninstall-libs uninstall-headers
 
@@ -69,7 +66,7 @@ uninstall: uninstall-libs uninstall-headers
 .SUFFIXES:
 
 # Do not delete intermediate files from chains of implicit rules
-.SECONDARY:
+$(OBJS):
 endif
 
 OBJS-$(HAVE_MMX) +=  $(MMX-OBJS-yes)
@@ -83,7 +80,7 @@ FFEXTRALIBS := $(addprefix -l,$(addsuffix $(BUILDSUF),$(FFLIBS))) $(EXTRALIBS)
 FFLDFLAGS   := $(addprefix -L$(BUILD_ROOT)/lib,$(ALLFFLIBS)) $(LDFLAGS)
 
 EXAMPLES  := $(addprefix $(SUBDIR),$(addsuffix -example$(EXESUF),$(EXAMPLES)))
-OBJS      := $(addprefix $(SUBDIR),$(OBJS))
+OBJS      := $(addprefix $(SUBDIR),$(sort $(OBJS)))
 TESTOBJS  := $(addprefix $(SUBDIR),$(TESTOBJS))
 TESTPROGS := $(addprefix $(SUBDIR),$(addsuffix -test$(EXESUF),$(TESTPROGS)))
 HOSTOBJS  := $(addprefix $(SUBDIR),$(addsuffix .o,$(HOSTPROGS)))

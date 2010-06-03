@@ -85,7 +85,19 @@ tools/%.o: tools/%.c
 
 ffplay.o ffplay.d: CFLAGS += $(SDL_CFLAGS)
 
-cmdutils.o cmdutils.d: version.h
+VERSION_SH  = $(SRC_PATH_BARE)/version.sh
+GIT_LOG     = $(SRC_PATH_BARE)/.git/logs/HEAD
+SVN_ENTRIES = $(SRC_PATH_BARE)/.svn/entries
+
+.version: $(wildcard $(GIT_LOG) $(SVN_ENTRIES)) $(VERSION_SH) config.mak
+.version: M=@
+
+version.h .version:
+	$(M)$(VERSION_SH) $(SRC_PATH) version.h $(EXTRA_VERSION)
+	$(Q)touch .version
+
+# force version.sh to run whenever version might have changed
+-include .version
 
 alltools: $(TOOLS)
 
@@ -93,15 +105,17 @@ documentation: $(addprefix doc/, developer.html faq.html ffmpeg-doc.html \
                                  ffplay-doc.html ffprobe-doc.html ffserver-doc.html \
                                  general.html libavfilter.html $(ALLMANPAGES))
 
+doc/%.html: TAG = HTML
 doc/%.html: doc/%.texi
-	texi2html -monolithic -number $<
-	mv $(@F) $@
+	$(M)cd doc && texi2html -monolithic -number $(<:doc/%=%)
 
+doc/%.pod: TAG = POD
 doc/%.pod: doc/%-doc.texi
-	doc/texi2pod.pl $< $@
+	$(M)doc/texi2pod.pl $< $@
 
+doc/%.1: TAG = MAN
 doc/%.1: doc/%.pod
-	pod2man --section=1 --center=" " --release=" " $< > $@
+	$(M)pod2man --section=1 --center=" " --release=" " $< > $@
 
 install: $(INSTALL_TARGETS-yes)
 
@@ -236,7 +250,17 @@ LAVF_TESTS-$(call MUXDEM,VOC)                += voc
 LAVF_TESTS-$(call MUXDEM,WAV)                += wav
 LAVF_TESTS-$(call MUXDEM,YUV4MPEGPIPE)       += yuv4mpeg
 
-LAVFI_TESTS =
+LAVFI_TESTS =           \
+    crop                \
+    crop_scale          \
+    crop_scale_vflip    \
+    crop_vflip          \
+    null                \
+    scale200            \
+    scale500            \
+    vflip               \
+    vflip_crop          \
+    vflip_vflip         \
 
 ACODEC_TESTS := $(addprefix regtest-, $(ACODEC_TESTS) $(ACODEC_TESTS-yes))
 VCODEC_TESTS := $(addprefix regtest-, $(VCODEC_TESTS) $(VCODEC_TESTS-yes))
@@ -247,8 +271,7 @@ CODEC_TESTS = $(VCODEC_TESTS) $(ACODEC_TESTS)
 
 codectest: $(CODEC_TESTS)
 lavftest:  $(LAVF_TESTS)
-
-# lavfitest: $(LAVFI_TESTS)
+lavfitest: $(LAVFI_TESTS)
 
 $(ACODEC_TESTS): regtest-aref
 $(VCODEC_TESTS): regtest-vref
@@ -316,5 +339,15 @@ tests/data/asynth1.sw: tests/audiogen$(HOSTEXESUF)
 tests/seek_test$(EXESUF): tests/seek_test.o $(FF_DEP_LIBS)
 	$(LD) $(FF_LDFLAGS) -o $@ $< $(FF_EXTRALIBS)
 
+ifdef SAMPLES
+include $(SRC_PATH_BARE)/tests/fate.mak
+fate: $(FATE_TESTS)
+$(FATE_TESTS): ffmpeg$(EXESUF)
+	@echo "TEST FATE   $(@:fate-%=%)"
+	@$(SRC_PATH)/tests/fate-run.sh $@ "$(SAMPLES)" "$(TARGET_EXEC)" "$(TARGET_PATH)" '$(CMD)'
+else
+fate:
+	@echo "SAMPLES not specified, cannot run FATE"
+endif
 
 .PHONY: documentation *test regtest-* zlib-error alltools check config

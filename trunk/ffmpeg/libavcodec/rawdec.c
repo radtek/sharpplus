@@ -20,7 +20,7 @@
  */
 
 /**
- * @file libavcodec/rawdec.c
+ * @file
  * Raw Video Decoder
  */
 
@@ -153,7 +153,7 @@ static int raw_decode(AVCodecContext *avctx,
         avctx->palctrl->palette_changed = 0;
     }
 
-    //if(context->flip)
+    if(context->flip)
         flip(avctx, picture);
 
     if (   avctx->codec_tag == MKTAG('Y', 'V', '1', '2')
@@ -185,7 +185,7 @@ static av_cold int raw_close_decoder(AVCodecContext *avctx)
 
 AVCodec rawvideo_decoder = {
     "rawvideo",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_RAWVIDEO,
     sizeof(RawVideoContext),
     raw_init_decoder,

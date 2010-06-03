@@ -19,7 +19,7 @@
  */
 
 /**
- * @file libavutil/internal.h
+ * @file
  * common internal API header
  */
 
@@ -35,8 +35,7 @@
 #include <stddef.h>
 #include <assert.h>
 #include "config.h"
-#include "common.h"
-#include "mem.h"
+#include "attributes.h"
 #include "timer.h"
 
 #ifndef attribute_align_arg
@@ -192,65 +191,7 @@
     }\
 }
 
-#if !HAVE_EXP2
-#undef exp2
-#define exp2(x) exp((x) * 0.693147180559945)
-#endif /* HAVE_EXP2 */
-
-#if !HAVE_EXP2F
-#undef exp2f
-#define exp2f(x) ((float)exp2(x))
-#endif /* HAVE_EXP2F */
-
-#if !HAVE_LLRINT
-#undef llrint
-#define llrint(x) ((long long)rint(x))
-#endif /* HAVE_LLRINT */
-
-#if !HAVE_LOG2
-#undef log2
-#define log2(x) (log(x) * 1.44269504088896340736)
-#endif /* HAVE_LOG2 */
-
-#if !HAVE_LOG2F
-#undef log2f
-#define log2f(x) ((float)log2(x))
-#endif /* HAVE_LOG2F */
-
-#if !HAVE_LRINT
-static av_always_inline av_const long int lrint(double x)
-{
-    return rint(x);
-}
-#endif /* HAVE_LRINT */
-
-#if !HAVE_LRINTF
-static av_always_inline av_const long int lrintf(float x)
-{
-    return (int)(rint(x));
-}
-#endif /* HAVE_LRINTF */
-
-#if !HAVE_ROUND
-static av_always_inline av_const double round(double x)
-{
-    return (x > 0) ? floor(x + 0.5) : ceil(x - 0.5);
-}
-#endif /* HAVE_ROUND */
-
-#if !HAVE_ROUNDF
-static av_always_inline av_const float roundf(float x)
-{
-    return (x > 0) ? floor(x + 0.5) : ceil(x - 0.5);
-}
-#endif /* HAVE_ROUNDF */
-
-#if !HAVE_TRUNCF
-static av_always_inline av_const float truncf(float x)
-{
-    return (x > 0) ? floor(x) : ceil(x);
-}
-#endif /* HAVE_TRUNCF */
+#include "libm.h"
 
 /**
  * Returns NULL if CONFIG_SMALL is true, otherwise the argument
@@ -261,6 +202,12 @@ static av_always_inline av_const float truncf(float x)
 #   define NULL_IF_CONFIG_SMALL(x) NULL
 #else
 #   define NULL_IF_CONFIG_SMALL(x) x
+#endif
+
+#if HAVE_THREADS
+#   define ONLY_IF_THREADS_ENABLED(x) x
+#else
+#   define ONLY_IF_THREADS_ENABLED(x) NULL
 #endif
 
 #endif /* AVUTIL_INTERNAL_H */

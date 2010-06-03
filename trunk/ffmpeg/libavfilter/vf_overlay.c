@@ -144,11 +144,11 @@ static int config_input_overlay(AVFilterLink *link)
     var_values[OVERLAY_W] = ctx->inputs[1]->w;
     var_values[OVERLAY_H] = ctx->inputs[1]->h;
 
-    over->x = ff_eval2((expr = over->x_expr), var_values, var_names,
+    over->x = ff_parse_and_eval_expr((expr = over->x_expr), var_values, var_names,
                        NULL, NULL, NULL, NULL, NULL, &error);
     if (error)
         goto fail;
-    over->y = ff_eval2((expr = over->y_expr), var_values, var_names,
+    over->y = ff_parse_and_eval_expr((expr = over->y_expr), var_values, var_names,
                        NULL, NULL, NULL, NULL, NULL, &error);
     if (error)
         goto fail;
@@ -182,6 +182,10 @@ static void start_frame(AVFilterLink *link, AVFilterPicRef *picref)
         /* No previous unused frame, take this one into use directly */
         over->pics[link->dstpad][0] = picref;
     }
+}
+
+static void draw_slice(AVFilterLink *link, int y, int h, int slice_dir)
+{
 }
 
 static void end_frame(AVFilterLink *link)
@@ -338,22 +342,24 @@ AVFilter avfilter_vf_overlay =
     .query_formats = query_formats,
 
     .inputs    = (AVFilterPad[]) {{ .name            = "default",
-                                    .type            = CODEC_TYPE_VIDEO,
+                                    .type            = AVMEDIA_TYPE_VIDEO,
                                     .start_frame     = start_frame,
                                     .config_props    = config_input_main,
+                                    .draw_slice      = draw_slice,
                                     .end_frame       = end_frame,
                                     .min_perms       = AV_PERM_READ,
                                     .rej_perms       = AV_PERM_REUSE2, },
                                   { .name            = "sub",
-                                    .type            = CODEC_TYPE_VIDEO,
+                                    .type            = AVMEDIA_TYPE_VIDEO,
                                     .start_frame     = start_frame,
                                     .config_props    = config_input_overlay,
+                                    .draw_slice      = draw_slice,
                                     .end_frame       = end_frame,
                                     .min_perms       = AV_PERM_READ,
                                     .rej_perms       = AV_PERM_REUSE2, },
                                   { .name = NULL}},
     .outputs   = (AVFilterPad[]) {{ .name            = "default",
-                                    .type            = CODEC_TYPE_VIDEO,
+                                    .type            = AVMEDIA_TYPE_VIDEO,
                                     .request_frame   = request_frame, },
                                   { .name = NULL}},
 };

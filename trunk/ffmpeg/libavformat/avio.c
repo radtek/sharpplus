@@ -201,8 +201,8 @@ int64_t url_seek(URLContext *h, int64_t pos, int whence)
     int64_t ret;
 
     if (!h->prot->url_seek)
-        return AVERROR(EPIPE);
-    ret = h->prot->url_seek(h, pos, whence);
+        return AVERROR(ENOSYS);
+    ret = h->prot->url_seek(h, pos, whence & ~AVSEEK_FORCE);
     return ret;
 }
 
