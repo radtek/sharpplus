@@ -89,7 +89,7 @@ Configuration options:
   --disable-avformat       disable libavformat build
   --disable-swscale        disable libswscale build
   --enable-postproc        enable GPLed postprocessing support [no]
-  --enable-avfilter        video filter support [no]
+  --disable-avfilter       disable video filter support [no]
   --enable-avfilter-lavf   video filters dependent on avformat [no]
   --enable-beosthreads     use BeOS threads [no]
   --enable-os2threads      use OS/2 threads [no]
@@ -183,6 +183,7 @@ External library support:
   --enable-libtheora       enable Theora encoding via libtheora [no]
   --enable-libvorbis       enable Vorbis encoding via libvorbis,
                            native implementation exists [no]
+  --enable-libvpx          enable VP8 support via libvpx [no]
   --enable-libx264         enable H.264 encoding via x264 [no]
   --enable-libxvid         enable Xvid encoding via xvidcore,
                            native MPEG-4/Xvid encoder exists [no]
@@ -199,6 +200,7 @@ Advanced options (experts only):
   --target-exec=CMD        command to run executables on target
   --target-path=DIR        path to view of build directory on target
   --nm=NM                  use nm tool
+  --ar=AR                  use archive tool AR [$ar_default]
   --as=AS                  use assembler AS [$as_default]
   --cc=CC                  use C compiler CC [$cc_default]
   --ld=LD                  use linker LD
@@ -926,6 +928,7 @@ CONFIG_LIST="
     libspeex
     libtheora
     libvorbis
+    libvpx
     libx264
     libxvid
     lpc
@@ -1052,6 +1055,7 @@ HAVE_LIST="
     libdc1394_1
     libdc1394_2
     llrint
+    llrintf
     local_aligned_16
     local_aligned_8
     log2
@@ -1131,6 +1135,7 @@ PATHS_LIST='
 
 CMDLINE_SET="
     $PATHS_LIST
+    ar
     arch
     as
     build_suffix
@@ -1303,7 +1308,7 @@ wmav1_decoder_select="mdct"
 wmav1_encoder_select="mdct"
 wmav2_decoder_select="mdct"
 wmav2_encoder_select="mdct"
-wmavoice_decoder_select="lsp"
+wmavoice_decoder_select="lsp rdft dct"
 wmv1_decoder_select="h263_decoder"
 wmv1_encoder_select="h263_encoder"
 wmv2_decoder_select="h263_decoder"
@@ -1331,7 +1336,7 @@ libdirac_decoder_deps="libdirac !libschroedinger"
 libdirac_encoder_deps="libdirac"
 libfaac_encoder_deps="libfaac"
 libfaad_decoder_deps="libfaad"
-libfaadbin_decoder_extralibs='$ldl'
+libfaadbin_extralibs='$ldl'
 libgsm_decoder_deps="libgsm"
 libgsm_encoder_deps="libgsm"
 libgsm_ms_decoder_deps="libgsm"
@@ -1346,6 +1351,7 @@ libschroedinger_encoder_deps="libschroedinger"
 libspeex_decoder_deps="libspeex"
 libtheora_encoder_deps="libtheora"
 libvorbis_encoder_deps="libvorbis"
+libvpx_decoder_deps="libvpx"
 libx264_encoder_deps="libx264"
 libxvid_encoder_deps="libxvid"
 
@@ -1406,8 +1412,9 @@ x11_grab_device_indev_extralibs="-lX11 -lXext -lXfixes"
 gopher_protocol_deps="network"
 http_protocol_deps="network"
 http_protocol_select="tcp_protocol"
-rtmp_protocol_deps="tcp_protocol"
-rtp_protocol_deps="udp_protocol"
+mmst_protocol_deps="network"
+rtmp_protocol_select="tcp_protocol"
+rtp_protocol_select="udp_protocol"
 tcp_protocol_deps="network"
 udp_protocol_deps="network"
 
@@ -1421,6 +1428,7 @@ avformat_deps="avcodec"
 
 # programs
 ffmpeg_deps="avcodec avformat swscale"
+ffmpeg_select="buffer_filter"
 ffplay_deps="avcodec avformat swscale sdl"
 ffplay_select="rdft"
 ffprobe_deps="avcodec avformat"
@@ -1443,7 +1451,7 @@ mandir_default='${prefix}/share/man'
 shlibdir_default="$libdir_default"
 
 # toolchain
-ar="ar"
+ar_default="ar"
 cc_default="gcc"
 cc_version=\"unknown\"
 host_cc_default="gcc"
@@ -1467,6 +1475,7 @@ host_os=$target_os_default
 # configurable options
 enable avcodec
 enable avdevice
+enable avfilter
 enable avformat
 enable avutil
 enable asm
@@ -1642,7 +1651,7 @@ fi
 
 set_default arch target_os
 
-ar="${cross_prefix}${ar}"
+ar_default="${cross_prefix}${ar_default}"
 cc_default="${cross_prefix}${cc_default}"
 nm_default="${cross_prefix}${nm_default}"
 ranlib="${cross_prefix}${ranlib}"
@@ -1730,6 +1739,7 @@ elif $cc --version 2>/dev/null | grep -q Intel; then
     AS_DEPFLAGS='-MMD'
     speed_cflags='-O3'
     size_cflags='-Os'
+    noopt_cflags='-O1'
 elif $cc -v 2>&1 | grep -q xlc; then
     cc_type=xlc
     cc_version="AV_STRINGIFY(__IBMC__)"
@@ -1819,9 +1829,9 @@ elif $cc -V 2>&1 | grep -q Sun; then
                 -march=*|-mcpu=*)
                     case "${flag#*=}" in
                         native)                   echo -xtarget=native       ;;
-                        v9)                       echo -xarch=sparc          ;;
+                        v9|niagara)               echo -xarch=sparc          ;;
                         ultrasparc)               echo -xarch=sparcvis       ;;
-                        ultrasparc3|niagara*)     echo -xarch=sparcvis2      ;;
+                        ultrasparc3|niagara2)     echo -xarch=sparcvis2      ;;
                         i586|pentium)             echo -xchip=pentium        ;;
                         i686|pentiumpro|pentium2) echo -xtarget=pentium_pro  ;;
                         pentium3*|c3-2)           echo -xtarget=pentium3     ;;
@@ -1853,7 +1863,7 @@ test -n "$cc_type" && enable $cc_type || echolog "Unknown C compiler $cc"
 : ${as_default:=$cc}
 : ${dep_cc_default:=$cc}
 : ${ld_default:=$cc}
-set_default as dep_cc ld
+set_default ar as dep_cc ld
 
 test -n "$CC_DEPFLAGS" || CCDEP=$DEPEND_CMD
 test -n "$AS_DEPFLAGS" || ASDEP=$DEPEND_CMD
@@ -2016,6 +2026,10 @@ elif enabled x86; then
 elif enabled sparc; then
 
     case $cpu in
+        niagara)
+            cpuflags="-mcpu=$cpu"
+            disable vis
+        ;;
         sparc64)
             cpuflags="-mcpu=v9"
         ;;
@@ -2330,6 +2344,7 @@ die_license_disabled gpl postproc
 die_license_disabled gpl x11grab
 
 die_license_disabled nonfree libfaac
+die_license_disabled nonfree libvpx
 
 die_license_disabled version3 libopencore_amrnb
 die_license_disabled version3 libopencore_amrwb
@@ -2403,11 +2418,6 @@ EOF
     enabled neon    && check_asm neon    '"vadd.i16 q0, q0, q0"'
 
     enabled_all armv6t2 shared !pic && enable_pic
-
-elif enabled ia64; then
-
-    # HACK: currently fails to build if .bss is > 4MB and shared libs are built
-    enabled shared && enable_weak hardcoded_tables
 
 elif enabled mips; then
 
@@ -2587,6 +2597,7 @@ check_lib va/va.h vaInitialize -lva
 check_mathfunc exp2
 check_mathfunc exp2f
 check_mathfunc llrint
+check_mathfunc llrintf
 check_mathfunc log2
 check_mathfunc log2f
 check_mathfunc lrint
@@ -2614,9 +2625,10 @@ enabled libschroedinger && add_cflags $(pkg-config --cflags schroedinger-1.0) &&
 enabled libspeex   && require  libspeex speex/speex.h speex_decoder_init -lspeex
 enabled libtheora  && require  libtheora theora/theoraenc.h th_info_init -ltheoraenc -ltheoradec -logg
 enabled libvorbis  && require  libvorbis vorbis/vorbisenc.h vorbis_info_init -lvorbisenc -lvorbis -logg
+enabled libvpx     && require2 libvpx "vpx/vpx_decoder.h vpx/vp8dx.h" "vpx_codec_dec_init_ver" -lvpx
 enabled libx264    && require  libx264 x264.h x264_encoder_encode $(pkg-config --libs x264) &&
-                      { check_cpp_condition x264.h "X264_BUILD >= 83" ||
-                        die "ERROR: libx264 version must be >= 0.83."; }
+                      { check_cpp_condition x264.h "X264_BUILD >= 90" ||
+                        die "ERROR: libx264 version must be >= 0.90."; }
 enabled libxvid    && require  libxvid xvid.h xvid_global -lxvidcore
 enabled mlib       && require  mediaLib mlib_types.h mlib_VectorSub_S16_U8_Mod -lmlib
 
@@ -2737,6 +2749,8 @@ if enabled small; then
     optimizations="small"
 elif enabled optimizations; then
     add_cflags $speed_cflags
+else
+    add_cflags $noopt_cflags
 fi
 check_cflags -fno-math-errno
 check_cflags -fno-signed-zeros
@@ -2803,7 +2817,7 @@ check_deps $CONFIG_LIST       \
            $OUTDEV_LIST       \
            $PROTOCOL_LIST     \
 
-enabled asm || disable $ARCH_LIST $ARCH_EXT_LIST
+enabled asm || { arch=c; disable $ARCH_LIST $ARCH_EXT_LIST; }
 
 echo "install prefix            $prefix"
 echo "source path               $source_path"
@@ -2882,6 +2896,7 @@ echo "libschroedinger enabled   ${libschroedinger-no}"
 echo "libspeex enabled          ${libspeex-no}"
 echo "libtheora enabled         ${libtheora-no}"
 echo "libvorbis enabled         ${libvorbis-no}"
+echo "libvpx enabled            ${libvpx-no}"
 echo "libx264 enabled           ${libx264-no}"
 echo "libxvid enabled           ${libxvid-no}"
 echo "zlib enabled              ${zlib-no}"

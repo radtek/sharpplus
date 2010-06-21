@@ -225,7 +225,7 @@ int avcodec_check_dimensions(void *av_log_ctx, unsigned int w, unsigned int h){
         return 0;
 
     av_log(av_log_ctx, AV_LOG_ERROR, "picture size invalid (%ux%u)\n", w, h);
-    return -1;
+    return AVERROR(EINVAL);
 }
 
 int avcodec_default_get_buffer(AVCodecContext *s, AVFrame *pic){
@@ -329,7 +329,7 @@ int avcodec_default_get_buffer(AVCodecContext *s, AVFrame *pic){
             if(buf->base[i]==NULL) return -1;
             memset(buf->base[i], 128, size[i]);
 
-            // no edge if EDEG EMU or not planar YUV
+            // no edge if EDGE EMU or not planar YUV
             if((s->flags&CODEC_FLAG_EMU_EDGE) || !size[2])
                 buf->data[i] = buf->base[i];
             else
@@ -621,13 +621,13 @@ int attribute_align_arg avcodec_decode_video2(AVCodecContext *avctx, AVFrame *pi
                          AVPacket *avpkt)
 {
     int ret;
-    int threaded = HAVE_PTHREADS && avctx->active_thread_type&FF_THREAD_FRAME;
+    int threaded = avctx->active_thread_type&FF_THREAD_FRAME;
 
     *got_picture_ptr= 0;
     if((avctx->coded_width||avctx->coded_height) && avcodec_check_dimensions(avctx,avctx->coded_width,avctx->coded_height))
         return -1;
     if((avctx->codec->capabilities & CODEC_CAP_DELAY) || avpkt->size || threaded){
-        if (threaded) ret = ff_thread_decode_frame(avctx, picture,
+        if (HAVE_PTHREADS && threaded) ret = ff_thread_decode_frame(avctx, picture,
                                 got_picture_ptr, avpkt);
         else ret = avctx->codec->decode(avctx, picture, got_picture_ptr,
                                 avpkt);
@@ -730,6 +730,7 @@ av_cold int avcodec_close(AVCodecContext *avctx)
     if (avctx->codec && avctx->codec->close && !(avctx->active_thread_type&FF_THREAD_FRAME))
         avctx->codec->close(avctx);
     avcodec_default_free_buffers(avctx);
+    avctx->coded_frame = NULL;
     av_freep(&avctx->priv_data);
     if(avctx->codec && avctx->codec->encode)
         av_freep(&avctx->extradata);
@@ -746,14 +747,18 @@ av_cold int avcodec_close(AVCodecContext *avctx)
 
 AVCodec *avcodec_find_encoder(enum CodecID id)
 {
-    AVCodec *p;
+    AVCodec *p, *experimental=NULL;
     p = first_avcodec;
     while (p) {
-        if (p->encode != NULL && p->id == id)
-            return p;
+        if (p->encode != NULL && p->id == id) {
+            if (p->capabilities & CODEC_CAP_EXPERIMENTAL && !experimental) {
+                experimental = p;
+            } else
+                return p;
+        }
         p = p->next;
     }
-    return NULL;
+    return experimental;
 }
 
 AVCodec *avcodec_find_encoder_by_name(const char *name)
@@ -1316,6 +1321,14 @@ int av_lockmgr_register(int (*cb)(void **mutex, enum AVLockOp op))
             return -1;
     }
     return 0;
+}
+
+unsigned int ff_toupper4(unsigned int x)
+{
+    return     toupper( x     &0xFF)
+    + (toupper((x>>8 )&0xFF)<<8 )
+    + (toupper((x>>16)&0xFF)<<16)
+    + (toupper((x>>24)&0xFF)<<24);
 }
 
 #if !HAVE_PTHREADS

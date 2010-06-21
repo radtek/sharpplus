@@ -5,8 +5,6 @@ FFLIBS = avcodec avutil swscale
 FFLIBS-$(CONFIG_AVFILTER_LAVF) += avformat
 FFLIBS-$(CONFIG_LOGO_FILTER) += avformat
 
-
-
 HEADERS = avfilter.h
 
 OBJS = allfilters.o                                                     \
@@ -20,10 +18,12 @@ OBJS = allfilters.o                                                     \
        dct.o                                                            \
        coeff.o                                                          \
        signature.o                                                      \
+       subreader.o                                                      \
 
 OBJS-$(CONFIG_ASPECT_FILTER)                 += vf_aspect.o
 OBJS-$(CONFIG_CROP_FILTER)                   += vf_crop.o
 OBJS-$(CONFIG_DRAWBOX_FILTER)                += vf_drawbox.o
+OBJS-$(CONFIG_DRAWTEXT_FILTER)               += vf_drawtext.o
 OBJS-$(CONFIG_FIFO_FILTER)                   += vf_fifo.o
 OBJS-$(CONFIG_FORMAT_FILTER)                 += vf_format.o
 OBJS-$(CONFIG_WATERMARK_FILTER)              += vf_watermark.o
@@ -33,12 +33,12 @@ OBJS-$(CONFIG_LOGO_FILTER)                   += vf_logo.o
 OBJS-$(CONFIG_NEGATE_FILTER)                 += vf_negate.o
 OBJS-$(CONFIG_NOFORMAT_FILTER)               += vf_format.o
 OBJS-$(CONFIG_NULL_FILTER)                   += vf_null.o
-OBJS-$(CONFIG_OVERLAY_FILTER)                += vf_overlay.o
+#OBJS-$(CONFIG_OVERLAY_FILTER)                += vf_overlay.o
 OBJS-$(CONFIG_PAD_FILTER)                    += vf_pad.o
 OBJS-$(CONFIG_PIXELASPECT_FILTER)            += vf_aspect.o
 OBJS-$(CONFIG_ROTATE_FILTER)                 += vf_rotate.o
 OBJS-$(CONFIG_SCALE_FILTER)                  += vf_scale.o
-OBJS-$(CONFIG_SETPTS_FILTER)                 += vf_setpts.o
+#OBJS-$(CONFIG_SETPTS_FILTER)                 += vf_setpts.o
 OBJS-$(CONFIG_SLICIFY_FILTER)                += vf_slicify.o
 OBJS-$(CONFIG_SPLIT_FILTER)                  += vf_split.o
 OBJS-$(CONFIG_TRANSPOSE_FILTER)              += vf_transpose.o
@@ -53,6 +53,6 @@ OBJS-$(CONFIG_NULLSRC_FILTER)                += vsrc_nullsrc.o
 OBJS-$(CONFIG_NULLSINK_FILTER)               += vsink_nullsink.o
 
 CFLAGS += -I/usr/local/include/ass
-EXTRALIBS += -lass -lfreetype
+EXTRALIBS += -lass -lfreetype -liconv
 
 include $(SUBDIR)../subdir.mak
