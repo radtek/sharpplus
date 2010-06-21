@@ -20,7 +20,7 @@
  */
 
 /**
- * @file libavfilter/vf_pad.c
+ * @file
  * video padding filter
  */
 
@@ -49,12 +49,12 @@ static av_cold int init(AVFilterContext *ctx, const char *args, void *opaque)
         sscanf(args, "%d:%d:%d:%d:%s", &pad->w, &pad->h, &pad->x, &pad->y, color_string);
 
     if (av_parse_color(pad->color, color_string, ctx) < 0)
-        return -1;
+        return AVERROR(EINVAL);
 
     /* sanity check params */
     if (pad->w < 0 || pad->h < 0) {
         av_log(ctx, AV_LOG_ERROR, "Negative size values are not acceptable.\n");
-        return -1;
+        return AVERROR(EINVAL);
     }
 
     return 0;
@@ -100,7 +100,7 @@ static int config_input(AVFilterLink *inlink)
     PadContext *pad = ctx->priv;
     const AVPixFmtDescriptor *pix_desc = &av_pix_fmt_descriptors[inlink->format];
     uint8_t rgba_color[4];
-    uint8_t rgba_map[4];
+    uint8_t rgba_map[4] = {0};
     int i, is_packed_rgb = 1;
 
     switch (inlink->format) {
@@ -150,9 +150,9 @@ static int config_input(AVFilterLink *inlink)
     } else {
         int plane;
 
-        pad->color[0] = RGB_TO_Y(rgba_color[0], rgba_color[1], rgba_color[2]);
-        pad->color[1] = RGB_TO_U(rgba_color[0], rgba_color[1], rgba_color[2], 0);
-        pad->color[2] = RGB_TO_V(rgba_color[0], rgba_color[1], rgba_color[2], 0);
+        pad->color[0] = RGB_TO_Y_CCIR(rgba_color[0], rgba_color[1], rgba_color[2]);
+        pad->color[1] = RGB_TO_U_CCIR(rgba_color[0], rgba_color[1], rgba_color[2], 0);
+        pad->color[2] = RGB_TO_V_CCIR(rgba_color[0], rgba_color[1], rgba_color[2], 0);
         pad->color[3] = rgba_color[3];
 
         for (plane = 0; plane < 4; plane++) {
@@ -178,7 +178,7 @@ static int config_input(AVFilterLink *inlink)
         av_log(ctx, AV_LOG_ERROR,
                "Input area %d:%d:%d:%d not within the padded area 0:0:%d:%d or zero-sized\n",
                pad->x, pad->y, pad->x + inlink->w, pad->y + inlink->h, pad->w, pad->h);
-        return -1;
+        return AVERROR(EINVAL);
     }
 
     return 0;
@@ -200,8 +200,9 @@ static AVFilterPicRef *get_video_buffer(AVFilterLink *inlink, int perms, int w, 
     AVFilterPicRef *picref = avfilter_get_video_buffer(inlink->dst->outputs[0], perms,
                                                        w + (pad->w - pad->in_w),
                                                        h + (pad->h - pad->in_h));
+    int plane;
 
-    for (int plane = 0; plane < 4 && picref->data[plane]; plane++) {
+    for (plane = 0; plane < 4 && picref->data[plane]; plane++) {
         int hsub = (plane == 1 || plane == 2) ? pad->hsub : 0;
         int vsub = (plane == 1 || plane == 2) ? pad->vsub : 0;
 
@@ -216,9 +217,11 @@ static void start_frame(AVFilterLink *inlink, AVFilterPicRef *inpicref)
 {
     PadContext *pad = inlink->dst->priv;
     AVFilterPicRef *outpicref = avfilter_ref_pic(inpicref, ~0);
+    int plane;
+
     inlink->dst->outputs[0]->outpic = outpicref;
 
-    for (int plane = 0; plane < 4 && outpicref->data[plane]; plane++) {
+    for (plane = 0; plane < 4 && outpicref->data[plane]; plane++) {
         int hsub = (plane == 1 || plane == 2) ? pad->hsub : 0;
         int vsub = (plane == 1 || plane == 2) ? pad->vsub : 0;
 

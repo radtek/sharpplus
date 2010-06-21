@@ -137,6 +137,7 @@ typedef struct Vp3DecodeContext {
     DSPContext dsp;
     int flipped_image;
     int last_slice_end;
+    int skip_loop_filter;
 
     int qps[3];
     int nqps;
@@ -379,8 +380,15 @@ static int unpack_superblocks(Vp3DecodeContext *s, GetBitContext *gb)
     } else {
 
         /* unpack the list of partially-coded superblocks */
-        bit = get_bits1(gb);
+        bit = get_bits1(gb) ^ 1;
+        current_run = 0;
+
         while (current_superblock < s->superblock_count && get_bits_left(gb) > 0) {
+            if (s->theora && current_run == MAXIMUM_LONG_BIT_RUN)
+                bit = get_bits1(gb);
+            else
+                bit ^= 1;
+
                 current_run = get_vlc2(gb,
                     s->superblock_run_length_vlc.table, 6, 2) + 1;
                 if (current_run == 34)
@@ -396,11 +404,6 @@ static int unpack_superblocks(Vp3DecodeContext *s, GetBitContext *gb)
             current_superblock += current_run;
             if (bit)
                 num_partial_superblocks += current_run;
-
-            if (s->theora && current_run == MAXIMUM_LONG_BIT_RUN)
-                bit = get_bits1(gb);
-            else
-                bit ^= 1;
         }
 
         /* unpack the list of fully coded superblocks if any of the blocks were
@@ -409,9 +412,17 @@ static int unpack_superblocks(Vp3DecodeContext *s, GetBitContext *gb)
             int superblocks_decoded = 0;
 
             current_superblock = 0;
-            bit = get_bits1(gb);
+            bit = get_bits1(gb) ^ 1;
+            current_run = 0;
+
             while (superblocks_decoded < s->superblock_count - num_partial_superblocks
                    && get_bits_left(gb) > 0) {
+
+                if (s->theora && current_run == MAXIMUM_LONG_BIT_RUN)
+                    bit = get_bits1(gb);
+                else
+                    bit ^= 1;
+
                         current_run = get_vlc2(gb,
                             s->superblock_run_length_vlc.table, 6, 2) + 1;
                         if (current_run == 34)
@@ -430,11 +441,6 @@ static int unpack_superblocks(Vp3DecodeContext *s, GetBitContext *gb)
                 }
                 }
                 superblocks_decoded += current_run;
-
-                if (s->theora && current_run == MAXIMUM_LONG_BIT_RUN)
-                    bit = get_bits1(gb);
-                else
-                    bit ^= 1;
             }
         }
 
@@ -801,9 +807,15 @@ static int unpack_block_qpis(Vp3DecodeContext *s, GetBitContext *gb)
     for (qpi = 0; qpi < s->nqps-1 && num_blocks > 0; qpi++) {
         i = blocks_decoded = num_blocks_at_qpi = 0;
 
-        bit = get_bits1(gb);
+        bit = get_bits1(gb) ^ 1;
+        run_length = 0;
 
         do {
+            if (run_length == MAXIMUM_LONG_BIT_RUN)
+                bit = get_bits1(gb);
+            else
+                bit ^= 1;
+
             run_length = get_vlc2(gb, s->superblock_run_length_vlc.table, 6, 2) + 1;
             if (run_length == 34)
                 run_length += get_bits(gb, 12);
@@ -821,11 +833,6 @@ static int unpack_block_qpis(Vp3DecodeContext *s, GetBitContext *gb)
                     j++;
                 }
             }
-
-            if (run_length == MAXIMUM_LONG_BIT_RUN)
-                bit = get_bits1(gb);
-            else
-                bit ^= 1;
         } while (blocks_decoded < num_blocks && get_bits_left(gb) > 0);
 
         num_blocks -= num_blocks_at_qpi;
@@ -1524,7 +1531,8 @@ static void render_slice(Vp3DecodeContext *s, int slice)
             }
 
             // Filter up to the last row in the superblock row
-            apply_loop_filter(s, plane, 4*sb_y - !!sb_y, FFMIN(4*sb_y+3, fragment_height-1));
+            if (!s->skip_loop_filter)
+                apply_loop_filter(s, plane, 4*sb_y - !!sb_y, FFMIN(4*sb_y+3, fragment_height-1));
         }
     }
 
@@ -1859,6 +1867,9 @@ static int vp3_decode_frame(AVCodecContext *avctx,
     if (s->avctx->debug & FF_DEBUG_PICT_INFO)
         av_log(s->avctx, AV_LOG_INFO, " VP3 %sframe #%d: Q index = %d\n",
             s->keyframe?"key":"", avctx->frame_number+1, s->qps[0]);
+
+    s->skip_loop_filter = !s->filter_limit_values[s->qps[0]] ||
+        avctx->skip_loop_filter >= (s->keyframe ? AVDISCARD_ALL : AVDISCARD_NONKEY);
 
     if (s->qps[0] != s->last_qps[0])
         init_loop_filter(s);

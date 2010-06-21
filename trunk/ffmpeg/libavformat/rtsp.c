@@ -379,11 +379,11 @@ static void sdp_parse_line(AVFormatContext *s, SDPParseState *s1,
         }
         break;
     case 's':
-        av_metadata_set(&s->metadata, "title", p);
+        av_metadata_set2(&s->metadata, "title", p, 0);
         break;
     case 'i':
         if (s->nb_streams == 0) {
-            av_metadata_set(&s->metadata, "comment", p);
+            av_metadata_set2(&s->metadata, "comment", p, 0);
             break;
         }
         break;
@@ -1337,6 +1337,8 @@ static int rtsp_read_play(AVFormatContext *s)
                 RTSPStream *rtsp_st = rt->rtsp_streams[i];
                 RTPDemuxContext *rtpctx = rtsp_st->transport_priv;
                 AVStream *st = NULL;
+                if (!rtpctx)
+                    continue;
                 if (rtsp_st->stream_index >= 0)
                     st = s->streams[rtsp_st->stream_index];
                 rtpctx->last_rtcp_ntp_time  = AV_NOPTS_VALUE;

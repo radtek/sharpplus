@@ -37,6 +37,7 @@ void avfilter_register_all(void)
     REGISTER_FILTER (ASPECT,      aspect,      vf);
     REGISTER_FILTER (CROP,        crop,        vf);
     REGISTER_FILTER (DRAWBOX,     drawbox,     vf);
+    REGISTER_FILTER (DRAWTEXT,    drawtext,    vf);
     REGISTER_FILTER(WATERMARK,watermark,vf);
     REGISTER_FILTER (FIFO,        fifo,        vf);
     REGISTER_FILTER (FORMAT,      format,      vf);
@@ -46,12 +47,12 @@ void avfilter_register_all(void)
     REGISTER_FILTER (NEGATE,      negate,      vf);
     REGISTER_FILTER (NOFORMAT,    noformat,    vf);
     REGISTER_FILTER (NULL,        null,        vf);
-    REGISTER_FILTER (OVERLAY,     overlay,     vf);
+    //REGISTER_FILTER (OVERLAY,     overlay,     vf);
     REGISTER_FILTER (PAD,         pad,         vf);
-    REGISTER_FILTER(ROTATE,rotate,vf);
     REGISTER_FILTER (PIXELASPECT, pixelaspect, vf);
+    REGISTER_FILTER (ROTATE,      rotate,      vf);
     REGISTER_FILTER (SCALE,       scale,       vf);
-    REGISTER_FILTER (SETPTS,      setpts,      vf);
+    //REGISTER_FILTER (SETPTS,      setpts,      vf);
     REGISTER_FILTER (SLICIFY,     slicify,     vf);
     REGISTER_FILTER (SPLIT,       split,       vf);
     REGISTER_FILTER (TRANSPOSE,   transpose,   vf);
