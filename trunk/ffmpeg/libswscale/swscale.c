@@ -3,22 +3,19 @@
  *
  * This file is part of FFmpeg.
  *
- * FFmpeg is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * FFmpeg is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * FFmpeg is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with FFmpeg; if not, write to the Free Software
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * the C code (not assembly, mmx, ...) of this file can be used
- * under the LGPL license too
  */
 
 /*
@@ -39,7 +36,7 @@
 
 /*
 tested special converters (most are tested actually, but I did not write it down ...)
- YV12 -> BGR16
+ YV12 -> BGR12/BGR16
  YV12 -> YV12
  BGR15 -> BGR16
  BGR16 -> BGR16
@@ -66,6 +63,7 @@ untested special converters
 #include "libavutil/intreadwrite.h"
 #include "libavutil/x86_cpu.h"
 #include "libavutil/avutil.h"
+#include "libavutil/mathematics.h"
 #include "libavutil/bswap.h"
 #include "libavutil/pixdesc.h"
 
@@ -79,12 +77,6 @@ untested special converters
 #define DITHER1XBPP
 
 #define FAST_BGR2YV12 // use 7 bit coefficients instead of 15 bit
-
-#ifdef M_PI
-#define PI M_PI
-#else
-#define PI 3.14159265358979323846
-#endif
 
 #define isPacked(x)         (       \
            (x)==PIX_FMT_PAL8        \
@@ -130,7 +122,7 @@ add BGR4 output support
 write special BGR->BGR scaler
 */
 
-#if ARCH_X86 && CONFIG_GPL
+#if ARCH_X86
 DECLARE_ASM_CONST(8, uint64_t, bF8)=       0xF8F8F8F8F8F8F8F8LL;
 DECLARE_ASM_CONST(8, uint64_t, bFC)=       0xFCFCFCFCFCFCFCFCLL;
 DECLARE_ASM_CONST(8, uint64_t, w10)=       0x0010001000100010LL;
@@ -185,7 +177,7 @@ DECLARE_ASM_CONST(8, uint64_t, ff_bgr24toUV)[2][4] = {
 
 DECLARE_ASM_CONST(8, uint64_t, ff_bgr24toUVOffset)= 0x0040400000404000ULL;
 
-#endif /* ARCH_X86 && CONFIG_GPL */
+#endif /* ARCH_X86 */
 
 DECLARE_ALIGNED(8, static const uint8_t, dither_2x2_4)[2][8]={
 {  1,   3,   1,   3,   1,   3,   1,   3, },
@@ -805,6 +797,23 @@ static inline void yuv2nv12XinC(const int16_t *lumFilter, const int16_t **lumSrc
             }\
         }\
         break;\
+    case PIX_FMT_RGB444BE:\
+    case PIX_FMT_RGB444LE:\
+    case PIX_FMT_BGR444BE:\
+    case PIX_FMT_BGR444LE:\
+        {\
+            const int dr1= dither_4x4_16[y&3    ][0];\
+            const int dg1= dither_4x4_16[y&3    ][1];\
+            const int db1= dither_4x4_16[(y&3)^3][0];\
+            const int dr2= dither_4x4_16[y&3    ][1];\
+            const int dg2= dither_4x4_16[y&3    ][0];\
+            const int db2= dither_4x4_16[(y&3)^3][1];\
+            func(uint16_t,0)\
+                ((uint16_t*)dest)[i2+0]= r[Y1+dr1] + g[Y1+dg1] + b[Y1+db1];\
+                ((uint16_t*)dest)[i2+1]= r[Y2+dr2] + g[Y2+dg2] + b[Y2+db2];\
+            }\
+        }\
+        break;\
     case PIX_FMT_RGB8:\
     case PIX_FMT_BGR8:\
         {\
@@ -1137,7 +1146,7 @@ static inline void monoblack2Y(uint8_t *dst, const uint8_t *src, long width, uin
 
 //Note: we have C, MMX, MMX2, 3DNOW versions, there is no 3DNOW+MMX2 one
 //Plain C versions
-#if ((!HAVE_MMX || !CONFIG_GPL) && !HAVE_ALTIVEC) || CONFIG_RUNTIME_CPUDETECT
+#if (!HAVE_MMX && !HAVE_ALTIVEC) || CONFIG_RUNTIME_CPUDETECT
 #define COMPILE_C
 #endif
 
@@ -1149,15 +1158,15 @@ static inline void monoblack2Y(uint8_t *dst, const uint8_t *src, long width, uin
 
 #if ARCH_X86
 
-#if ((HAVE_MMX && !HAVE_AMD3DNOW && !HAVE_MMX2) || CONFIG_RUNTIME_CPUDETECT) && CONFIG_GPL
+#if (HAVE_MMX && !HAVE_AMD3DNOW && !HAVE_MMX2) || CONFIG_RUNTIME_CPUDETECT
 #define COMPILE_MMX
 #endif
 
-#if (HAVE_MMX2 || CONFIG_RUNTIME_CPUDETECT) && CONFIG_GPL
+#if HAVE_MMX2 || CONFIG_RUNTIME_CPUDETECT
 #define COMPILE_MMX2
 #endif
 
-#if ((HAVE_AMD3DNOW && !HAVE_MMX2) || CONFIG_RUNTIME_CPUDETECT) && CONFIG_GPL
+#if (HAVE_AMD3DNOW && !HAVE_MMX2) || CONFIG_RUNTIME_CPUDETECT
 #define COMPILE_3DNOW
 #endif
 #endif //ARCH_X86
@@ -1228,7 +1237,7 @@ SwsFunc ff_getSwsFunc(SwsContext *c)
 #if CONFIG_RUNTIME_CPUDETECT
     int flags = c->flags;
 
-#if ARCH_X86 && CONFIG_GPL
+#if ARCH_X86
     // ordered per speed fastest first
     if (flags & SWS_CPU_CAPS_MMX2) {
         sws_init_swScale_MMX2(c);
@@ -1245,7 +1254,7 @@ SwsFunc ff_getSwsFunc(SwsContext *c)
     }
 
 #else
-#if ARCH_PPC && COMPILE_ALTIVEC
+#ifdef COMPILE_ALTIVEC
     if (flags & SWS_CPU_CAPS_ALTIVEC) {
         sws_init_swScale_altivec(c);
         return swScale_altivec;
@@ -1256,7 +1265,7 @@ SwsFunc ff_getSwsFunc(SwsContext *c)
 #endif
     sws_init_swScale_C(c);
     return swScale_C;
-#endif /* ARCH_X86 && CONFIG_GPL */
+#endif /* ARCH_X86 */
 #else //CONFIG_RUNTIME_CPUDETECT
 #if   COMPILE_TEMPLATE_MMX2
     sws_init_swScale_MMX2(c);
@@ -1410,12 +1419,12 @@ static int palToRgbWrapper(SwsContext *c, const uint8_t* src[], int srcStride[],
 
     if (usePal(srcFormat)) {
         switch (dstFormat) {
-        case PIX_FMT_RGB32  : conv = palette8topacked32; break;
-        case PIX_FMT_BGR32  : conv = palette8topacked32; break;
-        case PIX_FMT_BGR32_1: conv = palette8topacked32; break;
-        case PIX_FMT_RGB32_1: conv = palette8topacked32; break;
-        case PIX_FMT_RGB24  : conv = palette8topacked24; break;
-        case PIX_FMT_BGR24  : conv = palette8topacked24; break;
+        case PIX_FMT_RGB32  : conv = sws_convertPalette8ToPacked32; break;
+        case PIX_FMT_BGR32  : conv = sws_convertPalette8ToPacked32; break;
+        case PIX_FMT_BGR32_1: conv = sws_convertPalette8ToPacked32; break;
+        case PIX_FMT_RGB32_1: conv = sws_convertPalette8ToPacked32; break;
+        case PIX_FMT_RGB24  : conv = sws_convertPalette8ToPacked24; break;
+        case PIX_FMT_BGR24  : conv = sws_convertPalette8ToPacked24; break;
         }
     }
 
@@ -1948,3 +1957,26 @@ int sws_scale_ordered(SwsContext *c, const uint8_t* const src[], int srcStride[]
     return sws_scale(c, src, srcStride, srcSliceY, srcSliceH, dst, dstStride);
 }
 #endif
+
+/* Convert the palette to the same packed 32-bit format as the palette */
+void sws_convertPalette8ToPacked32(const uint8_t *src, uint8_t *dst, long num_pixels, const uint8_t *palette)
+{
+    long i;
+
+    for (i=0; i<num_pixels; i++)
+        ((uint32_t *) dst)[i] = ((const uint32_t *) palette)[src[i]];
+}
+
+/* Palette format: ABCD -> dst format: ABC */
+void sws_convertPalette8ToPacked24(const uint8_t *src, uint8_t *dst, long num_pixels, const uint8_t *palette)
+{
+    long i;
+
+    for (i=0; i<num_pixels; i++) {
+        //FIXME slow?
+        dst[0]= palette[src[i]*4+0];
+        dst[1]= palette[src[i]*4+1];
+        dst[2]= palette[src[i]*4+2];
+        dst+= 3;
+    }
+}
