@@ -2249,6 +2249,8 @@ static int decode_slice_header(H264Context *h, H264Context *h0){
                       h->sps.num_units_in_tick, den, 1<<30);
         }
         s->avctx->pix_fmt = s->avctx->get_format(s->avctx,
+                                                 s->avctx->codec->pix_fmts ?
+                                                 s->avctx->codec->pix_fmts :
                                                  s->avctx->color_range == AVCOL_RANGE_JPEG ?
                                                  hwaccel_pixfmt_list_h264_jpeg_420 :
                                                  ff_hwaccel_pixfmt_list_420);
@@ -3724,7 +3726,6 @@ AVCodec h264_decoder = {
     /*CODEC_CAP_DRAW_HORIZ_BAND |*/ CODEC_CAP_DR1 | CODEC_CAP_DELAY | CODEC_CAP_FRAME_THREADS,
     .flush= flush_dpb,
     .long_name = NULL_IF_CONFIG_SMALL("H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10"),
-    .pix_fmts= ff_hwaccel_pixfmt_list_420,
     .update_thread_context = ONLY_IF_THREADS_ENABLED(decode_update_thread_context)
 };
 
