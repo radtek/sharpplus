@@ -8,5 +8,5 @@ Description: FFmpeg container format library
 Version: 52.68.0
 Requires: libavcodec = 52.77.0
 Conflicts:
-Libs: ${libdir}/libavformat.a   -lpsapi -lz -lbz2 -lpthreadGC2 -lm -lavifil32 -lfaac -lfaad -lgsm -lmp3lame -lm -lnut -lopencore-amrnb -lm -lopencore-amrwb -lm -lopenjpeg -LC:/msys/1.0/local/lib -lschroedinger-1.0 -loil-0.3 -lm -lspeex -ltheoraenc -ltheoradec -logg -lvorbisenc -lvorbis -logg -LC:/msys/1.0/local/lib -lx264 -lpthreadGC2 -lxvidcore -lws2_32 -lgdi32 -lavicap32
+Libs: ${libdir}/libavformat.a   -lpsapi -lz -lbz2 -lpthreadGC2 -lm -lavifil32 -lfaac -lfaad -lgsm -lmp3lame -lm -lnut -lopencore-amrnb -lm -lopencore-amrwb -lm -lopenjpeg -LC:/msys/1.0/local/lib -lrtmp -lz -lssl -lcrypto -lws2_32 -lgdi32 -lcrypt32 -lwinmm -LC:/msys/1.0/local/lib -lschroedinger-1.0 -loil-0.3 -lm -lspeex -ltheoraenc -ltheoradec -logg -lvorbisenc -lvorbis -logg -LC:/msys/1.0/local/lib -lx264 -lpthreadGC2 -lxvidcore -lws2_32 -lgdi32 -lavicap32
 Cflags: -I${includedir}

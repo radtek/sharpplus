@@ -36,6 +36,13 @@
 #  define fstat(f,s) _fstati64((f), (s))
 #endif /* defined(__MINGW32__) && !defined(__MINGW32CE__) */
 
+#define HAVE_WIN_UTF8_PATHS
+
+#ifdef HAVE_WIN_UTF8_PATHS
+#define open(fn,of,pm) winutf8_open((fn), (of), (pm))
+int winutf8_open(const char *filename, int oflag, int pmode);
+#endif
+
 static inline int is_dos_path(const char *path)
 {
 #if HAVE_DOS_PATHS
