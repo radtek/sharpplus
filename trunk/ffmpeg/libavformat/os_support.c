@@ -31,6 +31,23 @@
 #include <sys/time.h>
 #include "os_support.h"
 
+#ifdef HAVE_WIN_UTF8_PATHS
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
+#ifdef HAVE_WIN_UTF8_PATHS
+int winutf8_open(const char *filename, int oflag, int pmode)
+{
+    wchar_t wfilename[MAX_PATH * 2];
+    
+    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filename, -1, wfilename, MAX_PATH) > 0)
+        return _wopen(wfilename, oflag, pmode);
+    else
+        return _open(filename, oflag, pmode);
+}
+#endif
+
 #if CONFIG_NETWORK
 #if !HAVE_POLL_H
 #if HAVE_WINSOCK2_H
