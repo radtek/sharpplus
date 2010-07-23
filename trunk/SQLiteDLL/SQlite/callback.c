@@ -12,8 +12,6 @@
 **
 ** This file contains functions used to access the internal hash tables
 ** of user defined functions and collation sequences.
-**
-** $Id: callback.c,v 1.42 2009/06/17 00:35:31 drh Exp $
 */
 
 #include "sqliteInt.h"
@@ -355,14 +353,19 @@ FuncDef *sqlite3FindFunction(
 
   /* If no match is found, search the built-in functions.
   **
+  ** If the SQLITE_PreferBuiltin flag is set, then search the built-in
+  ** functions even if a prior app-defined function was found.  And give
+  ** priority to built-in functions.
+  **
   ** Except, if createFlag is true, that means that we are trying to
   ** install a new function.  Whatever FuncDef structure is returned will
   ** have fields overwritten with new information appropriate for the
   ** new function.  But the FuncDefs for built-in functions are read-only.
   ** So we must not search for built-ins when creating a new function.
   */ 
-  if( !createFlag && !pBest ){
+  if( !createFlag && (pBest==0 || (db->flags & SQLITE_PreferBuiltin)!=0) ){
     FuncDefHash *pHash = &GLOBAL(FuncDefHash, sqlite3GlobalFunctions);
+    bestScore = 0;
     p = functionSearch(pHash, h, zName, nName);
     while( p ){
       int score = matchQuality(p, nArg, enc);
