@@ -1121,7 +1121,7 @@ static void asf_build_simple_index(AVFormatContext *s, int stream_index)
             int64_t index_pts= av_rescale(itime, i, 10000);
 
             if(pos != last_pos){
-            av_log(s, AV_LOG_DEBUG, "pktnum:%d, pktct:%d\n", pktnum, pktct);
+            av_log(s, AV_LOG_DEBUG, "pktnum:%d, pktct:%d,pos:%I64d, pts:%I64d\n", pktnum, pktct, pos, index_pts);
             av_add_index_entry(s->streams[stream_index], pos, index_pts, s->packet_size, 0, AVINDEX_KEYFRAME);
             last_pos=pos;
             }
