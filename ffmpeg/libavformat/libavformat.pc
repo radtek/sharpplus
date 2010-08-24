@@ -5,10 +5,10 @@ includedir=${prefix}/include
 
 Name: libavformat
 Description: FFmpeg container format library
-Version: 52.68.0
+Version: 52.78.1
 Requires: 
-Requires.private: libavcodec = 52.77.0
+Requires.private: libavcodec = 52.85.0
 Conflicts:
 Libs: -L${libdir} -lavformat 
-Libs.private: -lpsapi -lz -lbz2 -lpthreadGC2 -lm -lavifil32 -lfaac -lfaad -lgsm -lmp3lame -lm -lnut -lopencore-amrnb -lm -lopencore-amrwb -lm -lopenjpeg -LC:/msys/1.0/local/lib -lrtmp -lz -lssl -lcrypto -lws2_32 -lgdi32 -lcrypt32 -lwinmm -LC:/msys/1.0/local/lib -lschroedinger-1.0 -loil-0.3 -lm -lspeex -ltheoraenc -ltheoradec -logg -lvorbisenc -lvorbis -logg -lvpx -lvpx -LC:/msys/1.0/local/lib -lx264 -lpthreadGC2 -lxvidcore -lws2_32 -lgdi32 -lavicap32
+Libs.private: -lavicap32 -lgdi32 -lws2_32 -lxvidcore -LC:/msys/1.0/local/lib -lx264 -lpthreadGC2 -lvpx -lvpx -lvorbisenc -lvorbis -logg -ltheoraenc -ltheoradec -logg -lspeex -LC:/msys/1.0/local/lib -lschroedinger-1.0 -loil-0.3 -lm -LC:/msys/1.0/local/lib -lrtmp -lz -lssl -lcrypto -lws2_32 -lgdi32 -lcrypt32 -lwinmm -lopenjpeg -lopencore-amrwb -lopencore-amrnb -lnut -lmp3lame -lgsm -lfaac -lavifil32 -lm -lpthreadGC2 -lbz2 -lz -lpsapi
 Cflags: -I${includedir}

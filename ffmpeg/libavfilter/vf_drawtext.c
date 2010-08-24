@@ -27,7 +27,7 @@
 
 #include "avfilter.h"
 #include "parseutils.h"
-#include "libavcodec/colorspace.h"
+#include "libavutil/colorspace.h"
 #include "libavutil/pixdesc.h"
 
 #undef time
@@ -133,14 +133,8 @@ static inline int extract_color(AVFilterContext *ctx, char *color_str, unsigned 
     color[0] = RGB_TO_Y(rgba[0], rgba[1], rgba[2]);
     color[1] = RGB_TO_U(rgba[0], rgba[1], rgba[2], 0);
     color[2] = RGB_TO_V(rgba[0], rgba[1], rgba[2], 0);
+    color[3] = rgba[3];
 
-    /* FIXME: av_parse_color currently sets alpha to 0 if no alpha is specified.
-     * So we force alpha = 0xFF (opaque), here in such a case.
-     */
-    if (rgba[3] != 0)
-        color[3] = rgba[3];
-    else
-        color[3] = 0xFF;
     return 0;
 }
 
@@ -300,7 +294,7 @@ static int config_input(AVFilterLink *link)
     yuv_color[2] = pic_ref->data[2][((x) >> (hsub)) + ((y) >> (vsub)) * pic_ref->linesize[2]]; \
 }
 
-static inline void draw_glyph(AVFilterPicRef *pic_ref, FT_Bitmap *bitmap, unsigned int x,
+static inline void draw_glyph(AVFilterBufferRef *pic_ref, FT_Bitmap *bitmap, unsigned int x,
                               unsigned int y, unsigned int width, unsigned int height,
                               unsigned char yuv_fgcolor[4], unsigned char yuv_bgcolor[4],
                               short int outline, int hsub, int vsub)
@@ -356,7 +350,7 @@ static inline void draw_glyph(AVFilterPicRef *pic_ref, FT_Bitmap *bitmap, unsign
     }
 }
 
-static inline void drawbox(AVFilterPicRef *pic_ref, unsigned int x, unsigned int y,
+static inline void drawbox(AVFilterBufferRef *pic_ref, unsigned int x, unsigned int y,
                            unsigned int width, unsigned int height,
                            unsigned char yuv_color[4], int hsub, int vsub)
 {
@@ -384,7 +378,7 @@ static inline void drawbox(AVFilterPicRef *pic_ref, unsigned int x, unsigned int
     }
 }
 
-static void draw_text(AVFilterContext *ctx, AVFilterPicRef *pic_ref, int width, int height)
+static void draw_text(AVFilterContext *ctx, AVFilterBufferRef *pic_ref, int width, int height)
 {
     DrawTextContext *dtext = ctx->priv;
     FT_Face face = dtext->face;
@@ -468,11 +462,11 @@ static void draw_text(AVFilterContext *ctx, AVFilterPicRef *pic_ref, int width, 
 static void end_frame(AVFilterLink *link)
 {
     AVFilterLink *output = link->dst->outputs[0];
-    AVFilterPicRef *pic_ref = link->cur_pic;
+    AVFilterBufferRef *pic_ref = link->cur_buf;
 
-    draw_text(link->dst, pic_ref, pic_ref->w, pic_ref->h);
+    draw_text(link->dst, pic_ref, pic_ref->video->w, pic_ref->video->h);
 
-    avfilter_draw_slice(output, 0, pic_ref->h, 1);
+    avfilter_draw_slice(output, 0, pic_ref->video->h, 1);
     avfilter_end_frame(output);
 }
 

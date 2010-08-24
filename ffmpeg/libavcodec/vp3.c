@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "libavcore/imgutils.h"
 #include "avcodec.h"
 #include "dsputil.h"
 #include "get_bits.h"
@@ -259,7 +260,7 @@ typedef struct Vp3DecodeContext {
  * superblocks <-> fragments, macroblocks <-> fragments,
  * superblocks <-> macroblocks
  *
- * Returns 0 is successful; returns 1 if *anything* went wrong.
+ * @return 0 is successful; returns 1 if *anything* went wrong.
  */
 static int init_block_mapping(Vp3DecodeContext *s)
 {
@@ -1271,7 +1272,7 @@ static void apply_loop_filter(Vp3DecodeContext *s, int plane, int ystart, int ye
 }
 
 /**
- * Pulls DCT tokens from the 64 levels to decode and dequant the coefficients
+ * Pull DCT tokens from the 64 levels to decode and dequant the coefficients
  * for the next block in coding order
  */
 static inline int vp3_dequant(Vp3DecodeContext *s, Vp3Fragment *frag,
@@ -1434,7 +1435,7 @@ static void render_slice(Vp3DecodeContext *s, int slice)
                 first_pixel = 8*y*stride + 8*x;
 
                 if (s->all_fragments[i].coding_method != MODE_INTRA && !plane)
-                    await_reference_row(s, &s->all_fragments[i], motion_val[y*fragment_width + x][1], 8*y);
+                    await_reference_row(s, &s->all_fragments[i], motion_val[y*fragment_width + x][1], (16*y) >> s->chroma_y_shift);
 
                 /* transform if this block was coded */
                 if (s->all_fragments[i].coding_method != MODE_COPY) {
@@ -1994,6 +1995,9 @@ static av_cold int vp3_decode_end(AVCodecContext *avctx)
     Vp3DecodeContext *s = avctx->priv_data;
     int i;
 
+    if (avctx->is_copy && !s->current_frame.data[0])
+        return 0;
+
     av_free(s->superblock_coding);
     av_free(s->all_fragments);
     av_free(s->coded_fragment_list[0]);
@@ -2089,7 +2093,7 @@ static int theora_decode_header(AVCodecContext *avctx, GetBitContext *gb)
     visible_width  = s->width  = get_bits(gb, 16) << 4;
     visible_height = s->height = get_bits(gb, 16) << 4;
 
-    if(avcodec_check_dimensions(avctx, s->width, s->height)){
+    if(av_check_image_size(s->width, s->height, 0, avctx)){
         av_log(avctx, AV_LOG_ERROR, "Invalid dimensions (%dx%d)\n", s->width, s->height);
         s->width= s->height= 0;
         return -1;
