@@ -457,6 +457,7 @@ static int h263_probe(AVProbeData *p)
     int invalid_psc=0;
     int res_change=0;
     int src_fmt, last_src_fmt=-1;
+    int last_gn=0;
 
     for(i=0; i<p->buf_size; i++){
         code = (code<<8) + p->buf[i];
@@ -469,9 +470,16 @@ static int h263_probe(AVProbeData *p)
 
             if((code&0x300)==0x200 && src_fmt){
                 valid_psc++;
+                last_gn=0;
             }else
                 invalid_psc++;
             last_src_fmt= src_fmt;
+        } else if((code & 0xffff800000) == 0x800000) {
+            int gn= (code>>(23-5)) & 0x1F;
+            if(gn<last_gn){
+                invalid_psc++;
+            }else
+                last_gn= gn;
         }
     }
 //av_log(NULL, AV_LOG_ERROR, "h263_probe: psc:%d invalid:%d res_change:%d\n", valid_psc, invalid_psc, res_change);
@@ -973,6 +981,21 @@ AVOutputFormat h264_muxer = {
 };
 #endif
 
+#if CONFIG_CAVSVIDEO_MUXER
+AVOutputFormat cavsvideo_muxer = {
+    "cavsvideo",
+    NULL_IF_CONFIG_SMALL("raw Chinese AVS video"),
+    NULL,
+    "cavs",
+    0,
+    CODEC_ID_NONE,
+    CODEC_ID_CAVS,
+    NULL,
+    raw_write_packet,
+    .flags= AVFMT_NOTIMESTAMPS,
+};
+#endif
+
 #if CONFIG_INGENIENT_DEMUXER
 AVInputFormat ingenient_demuxer = {
     "ingenient",
@@ -1071,6 +1094,18 @@ AVOutputFormat mlp_muxer = {
     NULL,
     raw_write_packet,
     .flags= AVFMT_NOTIMESTAMPS,
+};
+#endif
+
+#if CONFIG_SRT_MUXER
+AVOutputFormat srt_muxer = {
+    .name           = "srt",
+    .long_name      = NULL_IF_CONFIG_SMALL("SubRip subtitle format"),
+    .mime_type      = "application/x-subrip",
+    .extensions     = "srt",
+    .write_packet   = raw_write_packet,
+    .flags          = AVFMT_NOTIMESTAMPS,
+    .subtitle_codec = CODEC_ID_SRT,
 };
 #endif
 

@@ -50,6 +50,7 @@ void avfilter_register_all(void)
     REGISTER_FILTER (NULL,        null,        vf);
     REGISTER_FILTER (OVERLAY,     overlay,     vf);
     REGISTER_FILTER (PAD,         pad,         vf);
+    REGISTER_FILTER (PIXDESCTEST, pixdesctest, vf);
     REGISTER_FILTER (PIXELASPECT, pixelaspect, vf);
     REGISTER_FILTER (ROTATE,      rotate,      vf);
     REGISTER_FILTER (SCALE,       scale,       vf);
@@ -62,6 +63,7 @@ void avfilter_register_all(void)
     REGISTER_FILTER (ASS,         ass,         vf);
 
     REGISTER_FILTER (BUFFER,      buffer,      vsrc);
+    REGISTER_FILTER (COLOR,       color,       vsrc);
     REGISTER_FILTER (MOVIE,       movie,       vsrc);
     REGISTER_FILTER (NULLSRC,     nullsrc,     vsrc);
 

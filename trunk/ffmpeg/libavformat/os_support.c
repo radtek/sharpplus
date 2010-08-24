@@ -26,30 +26,14 @@
 
 #include "config.h"
 #include "avformat.h"
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/time.h>
 #include "os_support.h"
 
-#ifdef HAVE_WIN_UTF8_PATHS
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
-
-#ifdef HAVE_WIN_UTF8_PATHS
-int winutf8_open(const char *filename, int oflag, int pmode)
-{
-    wchar_t wfilename[MAX_PATH * 2];
-    
-    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filename, -1, wfilename, MAX_PATH) > 0)
-        return _wopen(wfilename, oflag, pmode);
-    else
-        return _open(filename, oflag, pmode);
-}
-#endif
 
 #if CONFIG_NETWORK
+#include <fcntl.h>
+#include <unistd.h>
 #if !HAVE_POLL_H
+#include <sys/time.h>
 #if HAVE_WINSOCK2_H
 #include <winsock2.h>
 #elif HAVE_SYS_SELECT_H
@@ -62,6 +46,24 @@ int winutf8_open(const char *filename, int oflag, int pmode)
 #if !HAVE_INET_ATON
 #include <stdlib.h>
 #include <strings.h>
+
+
+#ifdef HAVE_WIN_UTF8_PATHS
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
+#ifdef HAVE_WIN_UTF8_PATHS
+int winutf8_open(const char *filename, int oflag, int pmode)
+{
+    wchar_t wfilename[MAX_PATH * 2];
+
+    if (MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,filename,-1,wfilename,MAX_PATH) > 0)
+        return _wopen(wfilename, oflag, pmode);
+    else
+        return open(filename, oflag, pmode);
+}
+#endif
 
 int ff_inet_aton (const char * str, struct in_addr * add)
 {

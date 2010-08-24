@@ -1,0 +1,15 @@
+config.h
+configure
+ffmpeg.c
+libavcodec\imgconvert.c
+libavfilter\makefile
+libavfilter\allfilters.c
+libavfilter\vf_drawtext.c
+libavfilter\graphparser.c
+libavformat\asfdec.c
+libavformat\os_support.h
+libavformat\os_support.c
+libavformat\rtsp.c
+libavdevice\gdi.c
+libavdevice\makefile
+libavdevice\alldevices.c

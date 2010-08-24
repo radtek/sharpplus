@@ -1100,6 +1100,16 @@ static void copy_parameter_set(void **to, void **from, int count, int size)
     }
 }
 
+static int decode_init_thread_copy(AVCodecContext *avctx){
+    H264Context *h= avctx->priv_data;
+
+    if (!avctx->is_copy) return 0;
+    memset(h->sps_buffers, 0, sizeof(h->sps_buffers));
+    memset(h->pps_buffers, 0, sizeof(h->pps_buffers));
+
+    return 0;
+}
+
 #define copy_fields(to, from, start_field, end_field) memcpy(&to->start_field, &from->start_field, (char*)&to->end_field - (char*)&to->start_field)
 static int decode_update_thread_context(AVCodecContext *dst, AVCodecContext *src){
     H264Context *h= dst->priv_data, *h1= src->priv_data;
@@ -1114,6 +1124,12 @@ static int decode_update_thread_context(AVCodecContext *dst, AVCodecContext *src
 
     //FIXME handle width/height changing
     if(!inited){
+        for(i = 0; i < MAX_SPS_COUNT; i++)
+            av_freep(h->sps_buffers + i);
+
+        for(i = 0; i < MAX_PPS_COUNT; i++)
+            av_freep(h->pps_buffers + i);
+
         memcpy(&h->s + 1, &h1->s + 1, sizeof(H264Context) - sizeof(MpegEncContext)); //copy all fields after MpegEnc
         memset(h->sps_buffers, 0, sizeof(h->sps_buffers));
         memset(h->pps_buffers, 0, sizeof(h->pps_buffers));
@@ -1821,7 +1837,7 @@ static int pred_weight_table(H264Context *h){
 
 /**
  * Initialize implicit_weight table.
- * @param field, 0/1 initialize the weight for interlaced MBAFF
+ * @param field  0/1 initialize the weight for interlaced MBAFF
  *                -1 initializes the rest
  */
 static void implicit_weight_table(H264Context *h, int field){
@@ -2087,7 +2103,7 @@ static void field_end(H264Context *h, int in_setup){
 }
 
 /**
- * Replicates H264 "master" context to thread contexts.
+ * Replicate H264 "master" context to thread contexts.
  */
 static void clone_slice(H264Context *dst, H264Context *src)
 {
@@ -2310,7 +2326,7 @@ static int decode_slice_header(H264Context *h, H264Context *h0){
 
         while(h->frame_num !=  h->prev_frame_num &&
               h->frame_num != (h->prev_frame_num+1)%(1<<h->sps.log2_max_frame_num)){
-            av_log(NULL, AV_LOG_DEBUG, "Frame num gap %d %d\n", h->frame_num, h->prev_frame_num);
+            av_log(h->s.avctx, AV_LOG_DEBUG, "Frame num gap %d %d\n", h->frame_num, h->prev_frame_num);
             if (ff_h264_frame_start(h) < 0)
                 return -1;
             h->prev_frame_num++;
@@ -2318,7 +2334,8 @@ static int decode_slice_header(H264Context *h, H264Context *h0){
             s->current_picture_ptr->frame_num= h->prev_frame_num;
             ff_thread_report_progress((AVFrame*)s->current_picture_ptr, INT_MAX, 0);
             ff_thread_report_progress((AVFrame*)s->current_picture_ptr, INT_MAX, 1);
-            ff_h264_execute_ref_pic_marking(h, NULL, 0);
+            ff_generate_sliding_window_mmcos(h);
+            ff_h264_execute_ref_pic_marking(h, h->mmco, h->mmco_index);
         }
 
         /* See if we have a decoded first field looking for a pair... */
@@ -3726,6 +3743,7 @@ AVCodec h264_decoder = {
     /*CODEC_CAP_DRAW_HORIZ_BAND |*/ CODEC_CAP_DR1 | CODEC_CAP_DELAY | CODEC_CAP_FRAME_THREADS,
     .flush= flush_dpb,
     .long_name = NULL_IF_CONFIG_SMALL("H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10"),
+    .init_thread_copy      = ONLY_IF_THREADS_ENABLED(decode_init_thread_copy),
     .update_thread_context = ONLY_IF_THREADS_ENABLED(decode_update_thread_context)
 };
 
