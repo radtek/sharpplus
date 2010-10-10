@@ -502,6 +502,20 @@ static int checkSavepointCount(sqlite3 *db){
 #endif
 
 /*
+** Transfer error message text from an sqlite3_vtab.zErrMsg (text stored
+** in memory obtained from sqlite3_malloc) into a Vdbe.zErrMsg (text stored
+** in memory obtained from sqlite3DbMalloc).
+*/
+static void importVtabErrMsg(Vdbe *p, sqlite3_vtab *pVtab){
+  sqlite3 *db = p->db;
+  sqlite3DbFree(db, p->zErrMsg);
+  p->zErrMsg = sqlite3DbStrDup(db, pVtab->zErrMsg);
+  sqlite3_free(pVtab->zErrMsg);
+  pVtab->zErrMsg = 0;
+}
+
+
+/*
 ** Execute as much of a VDBE program as we can then return.
 **
 ** sqlite3VdbeMakeReady() must be called before this routine in order to
@@ -4499,9 +4513,7 @@ case OP_Rowid: {                 /* out2-prerelease */
     u.bi.pModule = u.bi.pVtab->pModule;
     assert( u.bi.pModule->xRowid );
     rc = u.bi.pModule->xRowid(u.bi.pC->pVtabCursor, &u.bi.v);
-    sqlite3DbFree(db, p->zErrMsg);
-    p->zErrMsg = u.bi.pVtab->zErrMsg;
-    u.bi.pVtab->zErrMsg = 0;
+    importVtabErrMsg(p, u.bi.pVtab);
 #endif /* SQLITE_OMIT_VIRTUALTABLE */
   }else{
     assert( u.bi.pC->pCursor!=0 );
@@ -4820,7 +4832,7 @@ case OP_IdxRowid: {              /* out2-prerelease */
 ** that if the key from register P3 is a prefix of the key in the cursor,
 ** the result is false whereas it would be true with IdxGT.
 */
-/* Opcode: IdxLT P1 P2 P3 * P5
+/* Opcode: IdxLT P1 P2 P3 P4 P5
 **
 ** The P4 register values beginning with P3 form an unpacked index 
 ** key that omits the ROWID.  Compare this key value against the index 
@@ -5890,11 +5902,7 @@ case OP_VBegin: {
 #endif /* local variables moved into u.cf */
   u.cf.pVTab = pOp->p4.pVtab;
   rc = sqlite3VtabBegin(db, u.cf.pVTab);
-  if( u.cf.pVTab ){
-    sqlite3DbFree(db, p->zErrMsg);
-    p->zErrMsg = u.cf.pVTab->pVtab->zErrMsg;
-    u.cf.pVTab->pVtab->zErrMsg = 0;
-  }
+  if( u.cf.pVTab ) importVtabErrMsg(p, u.cf.pVTab->pVtab);
   break;
 }
 #endif /* SQLITE_OMIT_VIRTUALTABLE */
@@ -5946,9 +5954,7 @@ case OP_VOpen: {
   u.cg.pModule = (sqlite3_module *)u.cg.pVtab->pModule;
   assert(u.cg.pVtab && u.cg.pModule);
   rc = u.cg.pModule->xOpen(u.cg.pVtab, &u.cg.pVtabCursor);
-  sqlite3DbFree(db, p->zErrMsg);
-  p->zErrMsg = u.cg.pVtab->zErrMsg;
-  u.cg.pVtab->zErrMsg = 0;
+  importVtabErrMsg(p, u.cg.pVtab);
   if( SQLITE_OK==rc ){
     /* Initialize sqlite3_vtab_cursor base class */
     u.cg.pVtabCursor->pVtab = u.cg.pVtab;
@@ -6027,9 +6033,7 @@ case OP_VFilter: {   /* jump */
     p->inVtabMethod = 1;
     rc = u.ch.pModule->xFilter(u.ch.pVtabCursor, u.ch.iQuery, pOp->p4.z, u.ch.nArg, u.ch.apArg);
     p->inVtabMethod = 0;
-    sqlite3DbFree(db, p->zErrMsg);
-    p->zErrMsg = u.ch.pVtab->zErrMsg;
-    u.ch.pVtab->zErrMsg = 0;
+    importVtabErrMsg(p, u.ch.pVtab);
     if( rc==SQLITE_OK ){
       u.ch.res = u.ch.pModule->xEof(u.ch.pVtabCursor);
     }
@@ -6081,9 +6085,7 @@ case OP_VColumn: {
   MemSetTypeFlag(&u.ci.sContext.s, MEM_Null);
 
   rc = u.ci.pModule->xColumn(pCur->pVtabCursor, &u.ci.sContext, pOp->p2);
-  sqlite3DbFree(db, p->zErrMsg);
-  p->zErrMsg = u.ci.pVtab->zErrMsg;
-  u.ci.pVtab->zErrMsg = 0;
+  importVtabErrMsg(p, u.ci.pVtab);
   if( u.ci.sContext.isError ){
     rc = u.ci.sContext.isError;
   }
@@ -6138,9 +6140,7 @@ case OP_VNext: {   /* jump */
   p->inVtabMethod = 1;
   rc = u.cj.pModule->xNext(u.cj.pCur->pVtabCursor);
   p->inVtabMethod = 0;
-  sqlite3DbFree(db, p->zErrMsg);
-  p->zErrMsg = u.cj.pVtab->zErrMsg;
-  u.cj.pVtab->zErrMsg = 0;
+  importVtabErrMsg(p, u.cj.pVtab);
   if( rc==SQLITE_OK ){
     u.cj.res = u.cj.pModule->xEof(u.cj.pCur->pVtabCursor);
   }
@@ -6172,9 +6172,7 @@ case OP_VRename: {
   REGISTER_TRACE(pOp->p1, u.ck.pName);
   assert( u.ck.pName->flags & MEM_Str );
   rc = u.ck.pVtab->pModule->xRename(u.ck.pVtab, u.ck.pName->z);
-  sqlite3DbFree(db, p->zErrMsg);
-  p->zErrMsg = u.ck.pVtab->zErrMsg;
-  u.ck.pVtab->zErrMsg = 0;
+  importVtabErrMsg(p, u.ck.pVtab);
 
   break;
 }
@@ -6228,9 +6226,7 @@ case OP_VUpdate: {
       u.cl.pX++;
     }
     rc = u.cl.pModule->xUpdate(u.cl.pVtab, u.cl.nArg, u.cl.apArg, &u.cl.rowid);
-    sqlite3DbFree(db, p->zErrMsg);
-    p->zErrMsg = u.cl.pVtab->zErrMsg;
-    u.cl.pVtab->zErrMsg = 0;
+    importVtabErrMsg(p, u.cl.pVtab);
     if( rc==SQLITE_OK && pOp->p1 ){
       assert( u.cl.nArg>1 && u.cl.apArg[0] && (u.cl.apArg[0]->flags&MEM_Null) );
       db->lastRowid = u.cl.rowid;

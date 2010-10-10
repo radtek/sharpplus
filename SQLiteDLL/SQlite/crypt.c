@@ -350,7 +350,7 @@ int sqlite3_rekey(sqlite3 *db, const unsigned char *pKey, int nKeySize)
     DbPage *pPage;
     Pgno n;
 
-    rc = sqlite3PagerPagecount(p, &nPage);
+    sqlite3PagerPagecount(p, &nPage);
 
     for(n = 1; rc == SQLITE_OK && n <= nPage; n ++)
     {
