@@ -14,6 +14,8 @@ OBJS = allformats.o         \
        sdp.o                \
        seek.o               \
        utils.o              \
+       lang.o              \
+       dvdnav.o             \
 
 # muxers/demuxers
 OBJS-$(CONFIG_AAC_DEMUXER)               += raw.o id3v1.o id3v2.o
@@ -304,6 +306,8 @@ OBJS-$(CONFIG_CONCAT_PROTOCOL)           += concat.o
 
 # libavdevice dependencies
 OBJS-$(CONFIG_JACK_INDEV)                += timefilter.o
+CFLAGS += -I/usr/local/include/dvdread
+EXTRALIBS += -ldvdnav -ldvdread 
 
 EXAMPLES  = output
 TESTPROGS = timefilter

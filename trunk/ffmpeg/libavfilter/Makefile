@@ -15,7 +15,17 @@ OBJS = allfilters.o                                                     \
        parseutils.o                                                     \
        wm.o                                                             \
        dct.o                                                            \
+       dwt.o                                                            \
+       sort.o                                                            \
        coeff.o                                                          \
+       wavelet.o                                                          \
+       bruyn_common.o                                                          \
+       gray.o                                                      \
+       wm_frid.o                                                      \
+       coord.o                                                      \
+       wm_koch.o                                                      \
+       wm_bruyn.o                                                      \
+       wm_xie.o                                                      \
        signature.o                                                      \
        subreader.o                                                      \
 
