@@ -138,12 +138,68 @@ static inline int extract_color(AVFilterContext *ctx, char *color_str, unsigned 
     return 0;
 }
 
-static av_cold int init(AVFilterContext *ctx, const char *args, void *opaque)
+static unsigned int old_size=0;
+
+static int initFont(DrawTextContext *dtext)
 {
     unsigned short int c;
+    FT_BBox bbox;
+	
     int err;
     int y_max, y_min;
-    FT_BBox bbox;
+
+    if ((err = FT_New_Face(dtext->library, dtext->fontfile, 0, &(dtext->face)))) {
+        av_log(NULL, AV_LOG_ERROR, "Could not load fontface %s: %s\n", dtext->fontfile, FT_ERRMSG(err));
+        return AVERROR(EINVAL);
+    }
+    if ((err = FT_Set_Pixel_Sizes(dtext->face, 0, dtext->fontsize))) {
+        av_log(NULL, AV_LOG_ERROR, "Could not set font size to %d pixels: %s\n", dtext->fontsize, FT_ERRMSG(err));
+        return AVERROR(EINVAL);
+    }
+
+    dtext->use_kerning = FT_HAS_KERNING(dtext->face);
+
+    /* load and cache glyphs */
+    y_max = -32000;
+    y_min =  32000;
+    /* FIXME: Supports only ASCII text now. Add Unicode support */
+    for (c=0; c <= 255; c++) {
+        /* Load char */
+        err = FT_Load_Char(dtext->face, (unsigned char)c, FT_LOAD_RENDER | FT_LOAD_MONOCHROME);
+        if (err)
+            continue;  /* ignore errors */
+
+        dtext->bitmaps    [c] = dtext->face->glyph->bitmap;
+        dtext->bitmap_left[c] = dtext->face->glyph->bitmap_left;
+        dtext->bitmap_top [c] = dtext->face->glyph->bitmap_top;
+        dtext->advance    [c] = dtext->face->glyph->advance.x >> 6;
+
+        err = FT_Get_Glyph(dtext->face->glyph, &(dtext->glyphs[c]));
+        if (err)
+            continue;  /* ignore errors */
+
+        dtext->glyphs_index[c] = FT_Get_Char_Index(dtext->face, (unsigned char)c);
+
+        /* Measure text height to calculate text_height (or the maximum text height) */
+        FT_Glyph_Get_CBox(dtext->glyphs[c], ft_glyph_bbox_pixels, &bbox);
+        if (bbox.yMax > y_max)
+          y_max = bbox.yMax;
+        if (bbox.yMin < y_min)
+          y_min = bbox.yMin;
+    }
+
+    dtext->text_height = y_max - y_min;
+    dtext->baseline = y_max;
+
+	old_size = dtext->fontsize;
+	return 0;
+}
+
+static av_cold int init(AVFilterContext *ctx, const char *args, void *opaque)
+{
+
+    int err;
+
     DrawTextContext *dtext = ctx->priv;
 
     dtext->class = &drawtext_class;
@@ -212,50 +268,8 @@ static av_cold int init(AVFilterContext *ctx, const char *args, void *opaque)
         return AVERROR(EINVAL);
     }
 
-    if ((err = FT_New_Face(dtext->library, dtext->fontfile, 0, &(dtext->face)))) {
-        av_log(ctx, AV_LOG_ERROR, "Could not load fontface %s: %s\n", dtext->fontfile, FT_ERRMSG(err));
-        return AVERROR(EINVAL);
-    }
-    if ((err = FT_Set_Pixel_Sizes(dtext->face, 0, dtext->fontsize))) {
-        av_log(ctx, AV_LOG_ERROR, "Could not set font size to %d pixels: %s\n", dtext->fontsize, FT_ERRMSG(err));
-        return AVERROR(EINVAL);
-    }
+    return initFont(dtext);
 
-    dtext->use_kerning = FT_HAS_KERNING(dtext->face);
-
-    /* load and cache glyphs */
-    y_max = -32000;
-    y_min =  32000;
-    /* FIXME: Supports only ASCII text now. Add Unicode support */
-    for (c=0; c <= 255; c++) {
-        /* Load char */
-        err = FT_Load_Char(dtext->face, (unsigned char)c, FT_LOAD_RENDER | FT_LOAD_MONOCHROME);
-        if (err)
-            continue;  /* ignore errors */
-
-        dtext->bitmaps    [c] = dtext->face->glyph->bitmap;
-        dtext->bitmap_left[c] = dtext->face->glyph->bitmap_left;
-        dtext->bitmap_top [c] = dtext->face->glyph->bitmap_top;
-        dtext->advance    [c] = dtext->face->glyph->advance.x >> 6;
-
-        err = FT_Get_Glyph(dtext->face->glyph, &(dtext->glyphs[c]));
-        if (err)
-            continue;  /* ignore errors */
-
-        dtext->glyphs_index[c] = FT_Get_Char_Index(dtext->face, (unsigned char)c);
-
-        /* Measure text height to calculate text_height (or the maximum text height) */
-        FT_Glyph_Get_CBox(dtext->glyphs[c], ft_glyph_bbox_pixels, &bbox);
-        if (bbox.yMax > y_max)
-          y_max = bbox.yMax;
-        if (bbox.yMin < y_min)
-          y_min = bbox.yMin;
-    }
-
-    dtext->text_height = y_max - y_min;
-    dtext->baseline = y_max;
-
-    return 0;
 }
 
 static av_cold void uninit(AVFilterContext *ctx)
@@ -392,6 +406,20 @@ static void draw_text(AVFilterContext *ctx, AVFilterBufferRef *pic_ref, int widt
     FT_Vector pos[MAX_TEXT_SIZE];
     FT_Vector delta;
     struct tm ltime;
+	int err;
+
+    if (dtext->fontsize !=old_size)
+    {
+    	FT_Done_Face(dtext->face);
+		if ((err = initFont(dtext))) {
+			av_log(ctx, AV_LOG_ERROR, "Could not set font size to %d pixels: %s\n", dtext->fontsize, FT_ERRMSG(err));
+			return AVERROR(EINVAL);
+		}
+		
+		av_log(ctx, AV_LOG_ERROR, "change draw text font size to %d pixels\n", dtext->fontsize);
+    }
+	
+
 
 #if HAVE_LOCALTIME_R
     strftime(buff, sizeof(buff), text, localtime_r(&now, &ltime));

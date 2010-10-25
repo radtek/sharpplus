@@ -99,7 +99,7 @@ AVFilterContext *avfilter_graph_get_filter(AVFilterGraph *graph, char *name)
     int i;
 
     for(i = 0; i < graph->filter_count; i ++)
-        if(graph->filters[i]->name && !strcmp(name, graph->filters[i]->name))
+        if(graph->filters[i]->name && strstr(graph->filters[i]->name,name))
             return graph->filters[i];
 
     return NULL;
