@@ -48,7 +48,6 @@ OBJS-$(CONFIG_WATERMARK_FILTER)              += vf_watermark.o
 OBJS-$(CONFIG_FREI0R_FILTER)                 += vf_frei0r.o
 OBJS-$(CONFIG_FPS_FILTER)                    += vf_fps.o
 OBJS-$(CONFIG_HFLIP_FILTER)                  += vf_hflip.o
-OBJS-$(CONFIG_LOGO_FILTER)                   += vf_logo.o
 OBJS-$(CONFIG_NEGATE_FILTER)                 += vf_negate.o
 OBJS-$(CONFIG_NOFORMAT_FILTER)               += vf_format.o
 OBJS-$(CONFIG_NULL_FILTER)                   += vf_null.o
