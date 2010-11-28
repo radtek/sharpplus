@@ -96,7 +96,8 @@ typedef struct RTSPTransportField {
      * packets will be allowed to make before being discarded. */
     int ttl;
 
-    uint32_t destination; /**< destination IP address */
+    struct sockaddr_storage destination; /**< destination IP address */
+    char source[INET6_ADDRSTRLEN + 1]; /**< source IP address */
 
     /** data/packet transport protocol; e.g. RTP or RDT */
     enum RTSPTransport transport;
@@ -267,7 +268,11 @@ typedef struct RTSPState {
 
     /** stream setup during the last frame read. This is used to detect if
      * we need to subscribe or unsubscribe to any new streams. */
-    enum AVDiscard real_setup_cache[MAX_STREAMS];
+    enum AVDiscard *real_setup_cache;
+
+    /** current stream setup. This is a temporary buffer used to compare
+     * current setup to previous frame setup. */
+    enum AVDiscard *real_setup;
 
     /** the last value of the "SET_PARAMETER Subscribe:" RTSP command.
      * this is used to send the same "Unsubscribe:" if stream setup changed,
@@ -290,15 +295,20 @@ typedef struct RTSPState {
      * other cases, this is a copy of AVFormatContext->filename. */
     char control_uri[1024];
 
-    /** The synchronized start time of the output streams. */
-    int64_t start_time;
-
     /** Additional output handle, used when input and output are done
      * separately, eg for HTTP tunneling. */
     URLContext *rtsp_hd_out;
 
     /** RTSP transport mode, such as plain or tunneled. */
     enum RTSPControlTransport control_transport;
+
+    /* Number of RTCP BYE packets the RTSP session has received.
+     * An EOF is propagated back if nb_byes == nb_streams.
+     * This is reset after a seek. */
+    int nb_byes;
+
+    /** Reusable buffer for receiving packets */
+    uint8_t* recvbuf;
 } RTSPState;
 
 /**
@@ -323,7 +333,7 @@ typedef struct RTSPStream {
     /** The following are used only in SDP, not RTSP */
     //@{
     int sdp_port;             /**< port (from SDP content) */
-    struct in_addr sdp_ip;    /**< IP address (from SDP content) */
+    struct sockaddr_storage sdp_ip; /**< IP address (from SDP content) */
     int sdp_ttl;              /**< IP Time-To-Live (from SDP content) */
     int sdp_payload_type;     /**< payload type */
     //@}
@@ -341,9 +351,6 @@ typedef struct RTSPStream {
 void ff_rtsp_parse_line(RTSPMessageHeader *reply, const char *buf,
                         HTTPAuthState *auth_state);
 
-#if LIBAVFORMAT_VERSION_INT < (53 << 16)
-extern int rtsp_default_protocols;
-#endif
 extern int rtsp_rtp_port_min;
 extern int rtsp_rtp_port_max;
 

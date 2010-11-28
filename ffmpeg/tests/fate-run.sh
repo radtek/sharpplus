@@ -1,5 +1,7 @@
 #! /bin/sh
 
+export LC_ALL=C
+
 base=$(dirname $0)
 . "${base}/md5.sh"
 
@@ -41,11 +43,12 @@ stddev(){
 }
 
 run(){
+    test "${V:-0}" -gt 0 && echo "$target_exec" $target_path/"$@" >&3
     $target_exec $target_path/"$@"
 }
 
 ffmpeg(){
-    $target_exec $target_path/ffmpeg "$@"
+    run ffmpeg -v 0 "$@"
 }
 
 framecrc(){
@@ -107,6 +110,7 @@ seektest(){
 
 mkdir -p "$outdir"
 
+exec 3>&2
 $command > "$outfile" 2>$errfile
 err=$?
 

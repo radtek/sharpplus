@@ -162,8 +162,10 @@ Configuration options:
 External library support:
   --enable-avisynth        enable reading of AVISynth script files [no]
   --enable-bzlib           enable bzlib [autodetect]
+  --enable-frei0r          enable frei0r video filtering
   --enable-libopencore-amrnb enable AMR-NB de/encoding via libopencore-amrnb [no]
   --enable-libopencore-amrwb enable AMR-WB decoding via libopencore-amrwb [no]
+  --enable-libopencv       enable video filtering via libopencv [no]
   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
                            and libraw1394 [no]
   --enable-libdirac        enable Dirac support via libdirac [no]
@@ -495,20 +497,27 @@ check_deps(){
     done
 }
 
+print_config_h(){
+    enabled $1 && v=1 || v=0
+    echo "#define $2 $v"
+}
+print_config_mak(){
+    enabled $1 && v= || v=!
+    echo "$v$2=yes"
+}
+print_config_asm(){
+    enabled $1 && echo "%define $2"
+}
+
 print_config(){
     pfx=$1
-    header=$2
-    makefile=$3
-    shift 3
+    files=$2
+    shift 2
     for cfg; do
         ucname="$(toupper $cfg)"
-        if enabled $cfg; then
-            echo "#define ${pfx}${ucname} 1" >> $header
-            echo "${pfx}${ucname}=yes" >> $makefile
-        else
-            echo "#define ${pfx}${ucname} 0" >> $header
-            echo "!${pfx}${ucname}=yes" >> $makefile
-        fi
+        for f in $files; do
+            "print_config_${f##*.}" $cfg ${pfx}${ucname} >>$f
+        done
     done
 }
 
@@ -863,6 +872,7 @@ CONFIG_LIST="
     ffprobe
     ffserver
     fft
+    frei0r
     golomb
     gpl
     gray
@@ -878,6 +888,7 @@ CONFIG_LIST="
     libnut
     libopencore_amrnb
     libopencore_amrwb
+    libopencv
     libopenjpeg
     librtmp
     libschroedinger
@@ -899,6 +910,7 @@ CONFIG_LIST="
     pic
     postproc
     rdft
+    rtpdec
     runtime_cpudetect
     shared
     small
@@ -970,6 +982,7 @@ HAVE_LIST="
     $ARCH_EXT_LIST
     $HAVE_LIST_PUB
     $THREADS_LIST
+    aligned_stack
     alsa_asoundlib_h
     altivec_h
     arpa_inet_h
@@ -1038,6 +1051,7 @@ HAVE_LIST="
     poll_h
     setrlimit
     strerror_r
+    strtok_r
     struct_addrinfo
     struct_ipv6_mreq
     struct_sockaddr_in6
@@ -1059,6 +1073,7 @@ HAVE_LIST="
     VirtualAlloc
     winsock2_h
     xform_asm
+    xmm_clobbers
     yasm
 "
 
@@ -1153,6 +1168,7 @@ mmx2_deps="mmx"
 sse_deps="mmx"
 ssse3_deps="sse"
 
+aligned_stack_if_any="ppc x86"
 fast_64bit_if_any="alpha ia64 mips64 parisc64 ppc64 sparc64 x86_64"
 fast_clz_if_any="alpha armv5te avr32 mips ppc x86"
 fast_unaligned_if_any="armv6 ppc x86"
@@ -1344,11 +1360,13 @@ mpegtsraw_demuxer_select="mpegts_demuxer"
 mxf_d10_muxer_select="mxf_muxer"
 ogg_demuxer_select="golomb"
 psp_muxer_select="mov_muxer"
-rtsp_demuxer_deps="sdp_demuxer"
-rtsp_muxer_deps="sdp_demuxer"
-rtsp_muxer_select="rtp_muxer"
-sdp_demuxer_deps="rtp_protocol mpegts_demuxer"
-sdp_demuxer_select="asf_demuxer rm_demuxer"
+rtp_demuxer_select="sdp_demuxer"
+rtpdec_select="asf_demuxer rm_demuxer rtp_protocol mpegts_demuxer mov_demuxer"
+rtsp_demuxer_select="http_protocol rtpdec"
+rtsp_muxer_select="rtp_muxer http_protocol rtp_protocol"
+sap_demuxer_select="sdp_demuxer"
+sap_muxer_select="rtp_muxer rtp_protocol"
+sdp_demuxer_select="rtpdec"
 spdif_muxer_select="aac_parser"
 tg2_muxer_select="mov_muxer"
 tgp_muxer_select="mov_muxer"
@@ -1376,11 +1394,19 @@ x11_grab_device_indev_extralibs="-lX11 -lXext -lXfixes"
 gopher_protocol_deps="network"
 http_protocol_deps="network"
 http_protocol_select="tcp_protocol"
+mmsh_protocol_select="http_protocol"
 mmst_protocol_deps="network"
 rtmp_protocol_select="tcp_protocol"
 rtp_protocol_select="udp_protocol"
 tcp_protocol_deps="network"
 udp_protocol_deps="network"
+
+# filters
+blackframe_filter_deps="gpl"
+cropdetect_filter_deps="gpl"
+frei0r_filter_deps="frei0r dlopen strtok_r"
+ocv_smooth_filter_deps="libopencv"
+yadif_filter_deps="gpl"
 
 # libraries
 avdevice_deps="avcodec avformat"
@@ -1429,7 +1455,7 @@ test_deps _encoder _decoder                                             \
     asv1                                                                \
     asv2                                                                \
     bmp                                                                 \
-    dnxhd="hdxhd_1080i dnxhd_720p dnxhd_720p_rd"                        \
+    dnxhd="dnxhd_1080i dnxhd_720p dnxhd_720p_rd"                        \
     dvvideo="dv dv50"                                                   \
     ffv1                                                                \
     flac                                                                \
@@ -1494,6 +1520,7 @@ mpg_test_deps="mpeg1system_muxer mpegps_demuxer"
 
 set_ne_test_deps pixdesc
 set_ne_test_deps pixfmts_crop
+set_ne_test_deps pixfmts_hflip
 set_ne_test_deps pixfmts_null
 set_ne_test_deps pixfmts_pad
 set_ne_test_deps pixfmts_scale
@@ -1779,6 +1806,7 @@ tmpfile TMPO  .o
 tmpfile TMPS  .S
 tmpfile TMPV  .ver
 tmpfile TMPSH .sh
+tmpfile TMPASM .asm
 
 unset -f mktemp
 
@@ -1799,7 +1827,16 @@ filter_cflags=echo
 filter_cppflags=echo
 filter_asflags=echo
 
-if   $cc -v 2>&1 | grep -qi ^gcc; then
+if   $cc -v 2>&1 | grep -q '^gcc.*LLVM'; then
+    cc_type=llvm_gcc
+    cc_version=__VERSION__
+    gcc_extra_ver=$(expr "$($cc --version | head -n1)" : '.*\((.*)\)')
+    cc_ident="llvm-gcc $($cc -dumpversion) $gcc_extra_ver"
+    CC_DEPFLAGS='-MMD -MF $(@:.o=.d) -MT $@'
+    AS_DEPFLAGS='-MMD -MF $(@:.o=.d) -MT $@'
+    speed_cflags='-O3'
+    size_cflags='-Os'
+elif $cc -v 2>&1 | grep -qi ^gcc; then
     cc_type=gcc
     cc_version=__VERSION__
     gcc_extra_ver=$(expr "$($cc --version | head -n1)" : '.*\((.*)\)')
@@ -1814,6 +1851,7 @@ elif $cc --version 2>/dev/null | grep -q Intel; then
     cc_type=icc
     cc_version="AV_STRINGIFY(__INTEL_COMPILER)"
     cc_ident=$($cc --version | head -n1)
+    icc_version=$($cc -dumpversion)
     CC_DEPFLAGS='-MMD'
     AS_DEPFLAGS='-MMD'
     speed_cflags='-O3'
@@ -1845,6 +1883,7 @@ elif $cc --vsn 2>/dev/null | grep -q "ARM C/C++ Compiler"; then
         --configure_sysroot="$sysroot"        \
         --configure_cpp_headers="$sysinclude" >>$logfile 2>&1 ||
         die "Error creating armcc configuration file."
+    $cc --vsn | grep -q RVCT && armcc_opt=rvct || armcc_opt=armcc
     cc="$cc --arm_linux_config_file=$armcc_conf --translate_gcc"
     as_default="${cross_prefix}gcc"
     CC_DEPFLAGS='-MMD'
@@ -1942,9 +1981,17 @@ elif $cc -V 2>&1 | grep -q Sun; then
             esac
         done
     }
-elif $cc -v 2>&1 | grep -q PathScale; then
+elif $cc -v 2>&1 | grep -q 'PathScale\|Path64'; then
     cc_type=pathscale
     cc_version=__PATHSCALE__
+    cc_ident=$($cc -v 2>&1 | head -n1 | tr -d :)
+    CC_DEPFLAGS='-MMD -MF $(@:.o=.d) -MT $@'
+    AS_DEPFLAGS='-MMD -MF $(@:.o=.d) -MT $@'
+    speed_cflags='-O2'
+    size_cflags='-Os'
+elif $cc -v 2>&1 | grep -q Open64; then
+    cc_type=open64
+    cc_version=__OPEN64__
     cc_ident=$($cc -v 2>&1 | head -n1 | tr -d :)
     CC_DEPFLAGS='-MMD -MF $(@:.o=.d) -MT $@'
     AS_DEPFLAGS='-MMD -MF $(@:.o=.d) -MT $@'
@@ -1968,7 +2015,7 @@ add_asflags $extra_cflags
 
 if test -n "$sysroot"; then
     case "$cc_type" in
-        gcc)
+        gcc|llvm_gcc)
             add_cppflags --sysroot="$sysroot"
             add_ldflags --sysroot="$sysroot"
         ;;
@@ -1987,7 +2034,7 @@ if test "$cpu" = host; then
     enabled cross_compile && die "--cpu=host makes no sense when cross-compiling."
 
     case "$cc_type" in
-        gcc)
+        gcc|llvm_gcc)
             check_native(){
                 $cc $1=native -v -c -o $TMPO $TMPC >$TMPE 2>&1 || return
                 sed -n "/$1=/{
@@ -2105,7 +2152,7 @@ elif enabled x86; then
             disable cmov
         ;;
         # targets that do support conditional mov (cmov)
-        i686|pentiumpro|pentium[23]|pentium-m|athlon|athlon-tbird|athlon-4|athlon-[mx]p|athlon64|k8|opteron|athlon-fx|core2|amdfam10|barcelona)
+        i686|pentiumpro|pentium[23]|pentium-m|athlon|athlon-tbird|athlon-4|athlon-[mx]p|athlon64|k8|opteron|athlon-fx|core2|amdfam10|barcelona|atom)
             cpuflags="-march=$cpu"
             enable cmov
             enable fast_cmov
@@ -2377,6 +2424,8 @@ case $target_os in
         ;;
 esac
 
+echo "config:$arch:$subarch:$cpu:$target_os:$cc_ident:$FFMPEG_CONFIGURATION" >config.fate
+
 check_cpp_condition stdlib.h "defined(__PIC__) || defined(__pic__) || defined(PIC)" && enable pic
 
 set_default $PATHS_LIST
@@ -2543,6 +2592,9 @@ EOF
     check_asm ebx_available '""::"b"(0)' &&
         check_asm ebx_available '"":::"%ebx"'
 
+    # check whether xmm clobbers are supported
+    check_asm xmm_clobbers '"":::"%xmm0"'
+
     # check whether more than 10 operands are supported
     check_cc <<EOF && enable ten_operands
 int main(void) {
@@ -2561,16 +2613,25 @@ EOF
 
     check_asm bswap '"bswap %%eax" ::: "%eax"'
 
-    YASMFLAGS="-f $objformat -DARCH_$(toupper $subarch)"
-    enabled     x86_64        && append YASMFLAGS "-m amd64"
+    if ! disabled_any asm mmx yasm; then
+        if check_cmd $yasmexe --version; then
+            enabled x86_64 && yasm_extra="-m amd64"
+            yasm_debug="-g dwarf2"
+        elif check_cmd nasm -v; then
+            yasmexe=nasm
+            yasm_debug="-g -F dwarf"
+            enabled x86_64 && test "$objformat" = elf && objformat=elf64
+        fi
+
+        YASMFLAGS="-f $objformat $yasm_extra"
     enabled     pic           && append YASMFLAGS "-DPIC"
     test -n "$extern_prefix"  && append YASMFLAGS "-DPREFIX"
     case "$objformat" in
-        elf) enabled debug && append YASMFLAGS "-g dwarf2" ;;
+            elf*) enabled debug && append YASMFLAGS $yasm_debug ;;
     esac
-    if ! disabled yasm; then
+
         check_yasm "pabsw xmm0, xmm0" && enable yasm ||
-            warn "yasm not found, performance will suffer"
+            die "yasm not found, use --disable-yasm for a crippled build"
     fi
 
     case "$cpu" in
@@ -2609,6 +2670,7 @@ check_func  mkstemp
 check_func  ${malloc_prefix}posix_memalign      && enable posix_memalign
 check_func  setrlimit
 check_func  strerror_r
+check_func  strtok_r
 check_func_headers io.h setmode
 check_func_headers lzo/lzo1x.h lzo1x_999_compress
 check_lib2 "windows.h psapi.h" GetProcessMemoryInfo -lpsapi
@@ -2682,15 +2744,18 @@ check_mathfunc truncf
 
 # these are off by default, so fail if requested and not available
 enabled avisynth   && require2 vfw32 "windows.h vfw.h" AVIFileInit -lavifil32
+enabled frei0r     && { check_header frei0r.h || die "ERROR: frei0r.h header not found"; }
 enabled libdirac   && add_cflags $(pkg-config --cflags dirac) &&
                       require  libdirac libdirac_decoder/dirac_parser.h dirac_decoder_init $(pkg-config --libs dirac) &&
                       require  libdirac libdirac_encoder/dirac_encoder.h dirac_encoder_init $(pkg-config --libs dirac)
 enabled libfaac    && require2 libfaac "stdint.h faac.h" faacEncGetVersion -lfaac
 enabled libgsm     && require  libgsm gsm/gsm.h gsm_create -lgsm
-enabled libmp3lame && require  libmp3lame lame/lame.h lame_init -lmp3lame
+enabled libmp3lame && require  "libmp3lame >= 3.98.3" lame/lame.h lame_set_VBR_quality -lmp3lame
 enabled libnut     && require  libnut libnut.h nut_demuxer_init -lnut
 enabled libopencore_amrnb  && require libopencore_amrnb opencore-amrnb/interf_dec.h Decoder_Interface_init -lopencore-amrnb
 enabled libopencore_amrwb  && require libopencore_amrwb opencore-amrwb/dec_if.h D_IF_init -lopencore-amrwb
+enabled libopencv  && { check_lib opencv/cv.h cvCreateImageHeader $(pkg-config --libs opencv) ||
+                        die "ERROR: libopencv not found"; }
 enabled libopenjpeg && require libopenjpeg openjpeg.h opj_version -lopenjpeg
 enabled librtmp    && { check_lib librtmp/rtmp.h RTMP_Socket $(pkg-config --libs librtmp) -lwinmm ||
                         die "ERROR: librtmp not found or RTMP_Socket() missing, librtmp version must be >= 2.2.f"; }
@@ -2735,7 +2800,7 @@ texi2html -version > /dev/null 2>&1 && enable texi2html || disable texi2html
 if enabled network; then
     check_type "sys/types.h sys/socket.h" socklen_t
     check_type netdb.h "struct addrinfo"
-    check_type netinet/in.h "struct ipv6_mreq"
+    check_type netinet/in.h "struct ipv6_mreq" -D_DARWIN_C_SOURCE
     check_type netinet/in.h "struct sockaddr_in6"
     check_type "sys/types.h sys/socket.h" "struct sockaddr_storage"
     check_struct "sys/types.h sys/socket.h" "struct sockaddr" sa_len
@@ -2862,6 +2927,11 @@ if enabled icc; then
     check_ldflags -march=$cpu
     # icc 11.0 and 11.1 work with ebp_available, but don't pass the test
     enable ebp_available
+    if enabled x86_32; then
+        test ${icc_version%%.*} -ge 11 && \
+            check_cflags -falign-stack=maintain-16-byte || \
+            disable aligned_stack
+    fi
 elif enabled ccc; then
     # disable some annoying warnings
     add_cflags -msg_disable cvtu32to64
@@ -2874,12 +2944,15 @@ elif enabled gcc; then
     check_cflags -fno-tree-vectorize
     check_cflags -Werror=implicit-function-declaration
 #    check_cflags -Werror=missing-prototypes
+elif enabled llvm_gcc; then
+    check_cflags -mllvm -stack-alignment=16
 elif enabled clang; then
+    check_cflags -mllvm -stack-alignment=16
     check_cflags -Qunused-arguments
 elif enabled armcc; then
     # 2523: use of inline assembler is deprecated
-    add_cflags -Wrvct,--diag_suppress=2523
-    add_cflags -Wrvct,--diag_suppress=1207
+    add_cflags -W${armcc_opt},--diag_suppress=2523
+    add_cflags -W${armcc_opt},--diag_suppress=1207
 elif enabled tms470; then
     add_cflags -pds=824 -pds=837
 fi
@@ -2965,6 +3038,7 @@ echo "threading support         ${thread_type-no}"
 echo "SDL support               ${sdl-no}"
 echo "Sun medialib support      ${mlib-no}"
 echo "AVISynth enabled          ${avisynth-no}"
+echo "frei0r enabled            ${frei0r-no}"
 echo "libdc1394 support         ${libdc1394-no}"
 echo "libdirac enabled          ${libdirac-no}"
 echo "libfaac enabled           ${libfaac-no}"
@@ -2973,6 +3047,7 @@ echo "libmp3lame enabled        ${libmp3lame-no}"
 echo "libnut enabled            ${libnut-no}"
 echo "libopencore-amrnb support ${libopencore_amrnb-no}"
 echo "libopencore-amrwb support ${libopencore_amrwb-no}"
+echo "libopencv support         ${libopencv-no}"
 echo "libopenjpeg enabled       ${libopenjpeg-no}"
 echo "librtmp enabled           ${librtmp-no}"
 echo "libschroedinger enabled   ${libschroedinger-no}"
@@ -3018,6 +3093,7 @@ if enabled source_path_used; then
         libavcore
         libavdevice
         libavfilter
+        libavfilter/$arch
         libavformat
         libavutil
         libavutil/$arch
@@ -3037,6 +3113,7 @@ if enabled source_path_used; then
         libavcore/Makefile
         libavdevice/Makefile
         libavfilter/Makefile
+        libavfilter/${arch}/Makefile
         libavformat/Makefile
         libavutil/Makefile
         libpostproc/Makefile
@@ -3047,6 +3124,8 @@ if enabled source_path_used; then
 fi
 
 enabled stripping || strip="echo skipping strip"
+
+config_files="$TMPH config.mak"
 
 cat > config.mak <<EOF
 # Automatically generated by configure - do not modify!
@@ -3153,6 +3232,7 @@ cat > $TMPH <<EOF
 #define ASMALIGN(ZEROBITS) ".p2align " #ZEROBITS "\\n\\t"
 #define EXTERN_PREFIX "${extern_prefix}"
 #define EXTERN_ASM ${extern_prefix}
+#define SLIBSUF "$SLIBSUF"
 EOF
 
 test -n "$malloc_prefix" &&
@@ -3163,9 +3243,14 @@ if enabled small || disabled optimizations; then
     echo "#define av_always_inline"  >> $TMPH
 fi
 
-print_config ARCH_   $TMPH config.mak $ARCH_LIST
-print_config HAVE_   $TMPH config.mak $HAVE_LIST
-print_config CONFIG_ $TMPH config.mak $CONFIG_LIST       \
+if enabled yasm; then
+    append config_files $TMPASM
+    printf '' >$TMPASM
+fi
+
+print_config ARCH_   "$config_files" $ARCH_LIST
+print_config HAVE_   "$config_files" $HAVE_LIST
+print_config CONFIG_ "$config_files" $CONFIG_LIST       \
                                       $CONFIG_EXTRA      \
                                       $DECODER_LIST      \
                                       $ENCODER_LIST      \
@@ -3194,19 +3279,19 @@ echo "endif # FFMPEG_CONFIG_MAK" >> config.mak
 cp_if_changed $TMPH config.h
 touch .config
 
+enabled yasm && cp_if_changed $TMPASM config.asm
+
 cat > $TMPH <<EOF
 /* Generated by ffconf */
 #ifndef AVUTIL_AVCONFIG_H
 #define AVUTIL_AVCONFIG_H
 EOF
 
-print_config AV_HAVE_ $TMPH /dev/null $HAVE_LIST_PUB
+print_config AV_HAVE_ $TMPH $HAVE_LIST_PUB
 
 echo "#endif /* AVUTIL_AVCONFIG_H */" >> $TMPH
 
 cp_if_changed $TMPH libavutil/avconfig.h
-
-echo "config:$arch:$subarch:$cpu:$target_os:$cc_ident:$FFMPEG_CONFIGURATION" >config.fate
 
 test -n "$WARNINGS" && printf "\n$WARNINGS"
 
@@ -3219,7 +3304,7 @@ comment=$2
 version=$3
 libs=$4
 requires=$5
-enabled $shortname || return 0
+enabled ${name#lib} || return 0
 cat <<EOF > $name/$name.pc
 prefix=$prefix
 exec_prefix=\${prefix}

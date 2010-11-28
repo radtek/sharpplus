@@ -5,8 +5,8 @@ includedir=/home/hubdog/ffmpeg
 
 Name: libavformat
 Description: FFmpeg container format library
-Version: 52.78.1
-Requires: libavcodec = 52.85.0
+Version: 52.84.0
+Requires: libavcodec = 52.94.0
 Conflicts:
-Libs: ${libdir}/libavformat.a -lavicap32 -lgdi32 -lws2_32 -lxvidcore -LC:/msys/1.0/local/lib -lx264 -lpthreadGC2 -lvpx -lvpx -lvorbisenc -lvorbis -logg -ltheoraenc -ltheoradec -logg -lspeex -LC:/msys/1.0/local/lib -lschroedinger-1.0 -loil-0.3 -lm -LC:/msys/1.0/local/lib -lrtmp -lz -lssl -lcrypto -lws2_32 -lgdi32 -lcrypt32 -lwinmm -lopenjpeg -lopencore-amrwb -lopencore-amrnb -lnut -lmp3lame -lgsm -lfaac -lavifil32 -lm -lpthreadGC2 -lbz2 -lz -lpsapi 
+Libs: ${libdir}/libavformat.a -lavicap32 -lgdi32 -lws2_32 -lxvidcore -LC:/msys/1.0/local/lib -lx264 -lpthreadGC2 -lvpx -lvpx -lvorbisenc -lvorbis -logg -ltheoraenc -ltheoradec -logg -lspeex -LC:/msys/1.0/local/lib -lschroedinger-1.0 -loil-0.3 -lm -LC:/msys/1.0/local/lib -lrtmp -lz -lssl -lcrypto -lws2_32 -lgdi32 -lcrypt32 -lwinmm -lopencore-amrwb -lopencore-amrnb -lnut -lmp3lame -lgsm -lfaac -lavifil32 -lm -lpthreadGC2 -lbz2 -lz -lpsapi 
 Cflags: -I${includedir}

@@ -31,6 +31,7 @@
 #include <xvid.h>
 #include <unistd.h>
 #include "avcodec.h"
+#include "libavutil/cpu.h"
 #include "libavutil/intreadwrite.h"
 #include "libxvid_internal.h"
 #if !HAVE_MKSTEMP
@@ -43,9 +44,6 @@
 #define BUFFER_SIZE                 1024
 #define BUFFER_REMAINING(x)         (BUFFER_SIZE - strlen(x))
 #define BUFFER_CAT(x)               (&((x)[strlen(x)]))
-
-/* For PPC Use */
-int has_altivec(void);
 
 /**
  * Structure for the private Xvid context.
@@ -215,7 +213,7 @@ static av_cold int xvid_encode_init(AVCodecContext *avctx)  {
 #if ARCH_PPC
     /* Xvid's PPC support is borked, use libavcodec to detect */
 #if HAVE_ALTIVEC
-    if( has_altivec() ) {
+    if (av_get_cpu_flags() & AV_CPU_FLAG_ALTIVEC) {
         xvid_gbl_init.cpu_flags = XVID_CPU_FORCE | XVID_CPU_ALTIVEC;
     } else
 #endif
@@ -451,7 +449,11 @@ static int xvid_encode_frame(AVCodecContext *avctx,
     xvid_enc_frame.vop_flags = x->vop_flags;
     xvid_enc_frame.vol_flags = x->vol_flags;
     xvid_enc_frame.motion = x->me_flags;
-    xvid_enc_frame.type = XVID_TYPE_AUTO;
+    xvid_enc_frame.type =
+        picture->pict_type == FF_I_TYPE ? XVID_TYPE_IVOP :
+        picture->pict_type == FF_P_TYPE ? XVID_TYPE_PVOP :
+        picture->pict_type == FF_B_TYPE ? XVID_TYPE_BVOP :
+                                          XVID_TYPE_AUTO;
 
     /* Pixel aspect ratio setting */
     if (avctx->sample_aspect_ratio.num < 1 || avctx->sample_aspect_ratio.num > 255 ||
