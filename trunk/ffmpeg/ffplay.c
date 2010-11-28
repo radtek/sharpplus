@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#define _XOPEN_SOURCE 600
+
 #include "config.h"
 #include <inttypes.h>
 #include <math.h>
@@ -26,6 +28,7 @@
 #include "libavutil/avstring.h"
 #include "libavutil/colorspace.h"
 #include "libavutil/pixdesc.h"
+#include "libavcore/imgutils.h"
 #include "libavcore/parseutils.h"
 #include "libavformat/avformat.h"
 #include "libavdevice/avdevice.h"
@@ -204,10 +207,7 @@ typedef struct VideoState {
     char filename[1024];
     int width, height, xleft, ytop;
 
-    int64_t faulty_pts;
-    int64_t faulty_dts;
-    int64_t last_dts_for_fault_detection;
-    int64_t last_pts_for_fault_detection;
+    PtsCorrectionContext pts_ctx;
 
 #if CONFIG_AVFILTER
     AVFilterContext *out_video_filter;          ///<the last filter in the video chain
@@ -1283,11 +1283,62 @@ retry:
             if (is->audio_st && is->video_st)
                 av_diff = get_audio_clock(is) - get_video_clock(is);
             printf("%7.2f A-V:%7.3f s:%3.1f aq=%5dKB vq=%5dKB sq=%5dB f=%"PRId64"/%"PRId64"   \r",
-                   get_master_clock(is), av_diff, FFMAX(is->skip_frames-1, 0), aqsize / 1024, vqsize / 1024, sqsize, is->faulty_dts, is->faulty_pts);
+                   get_master_clock(is), av_diff, FFMAX(is->skip_frames-1, 0), aqsize / 1024, vqsize / 1024, sqsize, is->pts_ctx.num_faulty_dts, is->pts_ctx.num_faulty_pts);
             fflush(stdout);
             last_time = cur_time;
         }
     }
+}
+
+static void stream_close(VideoState *is)
+{
+    VideoPicture *vp;
+    int i;
+    /* XXX: use a special url_shutdown call to abort parse cleanly */
+    is->abort_request = 1;
+    SDL_WaitThread(is->parse_tid, NULL);
+    SDL_WaitThread(is->refresh_tid, NULL);
+
+    /* free all pictures */
+    for(i=0;i<VIDEO_PICTURE_QUEUE_SIZE; i++) {
+        vp = &is->pictq[i];
+#if CONFIG_AVFILTER
+        if (vp->picref) {
+            avfilter_unref_buffer(vp->picref);
+            vp->picref = NULL;
+        }
+#endif
+        if (vp->bmp) {
+            SDL_FreeYUVOverlay(vp->bmp);
+            vp->bmp = NULL;
+        }
+    }
+    SDL_DestroyMutex(is->pictq_mutex);
+    SDL_DestroyCond(is->pictq_cond);
+    SDL_DestroyMutex(is->subpq_mutex);
+    SDL_DestroyCond(is->subpq_cond);
+#if !CONFIG_AVFILTER
+    if (is->img_convert_ctx)
+        sws_freeContext(is->img_convert_ctx);
+#endif
+    av_free(is);
+}
+
+static void do_exit(void)
+{
+    if (cur_stream) {
+        stream_close(cur_stream);
+        cur_stream = NULL;
+    }
+    uninit_opts();
+#if CONFIG_AVFILTER
+    avfilter_uninit();
+#endif
+    if (show_status)
+        printf("\n");
+    SDL_Quit();
+    av_log(NULL, AV_LOG_QUIET, "");
+    exit(0);
 }
 
 /* allocate a picture (needs to do that in main thread to avoid
@@ -1319,6 +1370,14 @@ static void alloc_picture(void *opaque)
     vp->bmp = SDL_CreateYUVOverlay(vp->width, vp->height,
                                    SDL_YV12_OVERLAY,
                                    screen);
+    if (!vp->bmp || vp->bmp->pitches[0] < vp->width) {
+        /* SDL allocates a buffer smaller than requested if the video
+         * overlay hardware is unable to support the requested size. */
+        fprintf(stderr, "Error: the video system does not support an image\n"
+                        "size of %dx%d pixels. Try using -lowres or -vf \"scale=w:h\"\n"
+                        "to reduce the image size.\n", vp->width, vp->height );
+        do_exit();
+    }
 
     SDL_LockMutex(is->pictq_mutex);
     vp->allocated = 1;
@@ -1499,8 +1558,7 @@ static int get_video_frame(VideoState *is, AVFrame *frame, int64_t *pts, AVPacke
             is->video_current_pos= -1;
             SDL_UnlockMutex(is->pictq_mutex);
 
-            is->last_dts_for_fault_detection=
-            is->last_pts_for_fault_detection= INT64_MIN;
+            init_pts_correction(&is->pts_ctx);
             is->frame_last_pts= AV_NOPTS_VALUE;
             is->frame_last_delay = 0;
             is->frame_timer = (double)av_gettime() / 1000000.0;
@@ -1517,25 +1575,18 @@ static int get_video_frame(VideoState *is, AVFrame *frame, int64_t *pts, AVPacke
                                     pkt);
 
         if (got_picture) {
-            if(pkt->dts != AV_NOPTS_VALUE){
-                is->faulty_dts += pkt->dts <= is->last_dts_for_fault_detection;
-                is->last_dts_for_fault_detection= pkt->dts;
+            if (decoder_reorder_pts == -1) {
+                *pts = guess_correct_pts(&is->pts_ctx, frame->reordered_opaque, pkt->dts);
+            } else if (decoder_reorder_pts) {
+                *pts = frame->reordered_opaque;
+            } else {
+                *pts = pkt->dts;
             }
-            if(frame->reordered_opaque != AV_NOPTS_VALUE){
-                is->faulty_pts += frame->reordered_opaque <= is->last_pts_for_fault_detection;
-                is->last_pts_for_fault_detection= frame->reordered_opaque;
+
+            if (*pts == AV_NOPTS_VALUE) {
+                *pts = 0;
             }
         }
-
-        if(   (   decoder_reorder_pts==1
-               || (decoder_reorder_pts && is->faulty_pts<is->faulty_dts)
-               || pkt->dts == AV_NOPTS_VALUE)
-           && frame->reordered_opaque != AV_NOPTS_VALUE)
-            *pts= frame->reordered_opaque;
-        else if(pkt->dts != AV_NOPTS_VALUE)
-            *pts= pkt->dts;
-        else
-            *pts= 0;
 
 //            if (len1 < 0)
 //                break;
@@ -1670,9 +1721,9 @@ static int input_request_frame(AVFilterLink *link)
         picref = avfilter_ref_buffer(priv->frame->opaque, ~0);
     } else {
         picref = avfilter_get_video_buffer(link, AV_PERM_WRITE, link->w, link->h);
-        av_picture_data_copy(picref->data, picref->linesize,
-                             priv->frame->data, priv->frame->linesize,
-                             picref->format, link->w, link->h);
+        av_image_copy(picref->data, picref->linesize,
+                      priv->frame->data, priv->frame->linesize,
+                      picref->format, link->w, link->h);
     }
     av_free_packet(&pkt);
 
@@ -1704,6 +1755,7 @@ static int input_config_props(AVFilterLink *link)
 
     link->w = c->width;
     link->h = c->height;
+    link->time_base = priv->is->video_st->time_base;
 
     return 0;
 }
@@ -1727,52 +1779,6 @@ static AVFilter input_filter =
                                   { .name = NULL }},
 };
 
-static void output_end_frame(AVFilterLink *link)
-{
-}
-
-static int output_query_formats(AVFilterContext *ctx)
-{
-    enum PixelFormat pix_fmts[] = { PIX_FMT_YUV420P, PIX_FMT_NONE };
-
-    avfilter_set_common_formats(ctx, avfilter_make_format_list(pix_fmts));
-    return 0;
-}
-
-static int get_filtered_video_frame(AVFilterContext *ctx, AVFrame *frame,
-                                    int64_t *pts, int64_t *pos)
-{
-    AVFilterBufferRef *pic;
-
-    if(avfilter_request_frame(ctx->inputs[0]))
-        return -1;
-    if(!(pic = ctx->inputs[0]->cur_buf))
-        return -1;
-    ctx->inputs[0]->cur_buf = NULL;
-
-    frame->opaque = pic;
-    *pts          = pic->pts;
-    *pos          = pic->pos;
-
-    memcpy(frame->data,     pic->data,     sizeof(frame->data));
-    memcpy(frame->linesize, pic->linesize, sizeof(frame->linesize));
-
-    return 1;
-}
-
-static AVFilter output_filter =
-{
-    .name      = "ffplay_output",
-
-    .query_formats = output_query_formats,
-
-    .inputs    = (AVFilterPad[]) {{ .name          = "default",
-                                    .type          = AVMEDIA_TYPE_VIDEO,
-                                    .end_frame     = output_end_frame,
-                                    .min_perms     = AV_PERM_READ, },
-                                  { .name = NULL }},
-    .outputs   = (AVFilterPad[]) {{ .name = NULL }},
-};
 #endif  /* CONFIG_AVFILTER */
 
 static int video_thread(void *arg)
@@ -1786,16 +1792,17 @@ static int video_thread(void *arg)
 #if CONFIG_AVFILTER
     int64_t pos;
     char sws_flags_str[128];
+    FFSinkContext ffsink_ctx = { .pix_fmt = PIX_FMT_YUV420P };
     AVFilterContext *filt_src = NULL, *filt_out = NULL;
     AVFilterGraph *graph = av_mallocz(sizeof(AVFilterGraph));
     snprintf(sws_flags_str, sizeof(sws_flags_str), "flags=%d", sws_flags);
     graph->scale_sws_opts = av_strdup(sws_flags_str);
 
     if (avfilter_open(&filt_src, &input_filter,  "src") < 0) goto the_end;
-    if (avfilter_open(&filt_out, &output_filter, "out") < 0) goto the_end;
+    if (avfilter_open(&filt_out, &ffsink      ,  "out") < 0) goto the_end;
 
     if(avfilter_init_filter(filt_src, NULL, is))             goto the_end;
-    if(avfilter_init_filter(filt_out, NULL, frame))          goto the_end;
+    if(avfilter_init_filter(filt_out, NULL, &ffsink_ctx))    goto the_end;
 
 
     if(vfilters) {
@@ -1821,9 +1828,8 @@ static int video_thread(void *arg)
     avfilter_graph_add_filter(graph, filt_src);
     avfilter_graph_add_filter(graph, filt_out);
 
-    if(avfilter_graph_check_validity(graph, NULL))           goto the_end;
-    if(avfilter_graph_config_formats(graph, NULL))           goto the_end;
-    if(avfilter_graph_config_links(graph, NULL))             goto the_end;
+    if (avfilter_graph_config(graph, NULL) < 0)
+        goto the_end;
 
     is->out_video_filter = filt_out;
 #endif
@@ -1831,11 +1837,28 @@ static int video_thread(void *arg)
     for(;;) {
 #if !CONFIG_AVFILTER
         AVPacket pkt;
+#else
+        AVFilterBufferRef *picref;
+        AVRational tb;
 #endif
         while (is->paused && !is->videoq.abort_request)
             SDL_Delay(10);
 #if CONFIG_AVFILTER
-        ret = get_filtered_video_frame(filt_out, frame, &pts_int, &pos);
+        ret = get_filtered_video_frame(filt_out, frame, &picref, &tb);
+        if (picref) {
+            pts_int = picref->pts;
+            pos     = picref->pos;
+            frame->opaque = picref;
+        }
+
+        if (av_cmp_q(tb, is->video_st->time_base)) {
+            int64_t pts1 = pts_int;
+            pts_int = av_rescale_q(pts_int, tb, is->video_st->time_base);
+            av_log(NULL, AV_LOG_DEBUG, "video_thread(): "
+                   "tb:%d/%d pts:%"PRId64" -> tb:%d/%d pts:%"PRId64"\n",
+                   tb.num, tb.den, pts1,
+                   is->video_st->time_base.num, is->video_st->time_base.den, pts_int);
+        }
 #else
         ret = get_video_frame(is, frame, &pts_int, &pkt);
 #endif
@@ -2225,7 +2248,7 @@ static int stream_component_open(VideoState *is, int stream_index)
     avctx->error_concealment= error_concealment;
     avcodec_thread_init(avctx, thread_count);
 
-    set_context_opts(avctx, avcodec_opts[avctx->codec_type], 0);
+    set_context_opts(avctx, avcodec_opts[avctx->codec_type], 0, codec);
 
     if (!codec ||
         avcodec_open(avctx, codec) < 0)
@@ -2403,7 +2426,7 @@ static int decode_thread(void *arg)
     ap->time_base= (AVRational){1, 25};
     ap->pix_fmt = frame_pix_fmt;
 
-    set_context_opts(ic, avformat_opts, AV_OPT_FLAG_DECODING_PARAM);
+    set_context_opts(ic, avformat_opts, AV_OPT_FLAG_DECODING_PARAM, NULL);
 
     err = av_open_input_file(&ic, is->filename, is->iformat, 0, ap);
     if (err < 0) {
@@ -2554,7 +2577,7 @@ static int decode_thread(void *arg)
             SDL_Delay(10);
             continue;
         }
-        if(url_feof(ic->pb) || eof) {
+        if(eof) {
             if(is->video_stream >= 0){
                 av_init_packet(pkt);
                 pkt->data=NULL;
@@ -2575,7 +2598,7 @@ static int decode_thread(void *arg)
         }
         ret = av_read_frame(ic, pkt);
         if (ret < 0) {
-            if (ret == AVERROR_EOF)
+            if (ret == AVERROR_EOF || url_feof(ic->pb))
                 eof=1;
             if (url_ferror(ic->pb))
                 break;
@@ -2659,40 +2682,6 @@ static VideoState *stream_open(const char *filename, AVInputFormat *iformat)
     return is;
 }
 
-static void stream_close(VideoState *is)
-{
-    VideoPicture *vp;
-    int i;
-    /* XXX: use a special url_shutdown call to abort parse cleanly */
-    is->abort_request = 1;
-    SDL_WaitThread(is->parse_tid, NULL);
-    SDL_WaitThread(is->refresh_tid, NULL);
-
-    /* free all pictures */
-    for(i=0;i<VIDEO_PICTURE_QUEUE_SIZE; i++) {
-        vp = &is->pictq[i];
-#if CONFIG_AVFILTER
-        if (vp->picref) {
-            avfilter_unref_buffer(vp->picref);
-            vp->picref = NULL;
-        }
-#endif
-        if (vp->bmp) {
-            SDL_FreeYUVOverlay(vp->bmp);
-            vp->bmp = NULL;
-        }
-    }
-    SDL_DestroyMutex(is->pictq_mutex);
-    SDL_DestroyCond(is->pictq_cond);
-    SDL_DestroyMutex(is->subpq_mutex);
-    SDL_DestroyCond(is->subpq_cond);
-#if !CONFIG_AVFILTER
-    if (is->img_convert_ctx)
-        sws_freeContext(is->img_convert_ctx);
-#endif
-    av_free(is);
-}
-
 static void stream_cycle_channel(VideoState *is, int codec_type)
 {
     AVFormatContext *ic = is->ic;
@@ -2768,26 +2757,6 @@ static void step_to_next_frame(void)
             stream_pause(cur_stream);
     }
     step = 1;
-}
-
-static void do_exit(void)
-{
-    int i;
-    if (cur_stream) {
-        stream_close(cur_stream);
-        cur_stream = NULL;
-    }
-    for (i = 0; i < AVMEDIA_TYPE_NB; i++)
-        av_free(avcodec_opts[i]);
-    av_free(avformat_opts);
-    av_free(sws_opts);
-#if CONFIG_AVFILTER
-    avfilter_uninit();
-#endif
-    if (show_status)
-        printf("\n");
-    SDL_Quit();
-    exit(0);
 }
 
 static void toggle_audio_display(void)
@@ -3092,11 +3061,23 @@ static void show_usage(void)
 
 static void show_help(void)
 {
+    av_log_set_callback(log_callback_help);
     show_usage();
     show_help_options(options, "Main options:\n",
                       OPT_EXPERT, 0);
     show_help_options(options, "\nAdvanced options:\n",
                       OPT_EXPERT, OPT_EXPERT);
+    printf("\n");
+    av_opt_show2(avcodec_opts[0], NULL,
+                 AV_OPT_FLAG_DECODING_PARAM, 0);
+    printf("\n");
+    av_opt_show2(avformat_opts, NULL,
+                 AV_OPT_FLAG_DECODING_PARAM, 0);
+#if !CONFIG_AVFILTER
+    printf("\n");
+    av_opt_show2(sws_opts, NULL,
+                 AV_OPT_FLAG_ENCODING_PARAM, 0);
+#endif
     printf("\nWhile playing:\n"
            "q, ESC              quit\n"
            "f                   toggle full screen\n"
@@ -3127,7 +3108,9 @@ static void opt_input_file(const char *filename)
 /* Called from the main */
 int main(int argc, char **argv)
 {
-    int flags, i;
+    int flags;
+
+    av_log_set_flags(AV_LOG_SKIP_REPEATED);
 
     /* register all codecs, demux and protocols */
     avcodec_register_all();
@@ -3139,13 +3122,7 @@ int main(int argc, char **argv)
 #endif
     av_register_all();
 
-    for(i=0; i<AVMEDIA_TYPE_NB; i++){
-        avcodec_opts[i]= avcodec_alloc_context2(i);
-    }
-    avformat_opts = avformat_alloc_context();
-#if !CONFIG_AVFILTER
-    sws_opts = sws_getContext(16,16,0, 16,16,0, sws_flags, NULL,NULL,NULL);
-#endif
+    init_opts();
 
     show_banner();
 

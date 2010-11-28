@@ -47,6 +47,7 @@ void av_register_all(void)
     avcodec_register_all();
 
     /* (de)muxers */
+    REGISTER_MUXER    (A64, a64);
     REGISTER_DEMUXER  (AAC, aac);
     REGISTER_MUXDEMUX (AC3, ac3);
     REGISTER_MUXER    (ADTS, adts);
@@ -56,6 +57,7 @@ void av_register_all(void)
     REGISTER_DEMUXER  (ANM, anm);
     REGISTER_DEMUXER  (APC, apc);
     REGISTER_DEMUXER  (APE, ape);
+    REGISTER_DEMUXER  (APPLEHTTP, applehttp);
     REGISTER_MUXDEMUX (ASF, asf);
     REGISTER_MUXDEMUX (ASS, ass);
     REGISTER_MUXER    (ASF_STREAM, asf_stream);
@@ -90,6 +92,7 @@ void av_register_all(void)
     REGISTER_DEMUXER  (FOURXM, fourxm);
     REGISTER_MUXER    (FRAMECRC, framecrc);
     REGISTER_MUXER    (FRAMEMD5, framemd5);
+    REGISTER_MUXDEMUX (G722, g722);
     REGISTER_MUXER    (GIF, gif);
     REGISTER_DEMUXER  (GSM, gsm);
     REGISTER_MUXDEMUX (GXF, gxf);
@@ -107,6 +110,7 @@ void av_register_all(void)
     REGISTER_DEMUXER  (IV8, iv8);
     REGISTER_DEMUXER  (IVF, ivf);
     REGISTER_DEMUXER  (LMLM4, lmlm4);
+    REGISTER_DEMUXER  (LXF, lxf);
     REGISTER_MUXDEMUX (M4V, m4v);
     REGISTER_MUXER    (MD5, md5);
     REGISTER_MUXDEMUX (MATROSKA, matroska);
@@ -175,10 +179,11 @@ void av_register_all(void)
     REGISTER_MUXDEMUX (ROQ, roq);
     REGISTER_DEMUXER  (RPL, rpl);
     REGISTER_MUXDEMUX (RSO, rso);
-    REGISTER_MUXER    (RTP, rtp);
+    REGISTER_MUXDEMUX (RTP, rtp);
     REGISTER_MUXDEMUX (RTSP, rtsp);
+    REGISTER_MUXDEMUX (SAP, sap);
     REGISTER_DEMUXER  (SDP, sdp);
-#if CONFIG_SDP_DEMUXER
+#if CONFIG_RTPDEC
     av_register_rtp_dynamic_payload_handlers();
     av_register_rdt_dynamic_payload_handlers();
 #endif
@@ -225,6 +230,7 @@ void av_register_all(void)
     REGISTER_PROTOCOL (FILE, file);
     REGISTER_PROTOCOL (GOPHER, gopher);
     REGISTER_PROTOCOL (HTTP, http);
+    REGISTER_PROTOCOL (MMSH, mmsh);
     REGISTER_PROTOCOL (MMST, mmst);
     REGISTER_PROTOCOL (MD5,  md5);
     REGISTER_PROTOCOL (PIPE, pipe);

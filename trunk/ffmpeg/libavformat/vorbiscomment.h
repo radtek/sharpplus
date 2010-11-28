@@ -26,7 +26,7 @@
 #include "metadata.h"
 
 /**
- * Calculates the length in bytes of a VorbisComment. This is the minimum
+ * Calculate the length in bytes of a VorbisComment. This is the minimum
  * size required by ff_vorbiscomment_write().
  *
  * @param m The metadata structure to be parsed. For no metadata, set to NULL.
@@ -49,7 +49,7 @@ int ff_vorbiscomment_length(AVMetadata *m, const char *vendor_string,
  * @param vendor_string The vendor string to write.
  * @param count The number of tags in m because m->count is "not allowed"
  */
-int ff_vorbiscomment_write(uint8_t **p, AVMetadata *m,
+int ff_vorbiscomment_write(uint8_t **p, AVMetadata **m,
                            const char *vendor_string, const unsigned count);
 
 extern const AVMetadataConv ff_vorbiscomment_metadata_conv[];

@@ -1,8 +1,5 @@
 /*
- * Box drawing filter. Also a nice template for a filter that needs to write
- * in the input frame.
- *
- * Copyright (c) 2008 Affine Systems, Inc (Michael Sullivan, Bobby Impollonia)
+ * Copyright (C) 2008 Affine Systems, Inc (Michael Sullivan, Bobby Impollonia)
  *
  * This file is part of FFmpeg.
  *
@@ -21,49 +18,44 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+/**
+ * @file
+ * Box drawing filter. Also a nice template for a filter that needs to
+ * write in the input frame.
+ */
 
+#include "libavutil/colorspace.h"
+#include "libavutil/pixdesc.h"
 #include "avfilter.h"
 #include "parseutils.h"
-#include "libavutil/colorspace.h"
 
-typedef struct
-{
-    const char *name;
-    unsigned char y;
-    unsigned char cb;
-    unsigned char cr;
-} box_color;
+enum { Y, U, V, A };
 
-typedef struct
-{
+typedef struct {
     int x, y, w, h;
-    box_color color;
+    unsigned char yuv_color[4];
     int vsub, hsub;   //< chroma subsampling
-} BoxContext;
+} DrawBoxContext;
 
 static av_cold int init(AVFilterContext *ctx, const char *args, void *opaque)
 {
-    BoxContext *context= ctx->priv;
-    char tmp[1024];
+    DrawBoxContext *drawbox= ctx->priv;
+    char color_str[1024] = "black";
     uint8_t rgba_color[4];
 
-    if(!args || strlen(args) > 1024) {
-        av_log(ctx, AV_LOG_ERROR, "Invalid arguments!\n");
-        return -1;
-    }
+    drawbox->x = drawbox->y = drawbox->w = drawbox->h = 0;
 
-    sscanf(args, "%d:%d:%d:%d:%s", &(context->x), &(context->y),
-           &(context->w), &(context->h), tmp);
+    if (args)
+        sscanf(args, "%d:%d:%d:%d:%s",
+               &drawbox->x, &drawbox->y, &drawbox->w, &drawbox->h, color_str);
 
-    if (av_parse_color(rgba_color, tmp, ctx) < 0)
-        return -1;
+    if (av_parse_color(rgba_color, color_str, ctx) < 0)
+        return AVERROR(EINVAL);
 
-    context->color.y  = RGB_TO_Y(rgba_color[0], rgba_color[1], rgba_color[2]);
-    context->color.cb = RGB_TO_U(rgba_color[0], rgba_color[1], rgba_color[2], 0);
-    context->color.cr = RGB_TO_V(rgba_color[0], rgba_color[1], rgba_color[2], 0);
+    drawbox->yuv_color[Y] = RGB_TO_Y_CCIR(rgba_color[0], rgba_color[1], rgba_color[2]);
+    drawbox->yuv_color[U] = RGB_TO_U_CCIR(rgba_color[0], rgba_color[1], rgba_color[2], 0);
+    drawbox->yuv_color[V] = RGB_TO_V_CCIR(rgba_color[0], rgba_color[1], rgba_color[2], 0);
+    drawbox->yuv_color[A] = rgba_color[3];
 
     return 0;
 }
@@ -82,71 +74,70 @@ static int query_formats(AVFilterContext *ctx)
     return 0;
 }
 
-static int config_input(AVFilterLink *link)
+static int config_input(AVFilterLink *inlink)
 {
-    BoxContext *context = link->dst->priv;
+    DrawBoxContext *drawbox = inlink->dst->priv;
 
-    avcodec_get_chroma_sub_sample(link->format,
-                                  &context->hsub, &context->vsub);
+    drawbox->hsub = av_pix_fmt_descriptors[inlink->format].log2_chroma_w;
+    drawbox->vsub = av_pix_fmt_descriptors[inlink->format].log2_chroma_h;
+
+    if (drawbox->w == 0) drawbox->w = inlink->w;
+    if (drawbox->h == 0) drawbox->h = inlink->h;
+
+    av_log(inlink->dst, AV_LOG_INFO, "x:%d y:%d w:%d h:%d color:0x%02X%02X%02X%02X\n",
+           drawbox->w, drawbox->y, drawbox->w, drawbox->h,
+           drawbox->yuv_color[Y], drawbox->yuv_color[U], drawbox->yuv_color[V], drawbox->yuv_color[A]);
 
     return 0;
 }
 
-static void draw_box(AVFilterBufferRef *pic, BoxContext* context, box_color color)
+static void draw_slice(AVFilterLink *inlink, int y0, int h, int slice_dir)
 {
-    int x, y;
-    int channel;
+    DrawBoxContext *drawbox = inlink->dst->priv;
+    int plane, x, y, xb = drawbox->x, yb = drawbox->y;
     unsigned char *row[4];
-    int xb = context->x;
-    int yb = context->y;
+    AVFilterBufferRef *picref = inlink->cur_buf;
 
-    for (y = yb; (y < yb + context->h) && y < pic->video->h; y++) {
-        row[0] = pic->data[0] + y * pic->linesize[0];
+    for (y = FFMAX(yb, y0); y < (y0 + h) && y < (yb + drawbox->h); y++) {
+        row[0] = picref->data[0] + y * picref->linesize[0];
 
-        for (channel = 1; channel < 3; channel++)
-            row[channel] = pic->data[channel] +
-                pic->linesize[channel] * (y>> context->vsub);
+        for (plane = 1; plane < 3; plane++)
+            row[plane] = picref->data[plane] +
+                picref->linesize[plane] * (y >> drawbox->vsub);
 
-        for (x = xb; (x < xb + context->w) && x < pic->video->w; x++)
-            if((y - yb < 3) || (yb + context->h - y < 4) ||
-               (x - xb < 3) || (xb + context->w - x < 4)) {
-                row[0][x] = color.y;
-                row[1][x >> context->hsub] = color.cb;
-                row[2][x >> context->hsub] = color.cr;
+        for (x = FFMAX(xb, 0); x < (xb + drawbox->w) && x < picref->video->w; x++) {
+            double alpha = (double)drawbox->yuv_color[A] / 255;
+
+            if ((y - yb < 3) || (yb + drawbox->h - y < 4) ||
+                (x - xb < 3) || (xb + drawbox->w - x < 4)) {
+                row[0][x                 ] = (1 - alpha) * row[0][x                 ] + alpha * drawbox->yuv_color[Y];
+                row[1][x >> drawbox->hsub] = (1 - alpha) * row[1][x >> drawbox->hsub] + alpha * drawbox->yuv_color[U];
+                row[2][x >> drawbox->hsub] = (1 - alpha) * row[2][x >> drawbox->hsub] + alpha * drawbox->yuv_color[V];
             }
+        }
     }
+
+    avfilter_draw_slice(inlink->dst->outputs[0], y0, h, 1);
 }
 
-static void end_frame(AVFilterLink *link)
-{
-    BoxContext *context = link->dst->priv;
-    AVFilterLink *output = link->dst->outputs[0];
-    AVFilterBufferRef *pic = link->cur_buf;
-
-    draw_box(pic,context,context->color);
-
-    avfilter_draw_slice(output, 0, pic->video->h, 1);
-    avfilter_end_frame(output);
-}
-
-AVFilter avfilter_vf_drawbox=
-{
+AVFilter avfilter_vf_drawbox = {
     .name      = "drawbox",
-    .priv_size = sizeof(BoxContext),
+    .description = NULL_IF_CONFIG_SMALL("Draw a colored box on the input video."),
+    .priv_size = sizeof(DrawBoxContext),
     .init      = init,
 
     .query_formats   = query_formats,
-    .inputs    = (AVFilterPad[]) {{ .name            = "default",
-                                    .type            = AVMEDIA_TYPE_VIDEO,
-                                    .get_video_buffer= avfilter_null_get_video_buffer,
-                                    .start_frame     = avfilter_null_start_frame,
-                                    .end_frame       = end_frame,
-                                    .config_props    = config_input,
-                                    .min_perms       = AV_PERM_WRITE |
-                                                       AV_PERM_READ,
-                                    .rej_perms       = AV_PERM_PRESERVE },
+    .inputs    = (AVFilterPad[]) {{ .name             = "default",
+                                    .type             = AVMEDIA_TYPE_VIDEO,
+                                    .config_props     = config_input,
+                                    .get_video_buffer = avfilter_null_get_video_buffer,
+                                    .start_frame      = avfilter_null_start_frame,
+                                    .draw_slice       = draw_slice,
+                                    .end_frame        = avfilter_null_end_frame,
+                                    .min_perms        = AV_PERM_WRITE | AV_PERM_READ,
+                                    .rej_perms        = AV_PERM_PRESERVE },
                                   { .name = NULL}},
-    .outputs   = (AVFilterPad[]) {{ .name            = "default",
-                                    .type            = AVMEDIA_TYPE_VIDEO, },
+    .outputs   = (AVFilterPad[]) {{ .name             = "default",
+                                    .type             = AVMEDIA_TYPE_VIDEO, },
                                   { .name = NULL}},
 };

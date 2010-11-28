@@ -226,14 +226,13 @@ The following abbreviations are recognized:
 
 @item -aspect @var{aspect}
 Set aspect ratio (4:3, 16:9 or 1.3333, 1.7777).
-@item -croptop @var{size} (deprecated - use -vf crop=x:y:width:height instead)
-Set top crop band size (in pixels).
-@item -cropbottom @var{size} (deprecated - use -vf crop=x:y:width:height instead)
-Set bottom crop band size (in pixels).
-@item -cropleft @var{size} (deprecated - use -vf crop=x:y:width:height instead)
-Set left crop band size (in pixels).
-@item -cropright @var{size} (deprecated - use -vf crop=x:y:width:height instead)
-Set right crop band size (in pixels).
+@item -croptop @var{size}
+@item -cropbottom @var{size}
+@item -cropleft @var{size}
+@item -cropright @var{size}
+All the crop options have been removed. Use -vf
+crop=width:height:x:y instead.
+
 @item -padtop @var{size}
 @item -padbottom @var{size}
 @item -padleft @var{size}
@@ -496,6 +495,12 @@ Bitstream filters available are "dump_extra", "remove_extra", "noise", "h264_mp4
 @example
 ffmpeg -i h264.mp4 -vcodec copy -vbsf h264_mp4toannexb -an out.h264
 @end example
+@item -force_key_frames @var{time}[,@var{time}...]
+Force key frames at the specified timestamps, more precisely at the first
+frames after each specified time.
+This option can be useful to ensure that a seek point is present at a
+chapter mark or any other designated place in the output file.
+The timestamps must be specified in ascending order.
 @end table
 
 @section Audio Options
@@ -510,7 +515,10 @@ Set the audio bitrate in bit/s (default = 64k).
 @item -aq @var{q}
 Set the audio quality (codec-specific, VBR).
 @item -ac @var{channels}
-Set the number of audio channels (default = 1).
+Set the number of audio channels. For input streams it is set by
+default to 1, for output streams it is set by default to the same
+number of audio channels in input. If the input file has audio streams
+with different channel count, the behaviour is undefined.
 @item -an
 Disable audio recording.
 @item -acodec @var{codec}
@@ -814,14 +822,14 @@ standard mixer.
 FFmpeg can grab the X11 display.
 
 @example
-ffmpeg -f x11grab -s cif -i :0.0 /tmp/out.mpg
+ffmpeg -f x11grab -s cif -r 25 -i :0.0 /tmp/out.mpg
 @end example
 
 0.0 is display.screen number of your X11 server, same as
 the DISPLAY environment variable.
 
 @example
-ffmpeg -f x11grab -s cif -i :0.0+10,20 /tmp/out.mpg
+ffmpeg -f x11grab -s cif -r 25 -i :0.0+10,20 /tmp/out.mpg
 @end example
 
 0.0 is display.screen number of your X11 server, same as the DISPLAY environment

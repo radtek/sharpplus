@@ -6,10 +6,12 @@ libavfilter\makefile
 libavfilter\allfilters.c
 libavfilter\vf_drawtext.c
 libavfilter\graphparser.c
+libavfilter\avfiltergraph.c
 libavformat\asfdec.c
 libavformat\os_support.h
 libavformat\os_support.c
 libavformat\rtsp.c
+libavformat\makefile
 libavdevice\gdi.c
 libavdevice\makefile
 libavdevice\alldevices.c

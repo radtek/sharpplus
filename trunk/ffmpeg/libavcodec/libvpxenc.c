@@ -36,13 +36,13 @@
  * One encoded frame returned from the library.
  */
 struct FrameListData {
-    void *buf;                       /**≤ compressed data buffer */
-    size_t sz;                       /**≤ length of compressed data */
-    int64_t pts;                     /**≤ time stamp to show frame
+    void *buf;                       /**< compressed data buffer */
+    size_t sz;                       /**< length of compressed data */
+    int64_t pts;                     /**< time stamp to show frame
                                           (in timebase units) */
-    unsigned long duration;          /**≤ duration to show frame
+    unsigned long duration;          /**< duration to show frame
                                           (in timebase units) */
-    uint32_t flags;                  /**≤ flags for this frame */
+    uint32_t flags;                  /**< flags for this frame */
     struct FrameListData *next;
 };
 
@@ -310,6 +310,7 @@ static av_cold int vp8_init(AVCodecContext *avctx)
     av_log(avctx, AV_LOG_DEBUG, "vpx_codec_control\n");
     codecctl_int(avctx, VP8E_SET_CPUUSED,           cpuused);
     codecctl_int(avctx, VP8E_SET_NOISE_SENSITIVITY, avctx->noise_reduction);
+    codecctl_int(avctx, VP8E_SET_TOKEN_PARTITIONS,  av_log2(avctx->slices));
 
     //provide dummy value to initialize wrapper, values will be updated each _encode()
     vpx_img_wrap(&ctx->rawimg, VPX_IMG_FMT_I420, avctx->width, avctx->height, 1,

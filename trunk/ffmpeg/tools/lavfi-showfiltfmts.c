@@ -49,7 +49,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    if (!(filter_ctx = avfilter_open(filter, NULL))) {
+    if (avfilter_open(&filter_ctx, filter, NULL) < 0) {
         fprintf(stderr, "Inpossible to open filter with name '%s'\n", filter_name);
         return 1;
     }
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
     }
     for (i = 0; i < filter_ctx->output_count; i++) {
         AVFilterLink *link = av_mallocz(sizeof(AVFilterLink));
-        link->type = filter_ctx->filter->inputs[i].type;
+        link->type = filter_ctx->filter->outputs[i].type;
         filter_ctx->outputs[i] = link;
     }
 
