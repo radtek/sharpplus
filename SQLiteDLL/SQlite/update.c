@@ -8,7 +8,7 @@
 **    May you find forgiveness for yourself and forgive others.
 **    May you share freely, never taking more than you give.
 **
-sqlite*************************************************************************
+*************************************************************************
 ** This file contains C code routines that are called by the parser
 ** to handle UPDATE statements.
 */
@@ -638,6 +638,7 @@ static void updateVirtualTable(
   assert( v );
   ephemTab = pParse->nTab++;
   sqlite3VdbeAddOp2(v, OP_OpenEphemeral, ephemTab, pTab->nCol+1+(pRowid!=0));
+  sqlite3VdbeChangeP5(v, BTREE_UNORDERED);
 
   /* fill the ephemeral table 
   */

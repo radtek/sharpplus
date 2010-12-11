@@ -435,7 +435,7 @@ static int setupLookaside(sqlite3 *db, void *pBuf, int sz, int cnt){
     sz = 0;
     pStart = 0;
   }else if( pBuf==0 ){
-    sz = ROUND8(sz);
+    sz = ROUNDDOWN8(sz); /* IMP: R-33038-09382 */
     sqlite3BeginBenignMalloc();
     pStart = sqlite3Malloc( sz*cnt );
     sqlite3EndBenignMalloc();
@@ -596,6 +596,23 @@ void sqlite3CloseSavepoints(sqlite3 *db){
 }
 
 /*
+** Invoke the destructor function associated with FuncDef p, if any. Except,
+** if this is not the last copy of the function, do not invoke it. Multiple
+** copies of a single function are created when create_function() is called
+** with SQLITE_ANY as the encoding.
+*/
+static void functionDestroy(sqlite3 *db, FuncDef *p){
+  FuncDestructor *pDestructor = p->pDestructor;
+  if( pDestructor ){
+    pDestructor->nRef--;
+    if( pDestructor->nRef==0 ){
+      pDestructor->xDestroy(pDestructor->pUserData);
+      sqlite3DbFree(db, pDestructor);
+    }
+  }
+}
+
+/*
 ** Close an existing SQLite database
 */
 int sqlite3_close(sqlite3 *db){
@@ -667,6 +684,7 @@ int sqlite3_close(sqlite3 *db){
     for(p=db->aFunc.a[j]; p; p=pHash){
       pHash = p->pHash;
       while( p ){
+        functionDestroy(db, p);
         pNext = p->pNext;
         sqlite3DbFree(db, p);
         p = pNext;
@@ -941,7 +959,8 @@ int sqlite3CreateFunc(
   void *pUserData,
   void (*xFunc)(sqlite3_context*,int,sqlite3_value **),
   void (*xStep)(sqlite3_context*,int,sqlite3_value **),
-  void (*xFinal)(sqlite3_context*)
+  void (*xFinal)(sqlite3_context*),
+  FuncDestructor *pDestructor
 ){
   FuncDef *p;
   int nName;
@@ -969,10 +988,10 @@ int sqlite3CreateFunc(
   }else if( enc==SQLITE_ANY ){
     int rc;
     rc = sqlite3CreateFunc(db, zFunctionName, nArg, SQLITE_UTF8,
-         pUserData, xFunc, xStep, xFinal);
+         pUserData, xFunc, xStep, xFinal, pDestructor);
     if( rc==SQLITE_OK ){
       rc = sqlite3CreateFunc(db, zFunctionName, nArg, SQLITE_UTF16LE,
-          pUserData, xFunc, xStep, xFinal);
+          pUserData, xFunc, xStep, xFinal, pDestructor);
     }
     if( rc!=SQLITE_OK ){
       return rc;
@@ -1005,6 +1024,15 @@ int sqlite3CreateFunc(
   if( !p ){
     return SQLITE_NOMEM;
   }
+
+  /* If an older version of the function with a configured destructor is
+  ** being replaced invoke the destructor function here. */
+  functionDestroy(db, p);
+
+  if( pDestructor ){
+    pDestructor->nRef++;
+  }
+  p->pDestructor = pDestructor;
   p->flags = 0;
   p->xFunc = xFunc;
   p->xStep = xStep;
@@ -1019,7 +1047,7 @@ int sqlite3CreateFunc(
 */
 int sqlite3_create_function(
   sqlite3 *db,
-  const char *zFunctionName,
+  const char *zFunc,
   int nArg,
   int enc,
   void *p,
@@ -1027,9 +1055,41 @@ int sqlite3_create_function(
   void (*xStep)(sqlite3_context*,int,sqlite3_value **),
   void (*xFinal)(sqlite3_context*)
 ){
-  int rc;
+  return sqlite3_create_function_v2(db, zFunc, nArg, enc, p, xFunc, xStep,
+                                    xFinal, 0);
+}
+
+int sqlite3_create_function_v2(
+  sqlite3 *db,
+  const char *zFunc,
+  int nArg,
+  int enc,
+  void *p,
+  void (*xFunc)(sqlite3_context*,int,sqlite3_value **),
+  void (*xStep)(sqlite3_context*,int,sqlite3_value **),
+  void (*xFinal)(sqlite3_context*),
+  void (*xDestroy)(void *)
+){
+  int rc = SQLITE_ERROR;
+  FuncDestructor *pArg = 0;
   sqlite3_mutex_enter(db->mutex);
-  rc = sqlite3CreateFunc(db, zFunctionName, nArg, enc, p, xFunc, xStep, xFinal);
+  if( xDestroy ){
+    pArg = (FuncDestructor *)sqlite3DbMallocZero(db, sizeof(FuncDestructor));
+    if( !pArg ){
+      xDestroy(p);
+      goto out;
+    }
+    pArg->xDestroy = xDestroy;
+    pArg->pUserData = p;
+  }
+  rc = sqlite3CreateFunc(db, zFunc, nArg, enc, p, xFunc, xStep, xFinal, pArg);
+  if( pArg && pArg->nRef==0 ){
+    assert( rc!=SQLITE_OK );
+    xDestroy(p);
+    sqlite3DbFree(db, pArg);
+  }
+
+ out:
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
   return rc;
@@ -1051,7 +1111,7 @@ int sqlite3_create_function16(
   sqlite3_mutex_enter(db->mutex);
   assert( !db->mallocFailed );
   zFunc8 = sqlite3Utf16to8(db, zFunctionName, -1, SQLITE_UTF16NATIVE);
-  rc = sqlite3CreateFunc(db, zFunc8, nArg, eTextRep, p, xFunc, xStep, xFinal);
+  rc = sqlite3CreateFunc(db, zFunc8, nArg, eTextRep, p, xFunc, xStep, xFinal,0);
   sqlite3DbFree(db, zFunc8);
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
@@ -1082,7 +1142,7 @@ int sqlite3_overload_function(
   sqlite3_mutex_enter(db->mutex);
   if( sqlite3FindFunction(db, zName, nName, nArg, SQLITE_UTF8, 0)==0 ){
     sqlite3CreateFunc(db, zName, nArg, SQLITE_UTF8,
-                      0, sqlite3InvalidFunction, 0, 0);
+                      0, sqlite3InvalidFunction, 0, 0, 0);
   }
   rc = sqlite3ApiExit(db, SQLITE_OK);
   sqlite3_mutex_leave(db->mutex);
@@ -1220,7 +1280,10 @@ int sqlite3WalDefaultHook(
 ** configured by this function.
 */
 int sqlite3_wal_autocheckpoint(sqlite3 *db, int nFrame){
-#ifndef SQLITE_OMIT_WAL
+#ifdef SQLITE_OMIT_WAL
+  UNUSED_PARAMETER(db);
+  UNUSED_PARAMETER(nFrame);
+#else
   if( nFrame>0 ){
     sqlite3_wal_hook(db, sqlite3WalDefaultHook, SQLITE_INT_TO_PTR(nFrame));
   }else{
@@ -1348,60 +1411,6 @@ int sqlite3TempInMemory(const sqlite3 *db){
 #if SQLITE_TEMP_STORE<1 || SQLITE_TEMP_STORE>3
   return 0;
 #endif
-}
-
-/*
-** This routine is called to create a connection to a database BTree
-** driver.  If zFilename is the name of a file, then that file is
-** opened and used.  If zFilename is the magic name ":memory:" then
-** the database is stored in memory (and is thus forgotten as soon as
-** the connection is closed.)  If zFilename is NULL then the database
-** is a "virtual" database for transient use only and is deleted as
-** soon as the connection is closed.
-**
-** A virtual database can be either a disk file (that is automatically
-** deleted when the file is closed) or it an be held entirely in memory.
-** The sqlite3TempInMemory() function is used to determine which.
-*/
-int sqlite3BtreeFactory(
-  sqlite3 *db,              /* Main database when opening aux otherwise 0 */
-  const char *zFilename,    /* Name of the file containing the BTree database */
-  int omitJournal,          /* if TRUE then do not journal this file */
-  int nCache,               /* How many pages in the page cache */
-  int vfsFlags,             /* Flags passed through to vfsOpen */
-  Btree **ppBtree           /* Pointer to new Btree object written here */
-){
-  int btFlags = 0;
-  int rc;
-  
-  assert( sqlite3_mutex_held(db->mutex) );
-  assert( ppBtree != 0);
-  if( omitJournal ){
-    btFlags |= BTREE_OMIT_JOURNAL;
-  }
-  if( db->flags & SQLITE_NoReadlock ){
-    btFlags |= BTREE_NO_READLOCK;
-  }
-#ifndef SQLITE_OMIT_MEMORYDB
-  if( zFilename==0 && sqlite3TempInMemory(db) ){
-    zFilename = ":memory:";
-  }
-#endif
-
-  if( (vfsFlags & SQLITE_OPEN_MAIN_DB)!=0 && (zFilename==0 || *zFilename==0) ){
-    vfsFlags = (vfsFlags & ~SQLITE_OPEN_MAIN_DB) | SQLITE_OPEN_TEMP_DB;
-  }
-  rc = sqlite3BtreeOpen(zFilename, (sqlite3 *)db, ppBtree, btFlags, vfsFlags);
-
-  /* If the B-Tree was successfully opened, set the pager-cache size to the
-  ** default value. Except, if the call to BtreeOpen() returned a handle
-  ** open on an existing shared pager-cache, do not change the pager-cache 
-  ** size.
-  */
-  if( rc==SQLITE_OK && 0==sqlite3BtreeSchema(*ppBtree, 0, 0) ){
-    sqlite3BtreeSetCacheSize(*ppBtree, nCache);
-  }
-  return rc;
 }
 
 /*
@@ -1568,13 +1577,12 @@ static int createCollation(
   }
 
   pColl = sqlite3FindCollSeq(db, (u8)enc2, zName, 1);
-  if( pColl ){
+  if( pColl==0 ) return SQLITE_NOMEM;
     pColl->xCmp = xCompare;
     pColl->pUser = pCtx;
     pColl->xDel = xDel;
     pColl->enc = (u8)(enc2 | (enc & SQLITE_UTF16_ALIGNED));
     pColl->type = collType;
-  }
   sqlite3Error(db, SQLITE_OK, 0);
   return SQLITE_OK;
 }
@@ -1646,6 +1654,28 @@ static const int aHardLimit[] = {
 */
 int sqlite3_limit(sqlite3 *db, int limitId, int newLimit){
   int oldLimit;
+
+
+  /* EVIDENCE-OF: R-30189-54097 For each limit category SQLITE_LIMIT_NAME
+  ** there is a hard upper bound set at compile-time by a C preprocessor
+  ** macro called SQLITE_MAX_NAME. (The "_LIMIT_" in the name is changed to
+  ** "_MAX_".)
+  */
+  assert( aHardLimit[SQLITE_LIMIT_LENGTH]==SQLITE_MAX_LENGTH );
+  assert( aHardLimit[SQLITE_LIMIT_SQL_LENGTH]==SQLITE_MAX_SQL_LENGTH );
+  assert( aHardLimit[SQLITE_LIMIT_COLUMN]==SQLITE_MAX_COLUMN );
+  assert( aHardLimit[SQLITE_LIMIT_EXPR_DEPTH]==SQLITE_MAX_EXPR_DEPTH );
+  assert( aHardLimit[SQLITE_LIMIT_COMPOUND_SELECT]==SQLITE_MAX_COMPOUND_SELECT);
+  assert( aHardLimit[SQLITE_LIMIT_VDBE_OP]==SQLITE_MAX_VDBE_OP );
+  assert( aHardLimit[SQLITE_LIMIT_FUNCTION_ARG]==SQLITE_MAX_FUNCTION_ARG );
+  assert( aHardLimit[SQLITE_LIMIT_ATTACHED]==SQLITE_MAX_ATTACHED );
+  assert( aHardLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH]==
+                                               SQLITE_MAX_LIKE_PATTERN_LENGTH );
+  assert( aHardLimit[SQLITE_LIMIT_VARIABLE_NUMBER]==SQLITE_MAX_VARIABLE_NUMBER);
+  assert( aHardLimit[SQLITE_LIMIT_TRIGGER_DEPTH]==SQLITE_MAX_TRIGGER_DEPTH );
+  assert( SQLITE_LIMIT_TRIGGER_DEPTH==(SQLITE_N_LIMIT-1) );
+
+
   if( limitId<0 || limitId>=SQLITE_N_LIMIT ){
     return -1;
   }
@@ -1680,6 +1710,24 @@ static int openDatabase(
   if( rc ) return rc;
 #endif
 
+  /* Only allow sensible combinations of bits in the flags argument.  
+  ** Throw an error if any non-sense combination is used.  If we
+  ** do not block illegal combinations here, it could trigger
+  ** assert() statements in deeper layers.  Sensible combinations
+  ** are:
+  **
+  **  1:  SQLITE_OPEN_READONLY
+  **  2:  SQLITE_OPEN_READWRITE
+  **  6:  SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE
+  */
+  assert( SQLITE_OPEN_READONLY  == 0x01 );
+  assert( SQLITE_OPEN_READWRITE == 0x02 );
+  assert( SQLITE_OPEN_CREATE    == 0x04 );
+  testcase( (1<<(flags&7))==0x02 ); /* READONLY */
+  testcase( (1<<(flags&7))==0x04 ); /* READWRITE */
+  testcase( (1<<(flags&7))==0x40 ); /* READWRITE | CREATE */
+  if( ((1<<(flags&7)) & 0x46)==0 ) return SQLITE_MISUSE;
+
   if( sqlite3GlobalConfig.bCoreMutex==0 ){
     isThreadsafe = 0;
   }else if( flags & SQLITE_OPEN_NOMUTEX ){
@@ -1713,7 +1761,8 @@ static int openDatabase(
                SQLITE_OPEN_SUBJOURNAL | 
                SQLITE_OPEN_MASTER_JOURNAL |
                SQLITE_OPEN_NOMUTEX |
-               SQLITE_OPEN_FULLMUTEX
+               SQLITE_OPEN_FULLMUTEX |
+               SQLITE_OPEN_WAL
              );
 
   /* Allocate the sqlite data structure */
@@ -1785,9 +1834,8 @@ static int openDatabase(
 
   /* Open the backend database driver */
   db->openFlags = flags;
-  rc = sqlite3BtreeFactory(db, zFilename, 0, SQLITE_DEFAULT_CACHE_SIZE, 
-                           flags | SQLITE_OPEN_MAIN_DB,
-                           &db->aDb[0].pBt);
+  rc = sqlite3BtreeOpen(zFilename, db, &db->aDb[0].pBt, 0,
+                        flags | SQLITE_OPEN_MAIN_DB);
   if( rc!=SQLITE_OK ){
     if( rc==SQLITE_IOERR_NOMEM ){
       rc = SQLITE_NOMEM;
@@ -2291,7 +2339,10 @@ int sqlite3_file_control(sqlite3 *db, const char *zDbName, int op, void *pArg){
       assert( pPager!=0 );
       fd = sqlite3PagerFile(pPager);
       assert( fd!=0 );
-      if( fd->pMethods ){
+      if( op==SQLITE_FCNTL_FILE_POINTER ){
+        *(sqlite3_file**)pArg = fd;
+        rc = SQLITE_OK;
+      }else if( fd->pMethods ){
         rc = sqlite3OsFileControl(fd, op, pArg);
       }
       sqlite3BtreeLeave(pBtree);
@@ -2499,6 +2550,22 @@ int sqlite3_test_control(int op, ...){
     */
     case SQLITE_TESTCTRL_PGHDRSZ: {
       rc = sizeof(PgHdr);
+      break;
+    }
+
+    /* sqlite3_test_control(SQLITE_TESTCTRL_SCRATCHMALLOC, sz, &pNew, pFree);
+    **
+    ** Pass pFree into sqlite3ScratchFree(). 
+    ** If sz>0 then allocate a scratch buffer into pNew.  
+    */
+    case SQLITE_TESTCTRL_SCRATCHMALLOC: {
+      void *pFree, **ppNew;
+      int sz;
+      sz = va_arg(ap, int);
+      ppNew = va_arg(ap, void**);
+      pFree = va_arg(ap, void*);
+      if( sz ) *ppNew = sqlite3ScratchMalloc(sz);
+      sqlite3ScratchFree(pFree);
       break;
     }
 

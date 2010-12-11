@@ -47,6 +47,17 @@
 #include "vdbeInt.h"
 
 /*
+** Invoke this macro on memory cells just prior to changing the
+** value of the cell.  This macro verifies that shallow copies are
+** not misused.
+*/
+#ifdef SQLITE_DEBUG
+# define memAboutToChange(P,M) sqlite3VdbeMemPrepareToChange(P,M)
+#else
+# define memAboutToChange(P,M)
+#endif
+
+/*
 ** The following global variable is incremented every time a cursor
 ** moves, either by the OP_SeekXX, OP_Next, or OP_Prev opcodes.  The test
 ** procedures use this information to make sure that indices are
@@ -238,31 +249,17 @@ static VdbeCursor *allocateCursor(
 */
 static void applyNumericAffinity(Mem *pRec){
   if( (pRec->flags & (MEM_Real|MEM_Int))==0 ){
-    int realnum;
+    double rValue;
+    i64 iValue;
     u8 enc = pRec->enc;
-    sqlite3VdbeMemNulTerminate(pRec);
-    if( (pRec->flags&MEM_Str) && sqlite3IsNumber(pRec->z, &realnum, enc) ){
-      i64 value;
-      char *zUtf8 = pRec->z;
-#ifndef SQLITE_OMIT_UTF16
-      if( enc!=SQLITE_UTF8 ){
-        assert( pRec->db );
-        zUtf8 = sqlite3Utf16to8(pRec->db, pRec->z, pRec->n, enc);
-        if( !zUtf8 ) return;
-      }
-#endif
-      if( !realnum && sqlite3Atoi64(zUtf8, &value) ){
-        pRec->u.i = value;
-        MemSetTypeFlag(pRec, MEM_Int);
-      }else{
-        sqlite3AtoF(zUtf8, &pRec->r);
-        MemSetTypeFlag(pRec, MEM_Real);
-      }
-#ifndef SQLITE_OMIT_UTF16
-      if( enc!=SQLITE_UTF8 ){
-        sqlite3DbFree(pRec->db, zUtf8);
-      }
-#endif
+    if( (pRec->flags&MEM_Str)==0 ) return;
+    if( sqlite3AtoF(pRec->z, &rValue, pRec->n, enc)==0 ) return;
+    if( 0==sqlite3Atoi64(pRec->z, &iValue, pRec->n, enc) ){
+      pRec->u.i = iValue;
+      pRec->flags |= MEM_Int;
+    }else{
+      pRec->r = rValue;
+      pRec->flags |= MEM_Real;
     }
   }
 }
@@ -314,13 +311,13 @@ static void applyAffinity(
 ** into a numeric representation.  Use either INTEGER or REAL whichever
 ** is appropriate.  But only do the conversion if it is possible without
 ** loss of information and return the revised type of the argument.
-**
-** This is an EXPERIMENTAL api and is subject to change or removal.
 */
 int sqlite3_value_numeric_type(sqlite3_value *pVal){
   Mem *pMem = (Mem*)pVal;
-  applyNumericAffinity(pMem);
-  sqlite3VdbeMemStoreType(pMem);
+  if( pMem->type==SQLITE_TEXT ){
+    applyNumericAffinity(pMem);
+    sqlite3VdbeMemStoreType(pMem);
+  }
   return pMem->type;
 }
 
@@ -1066,6 +1063,7 @@ int sqlite3VdbeExec(
       assert( pOp->p2>0 );
       assert( pOp->p2<=p->nMem );
       pOut = &aMem[pOp->p2];
+      memAboutToChange(p, pOut);
       sqlite3VdbeMemReleaseExternal(pOut);
       pOut->flags = MEM_Int;
     }
@@ -1075,25 +1073,30 @@ int sqlite3VdbeExec(
     if( (pOp->opflags & OPFLG_IN1)!=0 ){
       assert( pOp->p1>0 );
       assert( pOp->p1<=p->nMem );
+      assert( memIsValid(&aMem[pOp->p1]) );
       REGISTER_TRACE(pOp->p1, &aMem[pOp->p1]);
     }
     if( (pOp->opflags & OPFLG_IN2)!=0 ){
       assert( pOp->p2>0 );
       assert( pOp->p2<=p->nMem );
+      assert( memIsValid(&aMem[pOp->p2]) );
       REGISTER_TRACE(pOp->p2, &aMem[pOp->p2]);
     }
     if( (pOp->opflags & OPFLG_IN3)!=0 ){
       assert( pOp->p3>0 );
       assert( pOp->p3<=p->nMem );
+      assert( memIsValid(&aMem[pOp->p3]) );
       REGISTER_TRACE(pOp->p3, &aMem[pOp->p3]);
     }
     if( (pOp->opflags & OPFLG_OUT2)!=0 ){
       assert( pOp->p2>0 );
       assert( pOp->p2<=p->nMem );
+      memAboutToChange(p, &aMem[pOp->p2]);
     }
     if( (pOp->opflags & OPFLG_OUT3)!=0 ){
       assert( pOp->p3>0 );
       assert( pOp->p3<=p->nMem );
+      memAboutToChange(p, &aMem[pOp->p3]);
     }
 #endif
   
@@ -1155,6 +1158,7 @@ case OP_Goto: {             /* jump */
 case OP_Gosub: {            /* jump, in1 */
   pIn1 = &aMem[pOp->p1];
   assert( (pIn1->flags & MEM_Dyn)==0 );
+  memAboutToChange(p, pIn1);
   pIn1->flags = MEM_Int;
   pIn1->u.i = pc;
   REGISTER_TRACE(pOp->p1, pIn1);
@@ -1362,11 +1366,7 @@ case OP_Null: {           /* out2-prerelease */
 /* Opcode: Blob P1 P2 * P4
 **
 ** P4 points to a blob of data P1 bytes long.  Store this
-** blob in register P2. This instruction is not coded directly
-** by the compiler. Instead, the compiler layer specifies
-** an OP_HexBlob opcode, with the hex string representation of
-** the blob as P4. This opcode is transformed to an OP_Blob
-** the first time it is executed.
+** blob in register P2.
 */
 case OP_Blob: {                /* out2-prerelease */
   assert( pOp->p1 <= SQLITE_MAX_LENGTH );
@@ -1424,6 +1424,8 @@ case OP_Move: {
   while( u.ac.n-- ){
     assert( pOut<=&aMem[p->nMem] );
     assert( pIn1<=&aMem[p->nMem] );
+    assert( memIsValid(pIn1) );
+    memAboutToChange(p, pOut);
     u.ac.zMalloc = pOut->zMalloc;
     pOut->zMalloc = 0;
     sqlite3VdbeMemMove(pOut, pIn1);
@@ -1469,6 +1471,9 @@ case OP_SCopy: {            /* in1, out2 */
   pOut = &aMem[pOp->p2];
   assert( pOut!=pIn1 );
   sqlite3VdbeMemShallowCopy(pOut, pIn1, MEM_Ephem);
+#ifdef SQLITE_DEBUG
+  if( pOut->pScopyFrom==0 ) pOut->pScopyFrom = pIn1;
+#endif
   REGISTER_TRACE(pOp->p2, pOut);
   break;
 }
@@ -1529,6 +1534,10 @@ case OP_ResultRow: {
   */
   u.ad.pMem = p->pResultSet = &aMem[pOp->p1];
   for(u.ad.i=0; u.ad.i<pOp->p2; u.ad.i++){
+    assert( memIsValid(&u.ad.pMem[u.ad.i]) );
+    Deephemeralize(&u.ad.pMem[u.ad.i]);
+    assert( (u.ad.pMem[u.ad.i].flags & MEM_Ephem)==0
+            || (u.ad.pMem[u.ad.i].flags & (MEM_Str|MEM_Blob))==0 );
     sqlite3VdbeMemNulTerminate(&u.ad.pMem[u.ad.i]);
     sqlite3VdbeMemStoreType(&u.ad.pMem[u.ad.i]);
     REGISTER_TRACE(pOp->p1+u.ad.i, &u.ad.pMem[u.ad.i]);
@@ -1760,12 +1769,17 @@ case OP_Function: {
   u.ag.n = pOp->p5;
   u.ag.apVal = p->apArg;
   assert( u.ag.apVal || u.ag.n==0 );
+  assert( pOp->p3>0 && pOp->p3<=p->nMem );
+  pOut = &aMem[pOp->p3];
+  memAboutToChange(p, pOut);
 
   assert( u.ag.n==0 || (pOp->p2>0 && pOp->p2+u.ag.n<=p->nMem+1) );
   assert( pOp->p3<pOp->p2 || pOp->p3>=pOp->p2+u.ag.n );
   u.ag.pArg = &aMem[pOp->p2];
   for(u.ag.i=0; u.ag.i<u.ag.n; u.ag.i++, u.ag.pArg++){
+    assert( memIsValid(u.ag.pArg) );
     u.ag.apVal[u.ag.i] = u.ag.pArg;
+    Deephemeralize(u.ag.pArg);
     sqlite3VdbeMemStoreType(u.ag.pArg);
     REGISTER_TRACE(pOp->p2+u.ag.i, u.ag.pArg);
   }
@@ -1779,8 +1793,6 @@ case OP_Function: {
     u.ag.ctx.pFunc = u.ag.ctx.pVdbeFunc->pFunc;
   }
 
-  assert( pOp->p3>0 && pOp->p3<=p->nMem );
-  pOut = &aMem[pOp->p3];
   u.ag.ctx.s.flags = MEM_Null;
   u.ag.ctx.s.db = db;
   u.ag.ctx.s.xDel = 0;
@@ -1800,7 +1812,7 @@ case OP_Function: {
     assert( pOp[-1].opcode==OP_CollSeq );
     u.ag.ctx.pColl = pOp[-1].p4.pColl;
   }
-  (*u.ag.ctx.pFunc->xFunc)(&u.ag.ctx, u.ag.n, u.ag.apVal);
+  (*u.ag.ctx.pFunc->xFunc)(&u.ag.ctx, u.ag.n, u.ag.apVal); /* IMP: R-24505-23230 */
   if( db->mallocFailed ){
     /* Even though a malloc() has failed, the implementation of the
     ** user function may have called an sqlite3_result_XXX() function
@@ -1852,7 +1864,7 @@ case OP_Function: {
 /* Opcode: ShiftLeft P1 P2 P3 * *
 **
 ** Shift the integer value in register P2 to the left by the
-** number of bits specified by the integer in regiser P1.
+** number of bits specified by the integer in register P1.
 ** Store the result in register P3.
 ** If either input is NULL, the result is NULL.
 */
@@ -1902,6 +1914,7 @@ case OP_ShiftRight: {           /* same as TK_RSHIFT, in1, in2, out3 */
 */
 case OP_AddImm: {            /* in1 */
   pIn1 = &aMem[pOp->p1];
+  memAboutToChange(p, pIn1);
   sqlite3VdbeMemIntegerify(pIn1);
   pIn1->u.i += pOp->p2;
   break;
@@ -1961,6 +1974,7 @@ case OP_RealAffinity: {                  /* in1 */
 */
 case OP_ToText: {                  /* same as TK_TO_TEXT, in1 */
   pIn1 = &aMem[pOp->p1];
+  memAboutToChange(p, pIn1);
   if( pIn1->flags & MEM_Null ) break;
   assert( MEM_Str==(MEM_Blob>>3) );
   pIn1->flags |= (pIn1->flags&MEM_Blob)>>3;
@@ -2007,16 +2021,14 @@ case OP_ToBlob: {                  /* same as TK_TO_BLOB, in1 */
 */
 case OP_ToNumeric: {                  /* same as TK_TO_NUMERIC, in1 */
   pIn1 = &aMem[pOp->p1];
-  if( (pIn1->flags & (MEM_Null|MEM_Int|MEM_Real))==0 ){
-    sqlite3VdbeMemNumerify(pIn1);
-  }
+  sqlite3VdbeMemNumerify(pIn1);
   break;
 }
 #endif /* SQLITE_OMIT_CAST */
 
 /* Opcode: ToInt P1 * * * *
 **
-** Force the value in register P1 be an integer.  If
+** Force the value in register P1 to be an integer.  If
 ** The value is currently a real number, drop its fractional part.
 ** If the value is text or blob, try to convert it to an integer using the
 ** equivalent of atoi() and store 0 if no such conversion is possible.
@@ -2043,6 +2055,7 @@ case OP_ToInt: {                  /* same as TK_TO_INT, in1 */
 */
 case OP_ToReal: {                  /* same as TK_TO_REAL, in1 */
   pIn1 = &aMem[pOp->p1];
+  memAboutToChange(p, pIn1);
   if( (pIn1->flags & MEM_Null)==0 ){
     sqlite3VdbeMemRealify(pIn1);
   }
@@ -2057,7 +2070,7 @@ case OP_ToReal: {                  /* same as TK_TO_REAL, in1 */
 **
 ** If the SQLITE_JUMPIFNULL bit of P5 is set and either reg(P1) or
 ** reg(P3) is NULL then take the jump.  If the SQLITE_JUMPIFNULL 
-** bit is clear then fall thru if either operand is NULL.
+** bit is clear then fall through if either operand is NULL.
 **
 ** The SQLITE_AFF_MASK portion of P5 must be an affinity character -
 ** SQLITE_AFF_TEXT, SQLITE_AFF_INTEGER, and so forth. An attempt is made 
@@ -2187,6 +2200,7 @@ case OP_Ge: {             /* same as TK_GE, jump, in1, in3 */
 
   if( pOp->p5 & SQLITE_STOREP2 ){
     pOut = &aMem[pOp->p2];
+    memAboutToChange(p, pOut);
     MemSetTypeFlag(pOut, MEM_Int);
     pOut->u.i = u.ai.res;
     REGISTER_TRACE(pOp->p2, pOut);
@@ -2218,8 +2232,8 @@ case OP_Permutation: {
 
 /* Opcode: Compare P1 P2 P3 P4 *
 **
-** Compare to vectors of registers in reg(P1)..reg(P1+P3-1) (all this
-** one "A") and in reg(P2)..reg(P2+P3-1) ("B").  Save the result of
+** Compare two vectors of registers in reg(P1)..reg(P1+P3-1) (call this
+** vector "A") and in reg(P2)..reg(P2+P3-1) ("B").  Save the result of
 ** the comparison for use by the next OP_Jump instruct.
 **
 ** P4 is a KeyInfo structure that defines collating sequences and sort
@@ -2261,6 +2275,8 @@ case OP_Compare: {
 #endif /* SQLITE_DEBUG */
   for(u.aj.i=0; u.aj.i<u.aj.n; u.aj.i++){
     u.aj.idx = aPermute ? aPermute[u.aj.i] : u.aj.i;
+    assert( memIsValid(&aMem[u.aj.p1+u.aj.idx]) );
+    assert( memIsValid(&aMem[u.aj.p2+u.aj.idx]) );
     REGISTER_TRACE(u.aj.p1+u.aj.idx, &aMem[u.aj.p1+u.aj.idx]);
     REGISTER_TRACE(u.aj.p2+u.aj.idx, &aMem[u.aj.p2+u.aj.idx]);
     assert( u.aj.i<u.aj.pKeyInfo->nField );
@@ -2492,6 +2508,7 @@ case OP_Column: {
   assert( u.am.p1<p->nCursor );
   assert( pOp->p3>0 && pOp->p3<=p->nMem );
   u.am.pDest = &aMem[pOp->p3];
+  memAboutToChange(p, u.am.pDest);
   MemSetTypeFlag(u.am.pDest, MEM_Null);
   u.am.zRec = 0;
 
@@ -2539,6 +2556,7 @@ case OP_Column: {
   }else if( u.am.pC->pseudoTableReg>0 ){
     u.am.pReg = &aMem[u.am.pC->pseudoTableReg];
     assert( u.am.pReg->flags & MEM_Blob );
+    assert( memIsValid(u.am.pReg) );
     u.am.payloadSize = u.am.pReg->n;
     u.am.zRec = u.am.pReg->z;
     u.am.pC->cacheStatus = (pOp->p5&OPFLAG_CLEARCACHE) ? CACHE_STALE : p->cacheCtr;
@@ -2763,6 +2781,7 @@ case OP_Affinity: {
   pIn1 = &aMem[pOp->p1];
   while( (u.an.cAff = *(u.an.zAffinity++))!=0 ){
     assert( pIn1 <= &p->aMem[p->nMem] );
+    assert( memIsValid(pIn1) );
     ExpandBlob(pIn1);
     applyAffinity(pIn1, u.an.cAff, encoding);
     pIn1++;
@@ -2772,12 +2791,9 @@ case OP_Affinity: {
 
 /* Opcode: MakeRecord P1 P2 P3 P4 *
 **
-** Convert P2 registers beginning with P1 into a single entry
-** suitable for use as a data record in a database table or as a key
-** in an index.  The details of the format are irrelevant as long as
-** the OP_Column opcode can decode the record later.
-** Refer to source code comments for the details of the record
-** format.
+** Convert P2 registers beginning with P1 into the [record format]
+** use as a data record in a database table or as a key
+** in an index.  The OP_Column opcode can decode the record later.
 **
 ** P4 may be a string that is P2 characters long.  The nth character of the
 ** string indicates the column affinity that should be used for the nth
@@ -2834,10 +2850,16 @@ case OP_MakeRecord: {
   u.ao.pLast = &u.ao.pData0[u.ao.nField-1];
   u.ao.file_format = p->minWriteFileFormat;
 
+  /* Identify the output register */
+  assert( pOp->p3<pOp->p1 || pOp->p3>=pOp->p1+pOp->p2 );
+  pOut = &aMem[pOp->p3];
+  memAboutToChange(p, pOut);
+
   /* Loop through the elements that will make up the record to figure
   ** out how much space is required for the new record.
   */
   for(u.ao.pRec=u.ao.pData0; u.ao.pRec<=u.ao.pLast; u.ao.pRec++){
+    assert( memIsValid(u.ao.pRec) );
     if( u.ao.zAffinity ){
       applyAffinity(u.ao.pRec, u.ao.zAffinity[u.ao.pRec-u.ao.pData0], encoding);
     }
@@ -2872,8 +2894,6 @@ case OP_MakeRecord: {
   ** be one of the input registers (because the following call to
   ** sqlite3VdbeMemGrow() could clobber the value before it is used).
   */
-  assert( pOp->p3<pOp->p1 || pOp->p3>=pOp->p1+pOp->p2 );
-  pOut = &aMem[pOp->p3];
   if( sqlite3VdbeMemGrow(pOut, (int)u.ao.nByte, 0) ){
     goto no_mem;
   }
@@ -3046,6 +3066,7 @@ case OP_Savepoint: {
         if( u.aq.p1==SAVEPOINT_ROLLBACK && (db->flags&SQLITE_InternChanges)!=0 ){
           sqlite3ExpirePreparedStatements(db);
           sqlite3ResetInternalSchema(db, 0);
+          db->flags = (db->flags | SQLITE_InternChanges);
         }
       }
 
@@ -3436,6 +3457,8 @@ case OP_OpenWrite: {
     assert( u.aw.p2>0 );
     assert( u.aw.p2<=p->nMem );
     pIn2 = &aMem[u.aw.p2];
+    assert( memIsValid(pIn2) );
+    assert( (pIn2->flags & MEM_Int)!=0 );
     sqlite3VdbeMemIntegerify(pIn2);
     u.aw.p2 = (int)pIn2->u.i;
     /* The u.aw.p2 value always comes from a prior OP_CreateTable opcode and
@@ -3458,6 +3481,7 @@ case OP_OpenWrite: {
   u.aw.pCur = allocateCursor(p, pOp->p1, u.aw.nField, u.aw.iDb, 1);
   if( u.aw.pCur==0 ) goto no_mem;
   u.aw.pCur->nullRow = 1;
+  u.aw.pCur->isOrdered = 1;
   rc = sqlite3BtreeCursor(u.aw.pX, u.aw.p2, u.aw.wrFlag, u.aw.pKeyInfo, u.aw.pCur->pCursor);
   u.aw.pCur->pKeyInfo = u.aw.pKeyInfo;
 
@@ -3510,7 +3534,7 @@ case OP_OpenEphemeral: {
 #if 0  /* local variables moved into u.ax */
   VdbeCursor *pCx;
 #endif /* local variables moved into u.ax */
-  static const int openFlags =
+  static const int vfsFlags =
       SQLITE_OPEN_READWRITE |
       SQLITE_OPEN_CREATE |
       SQLITE_OPEN_EXCLUSIVE |
@@ -3521,21 +3545,21 @@ case OP_OpenEphemeral: {
   u.ax.pCx = allocateCursor(p, pOp->p1, pOp->p2, -1, 1);
   if( u.ax.pCx==0 ) goto no_mem;
   u.ax.pCx->nullRow = 1;
-  rc = sqlite3BtreeFactory(db, 0, 1, SQLITE_DEFAULT_TEMP_CACHE_SIZE, openFlags,
-                           &u.ax.pCx->pBt);
+  rc = sqlite3BtreeOpen(0, db, &u.ax.pCx->pBt,
+                        BTREE_OMIT_JOURNAL | BTREE_SINGLE | pOp->p5, vfsFlags);
   if( rc==SQLITE_OK ){
     rc = sqlite3BtreeBeginTrans(u.ax.pCx->pBt, 1);
   }
   if( rc==SQLITE_OK ){
     /* If a transient index is required, create it by calling
-    ** sqlite3BtreeCreateTable() with the BTREE_ZERODATA flag before
+    ** sqlite3BtreeCreateTable() with the BTREE_BLOBKEY flag before
     ** opening it. If a transient table is required, just use the
-    ** automatically created table with root-page 1 (an INTKEY table).
+    ** automatically created table with root-page 1 (an BLOB_INTKEY table).
     */
     if( pOp->p4.pKeyInfo ){
       int pgno;
       assert( pOp->p4type==P4_KEYINFO );
-      rc = sqlite3BtreeCreateTable(u.ax.pCx->pBt, &pgno, BTREE_ZERODATA);
+      rc = sqlite3BtreeCreateTable(u.ax.pCx->pBt, &pgno, BTREE_BLOBKEY);
       if( rc==SQLITE_OK ){
         assert( pgno==MASTER_ROOT+1 );
         rc = sqlite3BtreeCursor(u.ax.pCx->pBt, pgno, 1,
@@ -3549,6 +3573,7 @@ case OP_OpenEphemeral: {
       u.ax.pCx->isTable = 1;
     }
   }
+  u.ax.pCx->isOrdered = (pOp->p5!=BTREE_UNORDERED);
   u.ax.pCx->isIndex = !u.ax.pCx->isTable;
   break;
 }
@@ -3668,6 +3693,7 @@ case OP_SeekGt: {       /* jump, in3 */
   assert( OP_SeekLe == OP_SeekLt+1 );
   assert( OP_SeekGe == OP_SeekLt+2 );
   assert( OP_SeekGt == OP_SeekLt+3 );
+  assert( u.az.pC->isOrdered );
   if( u.az.pC->pCursor!=0 ){
     u.az.oc = pOp->opcode;
     u.az.pC->nullRow = 0;
@@ -3750,6 +3776,9 @@ case OP_SeekGt: {       /* jump, in3 */
       assert( u.az.oc!=OP_SeekLt || u.az.r.flags==0 );
 
       u.az.r.aMem = &aMem[pOp->p3];
+#ifdef SQLITE_DEBUG
+      { int i; for(i=0; i<u.az.r.nField; i++) assert( memIsValid(&u.az.r.aMem[i]) ); }
+#endif
       ExpandBlob(u.az.r.aMem);
       rc = sqlite3BtreeMovetoUnpacked(u.az.pC->pCursor, &u.az.r, 0, 0, &u.az.res);
       if( rc!=SQLITE_OK ){
@@ -3878,11 +3907,14 @@ case OP_Found: {        /* jump, in3 */
       u.bb.r.pKeyInfo = u.bb.pC->pKeyInfo;
       u.bb.r.nField = (u16)pOp->p4.i;
       u.bb.r.aMem = pIn3;
+#ifdef SQLITE_DEBUG
+      { int i; for(i=0; i<u.bb.r.nField; i++) assert( memIsValid(&u.bb.r.aMem[i]) ); }
+#endif
       u.bb.r.flags = UNPACKED_PREFIX_MATCH;
       u.bb.pIdxKey = &u.bb.r;
     }else{
       assert( pIn3->flags & MEM_Blob );
-      ExpandBlob(pIn3);
+      assert( (pIn3->flags & MEM_Zero)==0 );  /* zeroblobs already expanded */
       u.bb.pIdxKey = sqlite3VdbeRecordUnpack(u.bb.pC->pKeyInfo, pIn3->n, pIn3->z,
                                         u.bb.aTempRec, sizeof(u.bb.aTempRec));
       if( u.bb.pIdxKey==0 ){
@@ -3977,6 +4009,9 @@ case OP_IsUnique: {        /* jump, in3 */
     u.bc.r.nField = u.bc.nField + 1;
     u.bc.r.flags = UNPACKED_PREFIX_SEARCH;
     u.bc.r.aMem = u.bc.aMx;
+#ifdef SQLITE_DEBUG
+    { int i; for(i=0; i<u.bc.r.nField; i++) assert( memIsValid(&u.bc.r.aMem[i]) ); }
+#endif
 
     /* Extract the value of u.bc.R from register P3. */
     sqlite3VdbeMemIntegerify(pIn3);
@@ -3999,7 +4034,7 @@ case OP_IsUnique: {        /* jump, in3 */
 **
 ** Use the content of register P3 as a integer key.  If a record 
 ** with that key does not exist in table of P1, then jump to P2. 
-** If the record does exist, then fall thru.  The cursor is left 
+** If the record does exist, then fall through.  The cursor is left 
 ** pointing to the record if it exists.
 **
 ** The difference between this operation and NotFound is that this
@@ -4157,7 +4192,9 @@ case OP_NewRowid: {           /* out2-prerelease */
           /* Assert that P3 is a valid memory cell. */
           assert( pOp->p3<=p->nMem );
           u.be.pMem = &aMem[pOp->p3];
+          memAboutToChange(p, u.be.pMem);
         }
+        assert( memIsValid(u.be.pMem) );
 
         REGISTER_TRACE(pOp->p3, u.be.pMem);
         sqlite3VdbeMemIntegerify(u.be.pMem);
@@ -4176,29 +4213,36 @@ case OP_NewRowid: {           /* out2-prerelease */
       sqlite3BtreeSetCachedRowid(u.be.pC->pCursor, u.be.v<MAX_ROWID ? u.be.v+1 : 0);
     }
     if( u.be.pC->useRandomRowid ){
-      /* IMPLEMENTATION-OF: R-48598-02938 If the largest ROWID is equal to the
+      /* IMPLEMENTATION-OF: R-07677-41881 If the largest ROWID is equal to the
       ** largest possible integer (9223372036854775807) then the database
-      ** engine starts picking candidate ROWIDs at random until it finds one
-      ** that is not previously used.
-      */
+      ** engine starts picking positive candidate ROWIDs at random until
+      ** it finds one that is not previously used. */
       assert( pOp->p3==0 );  /* We cannot be in random rowid mode if this is
                              ** an AUTOINCREMENT table. */
+      /* on the first attempt, simply do one more than previous */
       u.be.v = db->lastRowid;
+      u.be.v &= (MAX_ROWID>>1); /* ensure doesn't go negative */
+      u.be.v++; /* ensure non-zero */
       u.be.cnt = 0;
-      do{
-        if( u.be.cnt==0 && (u.be.v&0xffffff)==u.be.v ){
-          u.be.v++;
+      while(   ((rc = sqlite3BtreeMovetoUnpacked(u.be.pC->pCursor, 0, (u64)u.be.v,
+                                                 0, &u.be.res))==SQLITE_OK)
+            && (u.be.res==0)
+            && (++u.be.cnt<100)){
+        /* collision - try another random rowid */
+        sqlite3_randomness(sizeof(u.be.v), &u.be.v);
+        if( u.be.cnt<5 ){
+          /* try "small" random rowids for the initial attempts */
+          u.be.v &= 0xffffff;
         }else{
-          sqlite3_randomness(sizeof(u.be.v), &u.be.v);
-          if( u.be.cnt<5 ) u.be.v &= 0xffffff;
+          u.be.v &= (MAX_ROWID>>1); /* ensure doesn't go negative */
         }
-        rc = sqlite3BtreeMovetoUnpacked(u.be.pC->pCursor, 0, (u64)u.be.v, 0, &u.be.res);
-        u.be.cnt++;
-      }while( u.be.cnt<100 && rc==SQLITE_OK && u.be.res==0 );
+        u.be.v++; /* ensure non-zero */
+      }
       if( rc==SQLITE_OK && u.be.res==0 ){
         rc = SQLITE_FULL;   /* IMP: R-38219-53002 */
         goto abort_due_to_error;
       }
+      assert( u.be.v>0 );  /* EV: R-40812-03570 */
     }
     u.be.pC->rowidIsValid = 0;
     u.be.pC->deferredMoveto = 0;
@@ -4268,6 +4312,7 @@ case OP_InsertInt: {
 
   u.bf.pData = &aMem[pOp->p2];
   assert( pOp->p1>=0 && pOp->p1<p->nCursor );
+  assert( memIsValid(u.bf.pData) );
   u.bf.pC = p->apCsr[pOp->p1];
   assert( u.bf.pC!=0 );
   assert( u.bf.pC->pCursor!=0 );
@@ -4278,6 +4323,7 @@ case OP_InsertInt: {
   if( pOp->opcode==OP_Insert ){
     u.bf.pKey = &aMem[pOp->p3];
     assert( u.bf.pKey->flags & MEM_Int );
+    assert( memIsValid(u.bf.pKey) );
     REGISTER_TRACE(pOp->p3, u.bf.pKey);
     u.bf.iKey = u.bf.pKey->u.i;
   }else{
@@ -4429,6 +4475,7 @@ case OP_RowData: {
 #endif /* local variables moved into u.bh */
 
   pOut = &aMem[pOp->p2];
+  memAboutToChange(p, pOut);
 
   /* Note that RowKey and RowData are really exactly the same instruction */
   assert( pOp->p1>=0 && pOp->p1<p->nCursor );
@@ -4771,6 +4818,9 @@ case OP_IdxDelete: {
     u.bo.r.nField = (u16)pOp->p3;
     u.bo.r.flags = 0;
     u.bo.r.aMem = &aMem[pOp->p2];
+#ifdef SQLITE_DEBUG
+    { int i; for(i=0; i<u.bo.r.nField; i++) assert( memIsValid(&u.bo.r.aMem[i]) ); }
+#endif
     rc = sqlite3BtreeMovetoUnpacked(u.bo.pCrsr, &u.bo.r, 0, 0, &u.bo.res);
     if( rc==SQLITE_OK && u.bo.res==0 ){
       rc = sqlite3BtreeDelete(u.bo.pCrsr);
@@ -4855,6 +4905,7 @@ case OP_IdxGE: {        /* jump */
   assert( pOp->p1>=0 && pOp->p1<p->nCursor );
   u.bq.pC = p->apCsr[pOp->p1];
   assert( u.bq.pC!=0 );
+  assert( u.bq.pC->isOrdered );
   if( ALWAYS(u.bq.pC->pCursor!=0) ){
     assert( u.bq.pC->deferredMoveto==0 );
     assert( pOp->p5==0 || pOp->p5==1 );
@@ -4867,6 +4918,9 @@ case OP_IdxGE: {        /* jump */
       u.bq.r.flags = UNPACKED_IGNORE_ROWID;
     }
     u.bq.r.aMem = &aMem[pOp->p3];
+#ifdef SQLITE_DEBUG
+    { int i; for(i=0; i<u.bq.r.nField; i++) assert( memIsValid(&u.bq.r.aMem[i]) ); }
+#endif
     rc = sqlite3VdbeIdxKeyCompare(u.bq.pC, &u.bq.r, &u.bq.res);
     if( pOp->opcode==OP_IdxLT ){
       u.bq.res = -u.bq.res;
@@ -4970,6 +5024,8 @@ case OP_Clear: {
   if( pOp->p3 ){
     p->nChange += u.bs.nChange;
     if( pOp->p3>0 ){
+      assert( memIsValid(&aMem[pOp->p3]) );
+      memAboutToChange(p, &aMem[pOp->p3]);
       aMem[pOp->p3].u.i += u.bs.nChange;
     }
   }
@@ -5013,9 +5069,9 @@ case OP_CreateTable: {          /* out2-prerelease */
   assert( u.bt.pDb->pBt!=0 );
   if( pOp->opcode==OP_CreateTable ){
     /* u.bt.flags = BTREE_INTKEY; */
-    u.bt.flags = BTREE_LEAFDATA|BTREE_INTKEY;
+    u.bt.flags = BTREE_INTKEY;
   }else{
-    u.bt.flags = BTREE_ZERODATA;
+    u.bt.flags = BTREE_BLOBKEY;
   }
   rc = sqlite3BtreeCreateTable(u.bt.pDb->pBt, &u.bt.pgno, u.bt.flags);
   pOut->u.i = u.bt.pgno;
@@ -5344,6 +5400,7 @@ case OP_Program: {        /* jump */
 
   u.by.pProgram = pOp->p4.pProgram;
   u.by.pRt = &aMem[pOp->p3];
+  assert( memIsValid(u.by.pRt) );
   assert( u.by.pProgram->nOp>0 );
 
   /* If the p5 flag is clear, then recursive invocation of triggers is
@@ -5517,6 +5574,7 @@ case OP_MemMax: {        /* in2 */
   }else{
     u.ca.pIn1 = &aMem[pOp->p1];
   }
+  assert( memIsValid(u.ca.pIn1) );
   sqlite3VdbeMemIntegerify(u.ca.pIn1);
   pIn2 = &aMem[pOp->p2];
   sqlite3VdbeMemIntegerify(pIn2);
@@ -5603,7 +5661,9 @@ case OP_AggStep: {
   u.cb.apVal = p->apArg;
   assert( u.cb.apVal || u.cb.n==0 );
   for(u.cb.i=0; u.cb.i<u.cb.n; u.cb.i++, u.cb.pRec++){
+    assert( memIsValid(u.cb.pRec) );
     u.cb.apVal[u.cb.i] = u.cb.pRec;
+    memAboutToChange(p, u.cb.pRec);
     sqlite3VdbeMemStoreType(u.cb.pRec);
   }
   u.cb.ctx.pFunc = pOp->p4.pFunc;
@@ -5623,7 +5683,7 @@ case OP_AggStep: {
     assert( pOp[-1].opcode==OP_CollSeq );
     u.cb.ctx.pColl = pOp[-1].p4.pColl;
   }
-  (u.cb.ctx.pFunc->xStep)(&u.cb.ctx, u.cb.n, u.cb.apVal);
+  (u.cb.ctx.pFunc->xStep)(&u.cb.ctx, u.cb.n, u.cb.apVal); /* IMP: R-24505-23230 */
   if( u.cb.ctx.isError ){
     sqlite3SetString(&p->zErrMsg, db, "%s", sqlite3_value_text(&u.cb.ctx.s));
     rc = u.cb.ctx.isError;
@@ -6010,6 +6070,7 @@ case OP_VFilter: {   /* jump */
   u.ch.pQuery = &aMem[pOp->p3];
   u.ch.pArgc = &u.ch.pQuery[1];
   u.ch.pCur = p->apCsr[pOp->p1];
+  assert( memIsValid(u.ch.pQuery) );
   REGISTER_TRACE(pOp->p3, u.ch.pQuery);
   assert( u.ch.pCur->pVtabCursor );
   u.ch.pVtabCursor = u.ch.pCur->pVtabCursor;
@@ -6067,6 +6128,7 @@ case OP_VColumn: {
   assert( pCur->pVtabCursor );
   assert( pOp->p3>0 && pOp->p3<=p->nMem );
   u.ci.pDest = &aMem[pOp->p3];
+  memAboutToChange(p, u.ci.pDest);
   if( pCur->nullRow ){
     sqlite3VdbeMemSetNull(u.ci.pDest);
     break;
@@ -6169,10 +6231,12 @@ case OP_VRename: {
   u.ck.pVtab = pOp->p4.pVtab->pVtab;
   u.ck.pName = &aMem[pOp->p1];
   assert( u.ck.pVtab->pModule->xRename );
+  assert( memIsValid(u.ck.pName) );
   REGISTER_TRACE(pOp->p1, u.ck.pName);
   assert( u.ck.pName->flags & MEM_Str );
   rc = u.ck.pVtab->pModule->xRename(u.ck.pVtab, u.ck.pName->z);
   importVtabErrMsg(p, u.ck.pVtab);
+  p->expired = 0;
 
   break;
 }
@@ -6221,6 +6285,8 @@ case OP_VUpdate: {
     u.cl.apArg = p->apArg;
     u.cl.pX = &aMem[pOp->p3];
     for(u.cl.i=0; u.cl.i<u.cl.nArg; u.cl.i++){
+      assert( memIsValid(u.cl.pX) );
+      memAboutToChange(p, u.cl.pX);
       sqlite3VdbeMemStoreType(u.cl.pX);
       u.cl.apArg[u.cl.i] = u.cl.pX;
       u.cl.pX++;
@@ -6247,6 +6313,32 @@ case OP_Pagecount: {            /* out2-prerelease */
   break;
 }
 #endif
+
+
+#ifndef  SQLITE_OMIT_PAGER_PRAGMAS
+/* Opcode: MaxPgcnt P1 P2 P3 * *
+**
+** Try to set the maximum page count for database P1 to the value in P3.
+** Do not let the maximum page count fall below the current page count and
+** do not change the maximum page count value if P3==0.
+**
+** Store the maximum page count after the change in register P2.
+*/
+case OP_MaxPgcnt: {            /* out2-prerelease */
+  unsigned int newMax;
+  Btree *pBt;
+
+  pBt = db->aDb[pOp->p1].pBt;
+  newMax = 0;
+  if( pOp->p3 ){
+    newMax = sqlite3BtreeLastPage(pBt);
+    if( newMax < (unsigned)pOp->p3 ) newMax = (unsigned)pOp->p3;
+  }
+  pOut->u.i = sqlite3BtreeMaxPageCount(pBt, newMax);
+  break;
+}
+#endif
+
 
 #ifndef SQLITE_OMIT_TRACE
 /* Opcode: Trace * * * P4 *
