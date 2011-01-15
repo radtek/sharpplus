@@ -1,8 +1,8 @@
 include $(SUBDIR)../config.mak
 
 NAME = avfilter
-FFLIBS = avcodec avcore avutil swscale
-FFLIBS-$(CONFIG_LOGO_FILTER) += avformat
+FFLIBS = avcodec avcore avutil swscale avformat
+
 
 HEADERS = avfilter.h
 
