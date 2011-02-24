@@ -10,16 +10,12 @@
 {
 	
 	// Parse the XML document.
-	//NSData *htmlData = [data dataUsingEncoding:NSUTF8StringEncoding];
 	NSError* error;
-	NSData *htmlData = [[NSString stringWithContentsOfURL:[NSURL 
-														   URLWithString: @"http://www.sharpplus.com/"]
-												 encoding:NSASCIIStringEncoding
-													error:&error ]
-						dataUsingEncoding:NSUTF8StringEncoding];
 	
-	TFHpple *parser = [[TFHpple alloc] initWithHTMLData:htmlData];
-	NSArray *elements = [parser search:@"//title"];
+	//TFHpple *parser = [[TFHpple alloc] initWithHTMLData:htmlData];
+	TFHpple *parser = [[TFHpple alloc] initWithHTMLData:data];
+	//use xpath to query result title
+	NSArray *elements = [parser search:@"//a[@class='title']"];
     
     totalObjectsAvailableOnServer = [elements count];
     // Now construct our domain-specific object.
