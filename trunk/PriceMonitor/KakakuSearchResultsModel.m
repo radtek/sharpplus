@@ -2,7 +2,7 @@
 #import "KakakuXMLResponse.h"
 #import "Utils.h"
 
-const static NSUInteger kKakakuBatchSize = 10;   // The number of results to pull down with each request to the server.
+const static NSUInteger kKakakuBatchSize = 1;   // The number of results to pull down with each request to the server.
 
 @implementation KakakuSearchResultsModel
 
@@ -44,7 +44,7 @@ const static NSUInteger kKakakuBatchSize = 10;   // The number of results to pul
     else
         [responseProcessor.objects removeAllObjects]; // Clear out data from previous request.
     
-//    NSString *offset = [NSString stringWithFormat:@"%lu", (unsigned long)recordOffset];
+    NSString *offset = [NSString stringWithFormat:@"%lu", (unsigned long)recordOffset];
 //    NSString *batchSize = [NSString stringWithFormat:@"%lu", (unsigned long)kYahooBatchSize];
     
     // Construct the request.
@@ -56,9 +56,10 @@ const static NSUInteger kKakakuBatchSize = 10;   // The number of results to pul
 	NSArray* listStr = [Utils splitString:searchTerms separator:@" "];
 	NSString* strQuery = [Utils separatedText:listStr separator:@"+"];
 	
-            
-    //NSString *url = @"http://kakaku.com/search_results/?query=mac";//[host stringByAppendingFormat:@"%@?%@", path, [parameters gtm_httpArgumentsString]];
-    NSString *url = [NSString stringWithFormat:@"%@%@", @"http://kakaku.com/search_results/?query=", strQuery];
+    //http://kakaku.com/search_results/mac+air/?category=&c=&act=Page&page=2        
+    //NSString *url = [NSString stringWithFormat:@"%@%@", @"http://kakaku.com/search_results/?query=", strQuery];
+    NSString *url = [NSString stringWithFormat:@"%@%@/?category=&c=&act=Page&page=%@", 
+					 @"http://kakaku.com/search_results/", strQuery, offset];
     TTURLRequest *request = [TTURLRequest requestWithURL:url delegate:self];
     request.cachePolicy = cachePolicy;
     request.response = responseProcessor;
@@ -73,7 +74,7 @@ const static NSUInteger kKakakuBatchSize = 10;   // The number of results to pul
     [super reset];
     [searchTerms release];
     searchTerms = nil;
-	recordOffset = 0;
+	recordOffset = 1;
     [[responseProcessor objects] removeAllObjects];
 }
 
@@ -83,7 +84,7 @@ const static NSUInteger kKakakuBatchSize = 10;   // The number of results to pul
 		[searchTerms release];
 		searchTerms = [theSearchTerms retain];
 
-		recordOffset = 0;
+		recordOffset = 1;
     }
 }
 

@@ -27,6 +27,7 @@
 							URL:@"tt://monitorEdit/1"]
 		 ];
     
+	[self.items addObject:[TTTableMoreButton itemWithText:@"More"]];
     //TTLOG(@"Added %lu search result objects", (unsigned long)[self.items count]);
 }
 
