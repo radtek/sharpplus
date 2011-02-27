@@ -70,7 +70,7 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					497,
+					446,
 					20,
 					48,
 					43,
@@ -491,7 +491,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {733, 572}}";
 			sepNavSelRange = "{1103, 0}";
-			sepNavVisRange = "{826, 794}";
+			sepNavVisRange = "{771, 849}";
 		};
 	};
 	EC71148C12ED9FF10026951C /* TFHpple.h */ = {
@@ -926,9 +926,9 @@
 	};
 	EC86FA551319E14800C58589 /* CDataChunk.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {675, 390}}";
+			sepNavIntBoundsRect = "{{0, 0}, {624, 390}}";
 			sepNavSelRange = "{114, 0}";
-			sepNavVisRange = "{0, 834}";
+			sepNavVisRange = "{0, 765}";
 		};
 	};
 	EC86FA681319E14900C58589 /* Element.m */ = {
