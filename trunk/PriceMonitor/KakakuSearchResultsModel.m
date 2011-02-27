@@ -1,5 +1,6 @@
 #import "KakakuSearchResultsModel.h"
 #import "KakakuXMLResponse.h"
+#import "Utils.h"
 
 const static NSUInteger kKakakuBatchSize = 10;   // The number of results to pull down with each request to the server.
 
@@ -52,8 +53,12 @@ const static NSUInteger kKakakuBatchSize = 10;   // The number of results to pul
 //    NSDictionary *parameters = [NSDictionary dictionaryWithObjectsAndKeys:
 //                                searchTerms, @"query",
 //                                nil];
+	NSArray* listStr = [Utils splitString:searchTerms separator:@" "];
+	NSString* strQuery = [Utils separatedText:listStr separator:@"+"];
+	
             
-    NSString *url = @"http://kakaku.com/search_results/?query=mac";//[host stringByAppendingFormat:@"%@?%@", path, [parameters gtm_httpArgumentsString]];
+    //NSString *url = @"http://kakaku.com/search_results/?query=mac";//[host stringByAppendingFormat:@"%@?%@", path, [parameters gtm_httpArgumentsString]];
+    NSString *url = [NSString stringWithFormat:@"%@%@", @"http://kakaku.com/search_results/?query=", strQuery];
     TTURLRequest *request = [TTURLRequest requestWithURL:url delegate:self];
     request.cachePolicy = cachePolicy;
     request.response = responseProcessor;
@@ -75,8 +80,9 @@ const static NSUInteger kKakakuBatchSize = 10;   // The number of results to pul
 - (void)setSearchTerms:(NSString *)theSearchTerms
 {
     if (![theSearchTerms isEqualToString:searchTerms]) {
-        [searchTerms release];
-        searchTerms = [theSearchTerms retain];
+		[searchTerms release];
+		searchTerms = [theSearchTerms retain];
+
 		recordOffset = 0;
     }
 }

@@ -18,4 +18,9 @@
 
 + (NSData*)stringToData:(NSString*)string;
 
++ (NSArray*)splitString:(NSString*)string separator:(NSString*)separator;
++ (NSString*)separatedText:(NSArray*)listStrings separator:(NSString*)separator;
+
+
+
 @end
