@@ -1,6 +1,7 @@
 #import "KakakuXMLResponse.h"
 #import "SearchResult.h"
 #import "Utils.h"
+#import "NSString+HTML.h"
 
 @implementation KakakuXMLResponse
 
@@ -20,15 +21,19 @@
 	ElementParser* parser = [[[ElementParser alloc] init] autorelease];
 	DocumentRoot* root = [parser parseHTML: htmlStr];
 	//use xpath to query result title
-	NSArray *elements = [root selectElements:@"a.title"];
+	//NSArray *elements = [root selectElements:@"a.title"];
+	NSArray *images = [root selectElements:@"div.leftBox a img"];
+	NSArray *prices = [root selectElements:@"div.rightBox p span.price"];
 	
     
-    totalObjectsAvailableOnServer = [elements count];
+    //totalObjectsAvailableOnServer = [elements count];
+    totalObjectsAvailableOnServer = [images count];
     // Now construct our domain-specific object.
     for (NSUInteger i = 0; i < totalObjectsAvailableOnServer; i++) {
         SearchResult *result = [[[SearchResult alloc] init] autorelease];
-        result.title = [[elements objectAtIndex:i] contentsText];
-//        result.bigImageURL = [[bigImageURLs objectAtIndex:i] stringValue];
+        result.title = [[images objectAtIndex:i] attribute:@"alt"];
+        result.imageURL = [[images objectAtIndex:i] attribute:@"src"];
+		result.detail = [[[prices objectAtIndex:i] contentsText] stringByConvertingHTMLToPlainText];
 //        result.thumbnailURL = [[thumbnailURLs objectAtIndex:i] stringValue];
 //        result.bigImageSize = CGSizeMake([[[bigImageWidths objectAtIndex:i] stringValue] intValue], 
 //                                         [[[bigImageHeights objectAtIndex:i] stringValue] intValue]);
