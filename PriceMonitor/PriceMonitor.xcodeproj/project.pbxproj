@@ -18,12 +18,27 @@
 		EC71130912ED80E50026951C /* SearchResultsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = EC71130612ED80E50026951C /* SearchResultsModel.m */; };
 		EC71132112ED87F90026951C /* KakakuSearchResultsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = EC71131E12ED87F90026951C /* KakakuSearchResultsModel.m */; };
 		EC71132212ED87F90026951C /* KakakuXMLResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = EC71132012ED87F90026951C /* KakakuXMLResponse.m */; };
-		EC71149012ED9FF10026951C /* TFHpple.m in Sources */ = {isa = PBXBuildFile; fileRef = EC71148D12ED9FF10026951C /* TFHpple.m */; };
-		EC71149112ED9FF10026951C /* TFHppleElement.m in Sources */ = {isa = PBXBuildFile; fileRef = EC71148F12ED9FF10026951C /* TFHppleElement.m */; };
-		EC71149412EDA0080026951C /* XPathQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = EC71149312EDA0080026951C /* XPathQuery.m */; };
 		EC7114C112EDA7A20026951C /* SearchResultsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EC7114C012EDA7A20026951C /* SearchResultsDataSource.m */; };
 		EC820CC312EBB3A6006698B1 /* SearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EC820CC112EBB3A6006698B1 /* SearchViewController.m */; };
 		EC820CC412EBB3A6006698B1 /* SearchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EC820CC212EBB3A6006698B1 /* SearchViewController.xib */; };
+		EC86FA771319E14900C58589 /* CDataChunk.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA561319E14800C58589 /* CDataChunk.m */; };
+		EC86FA781319E14900C58589 /* Chunk.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA581319E14800C58589 /* Chunk.m */; };
+		EC86FA791319E14900C58589 /* CommentChunk.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA5A1319E14800C58589 /* CommentChunk.m */; };
+		EC86FA7A1319E14900C58589 /* CSSPartMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA5C1319E14800C58589 /* CSSPartMatcher.m */; };
+		EC86FA7B1319E14900C58589 /* CSSSelector.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA5E1319E14800C58589 /* CSSSelector.m */; };
+		EC86FA7C1319E14900C58589 /* CSSSelectorMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA601319E14900C58589 /* CSSSelectorMatcher.m */; };
+		EC86FA7D1319E14900C58589 /* CSSSelectorPart.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA621319E14900C58589 /* CSSSelectorPart.m */; };
+		EC86FA7E1319E14900C58589 /* DoctypeChunk.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA641319E14900C58589 /* DoctypeChunk.m */; };
+		EC86FA7F1319E14900C58589 /* DocumentRoot.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA661319E14900C58589 /* DocumentRoot.m */; };
+		EC86FA801319E14900C58589 /* Element.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA681319E14900C58589 /* Element.m */; };
+		EC86FA811319E14900C58589 /* ElementParser.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA6A1319E14900C58589 /* ElementParser.m */; };
+		EC86FA821319E14900C58589 /* EntityChunk.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA6C1319E14900C58589 /* EntityChunk.m */; };
+		EC86FA831319E14900C58589 /* NSString_HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA6E1319E14900C58589 /* NSString_HTML.m */; };
+		EC86FA841319E14900C58589 /* ProcessingInstructionChunk.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA701319E14900C58589 /* ProcessingInstructionChunk.m */; };
+		EC86FA851319E14900C58589 /* TagChunk.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA721319E14900C58589 /* TagChunk.m */; };
+		EC86FA861319E14900C58589 /* TxtChunk.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA741319E14900C58589 /* TxtChunk.m */; };
+		EC86FA871319E14900C58589 /* URLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FA761319E14900C58589 /* URLParser.m */; };
+		EC86FB5D1319E94500C58589 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = EC86FB5C1319E94500C58589 /* Utils.m */; };
 		EC87A2D912EEE5AB00C1EE7D /* GlobalSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = EC87A2D812EEE5AB00C1EE7D /* GlobalSettings.m */; };
 		EC87A2DE12EEEEB000C1EE7D /* PersistenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = EC87A2DD12EEEEB000C1EE7D /* PersistenceManager.m */; };
 		EC87A30B12EEF07900C1EE7D /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EC87A30A12EEF07900C1EE7D /* libsqlite3.dylib */; };
@@ -420,17 +435,47 @@
 		EC71131E12ED87F90026951C /* KakakuSearchResultsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KakakuSearchResultsModel.m; sourceTree = "<group>"; };
 		EC71131F12ED87F90026951C /* KakakuXMLResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KakakuXMLResponse.h; sourceTree = "<group>"; };
 		EC71132012ED87F90026951C /* KakakuXMLResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KakakuXMLResponse.m; sourceTree = "<group>"; };
-		EC71148C12ED9FF10026951C /* TFHpple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TFHpple.h; sourceTree = "<group>"; };
-		EC71148D12ED9FF10026951C /* TFHpple.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TFHpple.m; sourceTree = "<group>"; };
-		EC71148E12ED9FF10026951C /* TFHppleElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TFHppleElement.h; sourceTree = "<group>"; };
-		EC71148F12ED9FF10026951C /* TFHppleElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TFHppleElement.m; sourceTree = "<group>"; };
-		EC71149212EDA0080026951C /* XPathQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XPathQuery.h; sourceTree = "<group>"; };
-		EC71149312EDA0080026951C /* XPathQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XPathQuery.m; sourceTree = "<group>"; };
 		EC7114BF12EDA7A20026951C /* SearchResultsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchResultsDataSource.h; sourceTree = "<group>"; };
 		EC7114C012EDA7A20026951C /* SearchResultsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchResultsDataSource.m; sourceTree = "<group>"; };
 		EC820CC012EBB3A6006698B1 /* SearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchViewController.h; sourceTree = "<group>"; };
 		EC820CC112EBB3A6006698B1 /* SearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchViewController.m; sourceTree = "<group>"; };
 		EC820CC212EBB3A6006698B1 /* SearchViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchViewController.xib; sourceTree = "<group>"; };
+		EC86FA551319E14800C58589 /* CDataChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDataChunk.h; sourceTree = "<group>"; };
+		EC86FA561319E14800C58589 /* CDataChunk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDataChunk.m; sourceTree = "<group>"; };
+		EC86FA571319E14800C58589 /* Chunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chunk.h; sourceTree = "<group>"; };
+		EC86FA581319E14800C58589 /* Chunk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Chunk.m; sourceTree = "<group>"; };
+		EC86FA591319E14800C58589 /* CommentChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentChunk.h; sourceTree = "<group>"; };
+		EC86FA5A1319E14800C58589 /* CommentChunk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentChunk.m; sourceTree = "<group>"; };
+		EC86FA5B1319E14800C58589 /* CSSPartMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSPartMatcher.h; sourceTree = "<group>"; };
+		EC86FA5C1319E14800C58589 /* CSSPartMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSSPartMatcher.m; sourceTree = "<group>"; };
+		EC86FA5D1319E14800C58589 /* CSSSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSSelector.h; sourceTree = "<group>"; };
+		EC86FA5E1319E14800C58589 /* CSSSelector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSSSelector.m; sourceTree = "<group>"; };
+		EC86FA5F1319E14800C58589 /* CSSSelectorMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSSelectorMatcher.h; sourceTree = "<group>"; };
+		EC86FA601319E14900C58589 /* CSSSelectorMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSSSelectorMatcher.m; sourceTree = "<group>"; };
+		EC86FA611319E14900C58589 /* CSSSelectorPart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSSelectorPart.h; sourceTree = "<group>"; };
+		EC86FA621319E14900C58589 /* CSSSelectorPart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSSSelectorPart.m; sourceTree = "<group>"; };
+		EC86FA631319E14900C58589 /* DoctypeChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoctypeChunk.h; sourceTree = "<group>"; };
+		EC86FA641319E14900C58589 /* DoctypeChunk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DoctypeChunk.m; sourceTree = "<group>"; };
+		EC86FA651319E14900C58589 /* DocumentRoot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentRoot.h; sourceTree = "<group>"; };
+		EC86FA661319E14900C58589 /* DocumentRoot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocumentRoot.m; sourceTree = "<group>"; };
+		EC86FA671319E14900C58589 /* Element.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Element.h; sourceTree = "<group>"; };
+		EC86FA681319E14900C58589 /* Element.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Element.m; sourceTree = "<group>"; };
+		EC86FA691319E14900C58589 /* ElementParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElementParser.h; sourceTree = "<group>"; };
+		EC86FA6A1319E14900C58589 /* ElementParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ElementParser.m; sourceTree = "<group>"; };
+		EC86FA6B1319E14900C58589 /* EntityChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityChunk.h; sourceTree = "<group>"; };
+		EC86FA6C1319E14900C58589 /* EntityChunk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EntityChunk.m; sourceTree = "<group>"; };
+		EC86FA6D1319E14900C58589 /* NSString_HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSString_HTML.h; sourceTree = "<group>"; };
+		EC86FA6E1319E14900C58589 /* NSString_HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSString_HTML.m; sourceTree = "<group>"; };
+		EC86FA6F1319E14900C58589 /* ProcessingInstructionChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProcessingInstructionChunk.h; sourceTree = "<group>"; };
+		EC86FA701319E14900C58589 /* ProcessingInstructionChunk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProcessingInstructionChunk.m; sourceTree = "<group>"; };
+		EC86FA711319E14900C58589 /* TagChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagChunk.h; sourceTree = "<group>"; };
+		EC86FA721319E14900C58589 /* TagChunk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagChunk.m; sourceTree = "<group>"; };
+		EC86FA731319E14900C58589 /* TxtChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TxtChunk.h; sourceTree = "<group>"; };
+		EC86FA741319E14900C58589 /* TxtChunk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TxtChunk.m; sourceTree = "<group>"; };
+		EC86FA751319E14900C58589 /* URLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLParser.h; sourceTree = "<group>"; };
+		EC86FA761319E14900C58589 /* URLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLParser.m; sourceTree = "<group>"; };
+		EC86FB5B1319E94500C58589 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		EC86FB5C1319E94500C58589 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
 		EC87A2D712EEE5AB00C1EE7D /* GlobalSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalSettings.h; sourceTree = "<group>"; };
 		EC87A2D812EEE5AB00C1EE7D /* GlobalSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlobalSettings.m; sourceTree = "<group>"; };
 		EC87A2DC12EEEEB000C1EE7D /* PersistenceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PersistenceManager.h; sourceTree = "<group>"; };
@@ -515,8 +560,9 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				EC86FB5A1319E93100C58589 /* Utils */,
+				EC86FA4D1319E13000C58589 /* ElementParser */,
 				ECBD63791304166700111D40 /* dba */,
-				EC71149512EDA00F0026951C /* parser */,
 				EC8A722212E8777D001E55BA /* Three20.bundle */,
 				EC8A722312E8777D001E55BA /* Three20Core.xcodeproj */,
 				EC8A722612E8777D001E55BA /* Three20Network.xcodeproj */,
@@ -602,19 +648,6 @@
 			name = Amazon;
 			sourceTree = "<group>";
 		};
-		EC71149512EDA00F0026951C /* parser */ = {
-			isa = PBXGroup;
-			children = (
-				EC71149212EDA0080026951C /* XPathQuery.h */,
-				EC71149312EDA0080026951C /* XPathQuery.m */,
-				EC71148C12ED9FF10026951C /* TFHpple.h */,
-				EC71148D12ED9FF10026951C /* TFHpple.m */,
-				EC71148E12ED9FF10026951C /* TFHppleElement.h */,
-				EC71148F12ED9FF10026951C /* TFHppleElement.m */,
-			);
-			name = parser;
-			sourceTree = "<group>";
-		};
 		EC7114BC12EDA7840026951C /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -625,6 +658,56 @@
 				EC820CC212EBB3A6006698B1 /* SearchViewController.xib */,
 			);
 			name = Search;
+			sourceTree = "<group>";
+		};
+		EC86FA4D1319E13000C58589 /* ElementParser */ = {
+			isa = PBXGroup;
+			children = (
+				EC86FA551319E14800C58589 /* CDataChunk.h */,
+				EC86FA561319E14800C58589 /* CDataChunk.m */,
+				EC86FA571319E14800C58589 /* Chunk.h */,
+				EC86FA581319E14800C58589 /* Chunk.m */,
+				EC86FA591319E14800C58589 /* CommentChunk.h */,
+				EC86FA5A1319E14800C58589 /* CommentChunk.m */,
+				EC86FA5B1319E14800C58589 /* CSSPartMatcher.h */,
+				EC86FA5C1319E14800C58589 /* CSSPartMatcher.m */,
+				EC86FA5D1319E14800C58589 /* CSSSelector.h */,
+				EC86FA5E1319E14800C58589 /* CSSSelector.m */,
+				EC86FA5F1319E14800C58589 /* CSSSelectorMatcher.h */,
+				EC86FA601319E14900C58589 /* CSSSelectorMatcher.m */,
+				EC86FA611319E14900C58589 /* CSSSelectorPart.h */,
+				EC86FA621319E14900C58589 /* CSSSelectorPart.m */,
+				EC86FA631319E14900C58589 /* DoctypeChunk.h */,
+				EC86FA641319E14900C58589 /* DoctypeChunk.m */,
+				EC86FA651319E14900C58589 /* DocumentRoot.h */,
+				EC86FA661319E14900C58589 /* DocumentRoot.m */,
+				EC86FA671319E14900C58589 /* Element.h */,
+				EC86FA681319E14900C58589 /* Element.m */,
+				EC86FA691319E14900C58589 /* ElementParser.h */,
+				EC86FA6A1319E14900C58589 /* ElementParser.m */,
+				EC86FA6B1319E14900C58589 /* EntityChunk.h */,
+				EC86FA6C1319E14900C58589 /* EntityChunk.m */,
+				EC86FA6D1319E14900C58589 /* NSString_HTML.h */,
+				EC86FA6E1319E14900C58589 /* NSString_HTML.m */,
+				EC86FA6F1319E14900C58589 /* ProcessingInstructionChunk.h */,
+				EC86FA701319E14900C58589 /* ProcessingInstructionChunk.m */,
+				EC86FA711319E14900C58589 /* TagChunk.h */,
+				EC86FA721319E14900C58589 /* TagChunk.m */,
+				EC86FA731319E14900C58589 /* TxtChunk.h */,
+				EC86FA741319E14900C58589 /* TxtChunk.m */,
+				EC86FA751319E14900C58589 /* URLParser.h */,
+				EC86FA761319E14900C58589 /* URLParser.m */,
+			);
+			name = ElementParser;
+			sourceTree = "<group>";
+		};
+		EC86FB5A1319E93100C58589 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				EC86FB5B1319E94500C58589 /* Utils.h */,
+				EC86FB5C1319E94500C58589 /* Utils.m */,
+			);
+			name = Utils;
 			sourceTree = "<group>";
 		};
 		EC87A2B912EED23600C1EE7D /* Settings */ = {
@@ -1186,9 +1269,6 @@
 				EC71130912ED80E50026951C /* SearchResultsModel.m in Sources */,
 				EC71132112ED87F90026951C /* KakakuSearchResultsModel.m in Sources */,
 				EC71132212ED87F90026951C /* KakakuXMLResponse.m in Sources */,
-				EC71149012ED9FF10026951C /* TFHpple.m in Sources */,
-				EC71149112ED9FF10026951C /* TFHppleElement.m in Sources */,
-				EC71149412EDA0080026951C /* XPathQuery.m in Sources */,
 				EC7114C112EDA7A20026951C /* SearchResultsDataSource.m in Sources */,
 				EC87A2D912EEE5AB00C1EE7D /* GlobalSettings.m in Sources */,
 				EC87A2DE12EEEEB000C1EE7D /* PersistenceManager.m in Sources */,
@@ -1196,6 +1276,24 @@
 				ECBD63881304168600111D40 /* FMDatabaseAdditions.m in Sources */,
 				ECBD63891304168600111D40 /* fmdb.m in Sources */,
 				ECBD638A1304168600111D40 /* FMResultSet.m in Sources */,
+				EC86FA771319E14900C58589 /* CDataChunk.m in Sources */,
+				EC86FA781319E14900C58589 /* Chunk.m in Sources */,
+				EC86FA791319E14900C58589 /* CommentChunk.m in Sources */,
+				EC86FA7A1319E14900C58589 /* CSSPartMatcher.m in Sources */,
+				EC86FA7B1319E14900C58589 /* CSSSelector.m in Sources */,
+				EC86FA7C1319E14900C58589 /* CSSSelectorMatcher.m in Sources */,
+				EC86FA7D1319E14900C58589 /* CSSSelectorPart.m in Sources */,
+				EC86FA7E1319E14900C58589 /* DoctypeChunk.m in Sources */,
+				EC86FA7F1319E14900C58589 /* DocumentRoot.m in Sources */,
+				EC86FA801319E14900C58589 /* Element.m in Sources */,
+				EC86FA811319E14900C58589 /* ElementParser.m in Sources */,
+				EC86FA821319E14900C58589 /* EntityChunk.m in Sources */,
+				EC86FA831319E14900C58589 /* NSString_HTML.m in Sources */,
+				EC86FA841319E14900C58589 /* ProcessingInstructionChunk.m in Sources */,
+				EC86FA851319E14900C58589 /* TagChunk.m in Sources */,
+				EC86FA861319E14900C58589 /* TxtChunk.m in Sources */,
+				EC86FA871319E14900C58589 /* URLParser.m in Sources */,
+				EC86FB5D1319E94500C58589 /* Utils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
