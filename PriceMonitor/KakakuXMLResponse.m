@@ -11,8 +11,7 @@
 {
 	
 	// Parse the XML document.
-	NSError* error;
-	
+
 	//NSString * s=@"<html><a href='http://aa'><strong>a</strong>bc</a></html>";
 	//NSData* testData = [Utils stringToData:s];
 	NSString* htmlStr=[Utils cstringToString:data];
