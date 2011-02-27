@@ -21,11 +21,10 @@
     // Construct an object that is suitable for the table view system
     // from each SearchResult domain object that we retrieve from the TTModel.
     for (SearchResult *result in [(id<SearchResultsModel>)self.model results])
-        [self.items addObject:[TTTableTextItem itemWithText:result.title URL:@"tt://monitorEdit/1"]
-//		 [TTTableImageItem itemWithText:result.title
-//                         imageURL:result.thumbnailURL
-//                         defaultImage:[UIImage imageNamed:@"photo_placeholder.png"]
-//                         URL:nil]
+        [self.items addObject:[TTTableSubtitleItem itemWithText:result.title 
+							subtitle:result.detail
+							imageURL:result.imageURL
+							URL:@"tt://monitorEdit/1"]
 		 ];
     
     //TTLOG(@"Added %lu search result objects", (unsigned long)[self.items count]);
