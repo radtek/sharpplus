@@ -2,6 +2,7 @@
 #import "SearchResult.h"
 #import "Utils.h"
 #import "NSString+HTML.h"
+#import "Element.h"
 
 @implementation KakakuXMLResponse
 
@@ -31,9 +32,14 @@
     // Now construct our domain-specific object.
     for (NSUInteger i = 0; i < totalObjectsAvailableOnServer; i++) {
         SearchResult *result = [[[SearchResult alloc] init] autorelease];
-        result.title = [[images objectAtIndex:i] attribute:@"alt"];
-        result.imageURL = [[images objectAtIndex:i] attribute:@"src"];
+		Element* image = [images objectAtIndex:i];
+		Element* link = [image parent];
+		
+        result.title = [image attribute:@"alt"];
+        result.imageURL = [image attribute:@"src"];
+
 		result.detail = [[[prices objectAtIndex:i] contentsText] stringByConvertingHTMLToPlainText];
+		result.detailURL = [link attribute:@"href"];
 //        result.thumbnailURL = [[thumbnailURLs objectAtIndex:i] stringValue];
 //        result.bigImageSize = CGSizeMake([[[bigImageWidths objectAtIndex:i] stringValue] intValue], 
 //                                         [[[bigImageHeights objectAtIndex:i] stringValue] intValue]);
