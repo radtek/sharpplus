@@ -1,6 +1,7 @@
 #import "KakakuSearchResultsModel.h"
 #import "KakakuXMLResponse.h"
 #import "Utils.h"
+#import "GlobalSettings.h"
 
 const static NSUInteger kKakakuBatchSize = 1;   // The number of results to pull down with each request to the server.
 
@@ -45,6 +46,8 @@ const static NSUInteger kKakakuBatchSize = 1;   // The number of results to pull
         [responseProcessor.objects removeAllObjects]; // Clear out data from previous request.
     
     NSString *offset = [NSString stringWithFormat:@"%lu", (unsigned long)recordOffset];
+	GlobalSettings* settings = [GlobalSettings settings];
+	NSString *viewCount = [NSString stringWithFormat:@"%lu", (unsigned long)(settings.displayCount+1)*20];
 //    NSString *batchSize = [NSString stringWithFormat:@"%lu", (unsigned long)kYahooBatchSize];
     
     // Construct the request.
@@ -58,8 +61,8 @@ const static NSUInteger kKakakuBatchSize = 1;   // The number of results to pull
 	
     //http://kakaku.com/search_results/mac+air/?category=&c=&act=Page&page=2        
     //NSString *url = [NSString stringWithFormat:@"%@%@", @"http://kakaku.com/search_results/?query=", strQuery];
-    NSString *url = [NSString stringWithFormat:@"%@%@/?category=&c=&act=Page&page=%@", 
-					 @"http://kakaku.com/search_results/", strQuery, offset];
+    NSString *url = [NSString stringWithFormat:@"%@%@/?category=&c=&sort=%@&n=%@&act=Page&page=%@", 
+					 @"http://kakaku.com/search_results/", strQuery, [settings displaySort], viewCount, offset];
     TTURLRequest *request = [TTURLRequest requestWithURL:url delegate:self];
     request.cachePolicy = cachePolicy;
     request.response = responseProcessor;

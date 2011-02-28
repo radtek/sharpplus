@@ -32,5 +32,6 @@ typedef enum {
 
 -(void) loadFromDb;
 -(void) saveToDb;
+-(NSString*)displaySort;
 
 @end
