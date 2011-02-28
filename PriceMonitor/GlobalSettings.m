@@ -35,6 +35,7 @@ static GlobalSettings *sharedSettings = nil;
 		if (sharedSettings == nil) {
             sharedSettings = [super allocWithZone:zone];
 			
+			
 			[sharedSettings loadFromDb];
 			
 			return sharedSettings;  // assignment and return on first allocation
@@ -100,6 +101,11 @@ static GlobalSettings *sharedSettings = nil;
         NSLog(@"Err %d: %@", [mgr.database lastErrorCode], [mgr.database lastErrorMessage]);
     }	
 	
+}
+
+-(NSString*)displaySort{
+	NSArray *array = [[NSArray alloc] initWithObjects:@"popular", @"priceb", @"pricet", @"date", nil];
+	return [array objectAtIndex:displayOrder];
 }
 		
 @end
