@@ -1,5 +1,5 @@
 #import "KakakuSearchResultsModel.h"
-#import "KakakuXMLResponse.h"
+#import "KakakuSearchResponse.h"
 #import "Utils.h"
 #import "GlobalSettings.h"
 
@@ -17,7 +17,7 @@ const static NSUInteger kKakakuBatchSize = 1;   // The number of results to pull
                 responseProcessor = nil;//[[YahooJSONResponse alloc] init];
                 break;
             case SearchResponseFormatXML:
-                responseProcessor = [[KakakuXMLResponse alloc] init];
+                responseProcessor = [[KakakuSearchResponse alloc] init];
                 break;
             default:
                 [NSException raise:@"SearchResponseFormat unknown!" format:nil];

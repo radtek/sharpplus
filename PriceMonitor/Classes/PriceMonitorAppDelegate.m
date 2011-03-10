@@ -13,6 +13,7 @@
 #import "SettingViewController.h"
 #import "MonitorEditViewController.h"
 #import "SearchViewController.h"
+#import "CompareViewController.h"
 
 @implementation PriceMonitorAppDelegate
 
@@ -48,6 +49,8 @@
 	
 	// A new monitor edit controllers will be created each time you open a monitor URL
 	[map from:@"tt://monitorEdit/(initWithMonitor:)" toViewController:[MonitorEditViewController class]];
+	//compare price
+	[map from:@"tt://compareItem/(initWithItem:)" toViewController:[CompareViewController class]];
 
 	//[map from:@"tt://search" toSharedViewController:[SearchController class]];
 	//[map from:@"tt://monitor" toSharedViewController:[MonitorController class]];
