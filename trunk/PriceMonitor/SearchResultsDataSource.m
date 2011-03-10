@@ -20,12 +20,20 @@
     
     // Construct an object that is suitable for the table view system
     // from each SearchResult domain object that we retrieve from the TTModel.
-    for (SearchResult *result in [(id<SearchResultsModel>)self.model results])
+    for (SearchResult *result in [(id<SearchResultsModel>)self.model results]){
+		//extract id from url
+		NSArray* urlList = [result.detailURL componentsSeparatedByString:@"/"];
+		NSInteger index = [urlList count] - 2;
+		NSString* url =[NSString stringWithFormat:@"tt://compareItem/%@", [urlList objectAtIndex:index]];
+		//NSString* url =[NSString stringWithFormat:@"tt://monitorEdit/1", [urlList objectAtIndex:index]];
+		
         [self.items addObject:[TTTableSubtitleItem itemWithText:result.title 
 							subtitle:result.detail
 							imageURL:result.imageURL
-							URL:@"tt://monitorEdit/1"]
+							URL:url]
 		 ];
+		
+	}
     
 	[self.items addObject:[TTTableMoreButton itemWithText:@"More"]];
     //TTLOG(@"Added %lu search result objects", (unsigned long)[self.items count]);
