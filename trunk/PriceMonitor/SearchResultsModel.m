@@ -6,7 +6,6 @@
 
 #import "SearchResultsModel.h"
 #import "KakakuSearchResultsModel.h"
-//#import "FlickrSearchResultsModel.h"
 
 SearchService CurrentSearchService = SearchServiceDefault;
 SearchResponseFormat CurrentSearchResponseFormat = SearchResponseFormatDefault;

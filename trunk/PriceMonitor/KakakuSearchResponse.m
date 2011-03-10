@@ -1,10 +1,10 @@
-#import "KakakuXMLResponse.h"
+#import "KakakuSearchResponse.h"
 #import "SearchResult.h"
 #import "Utils.h"
 #import "NSString+HTML.h"
 #import "Element.h"
 
-@implementation KakakuXMLResponse
+@implementation KakakuSearchResponse
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark TTURLResponse
