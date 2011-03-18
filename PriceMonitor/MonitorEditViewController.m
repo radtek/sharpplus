@@ -11,25 +11,29 @@
 
 @implementation MonitorEditViewController
 
-@synthesize lblName;
+@synthesize lblName, edtCategory,segCondition, edtPrice, edtTime, segTime;
 
-- (id)initWithMonitor:(NSString*)itemId {
+// private
+
+- (void)dismiss {
+	[self dismissModalViewControllerAnimated:YES];
+}
+
+- (id)initWithAction:(NSString*)action query:(NSDictionary*)query  {
 	if (self = [super initWithNibName:@"MonitorEditViewController" bundle:nil]) {
-		//self.lblName.text = [NSString stringWithFormat:@"Monitor ID %@", itemId];
-//		NSString *newText = [[NSString alloc] initWithFormat:
-//							 @"Edit Monitor %@", itemId];
-//		lblName.text = newText;
-//		[newText release];
-		
-		self.title = [NSString stringWithFormat:@"Edit Monitor %@", itemId];
-		self.navigationItem.backBarButtonItem =
-		[[[UIBarButtonItem alloc] initWithTitle: @"Monitor List"
-										  style: UIBarButtonItemStyleBordered
-										 target: nil
-										 action: nil] autorelease];		
-//		self.navigationItem.leftBarButtonItem =
-//		[[[UIBarButtonItem alloc] initWithTitle:@"Monitor List" style:UIBarButtonItemStyleBordered
-//										 target:self action:@selector(showMonitorList)] autorelease];
+		if ([action isEqualToString:@"new"]){
+			_action = 0;
+		}else{
+			_action = 1;
+		}
+		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc]
+												   initWithTitle:@"Done" style:UIBarButtonItemStyleDone
+												   target:self action:@selector(dismiss)] autorelease];
+		self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc]
+												  initWithTitle:@"Cancel" style:UIBarButtonItemStyleBordered
+												  target:self action:@selector(dismiss)] autorelease];
+	
+		self.title = [NSString stringWithFormat:@"Edit Monitor %@", [query objectForKey:@"item"]];
 	}
 	return self;
 }
@@ -43,6 +47,11 @@
 
 - (void)dealloc {
 	[lblName release];
+	[edtCategory release];
+	[segCondition release];
+	[edtPrice release];
+	[edtTime release];
+	[segTime release];
 	[super dealloc];
 }
 

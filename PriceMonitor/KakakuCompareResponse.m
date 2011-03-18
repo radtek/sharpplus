@@ -19,7 +19,7 @@
 	ElementParser* parser = [[[ElementParser alloc] init] autorelease];
 	DocumentRoot* root = [parser parseHTML: htmlStr];
 	NSArray *prices = [root selectElements:@"p.fontPrice a"];
-	NSArray *shops  = [root selectElements:@"p.wordwrapShop a"];
+	NSArray *shops  = [root selectElements:@"td.shopname a"];
 	
     
     totalObjectsAvailableOnServer = [prices count];

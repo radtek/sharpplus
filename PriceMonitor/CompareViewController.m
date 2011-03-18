@@ -24,10 +24,18 @@
 		[[[UIBarButtonItem alloc] initWithTitle: @"Item List"
 										  style: UIBarButtonItemStyleBordered
 										 target: nil
-										 action: nil] autorelease];		
-		//		self.navigationItem.leftBarButtonItem =
-		//		[[[UIBarButtonItem alloc] initWithTitle:@"Monitor List" style:UIBarButtonItemStyleBordered
-		//										 target:self action:@selector(showMonitorList)] autorelease];
+										 action: nil] autorelease];	
+		//                                         @"tt://monitorEdit?action=new&item=123"
+		//NSString* url = [NSString stringWithFormat:@"tt://monitorEdit?action=new&item=%@", itemId];
+		//NSString* url = @"tt://monitorEdit?action=new&item=123";//[NSString stringWithFormat:@"tt://monitorEdit?action=new&item=%@", itemId];
+		NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=new&item=%@&name=%@", itemId];
+		
+		self.navigationItem.rightBarButtonItem =
+		[[[UIBarButtonItem alloc] initWithTitle:@"New Monitor" 
+										  style:UIBarButtonItemStyleBordered
+										 target:url
+										 action:@selector(openURLFromButton:)] autorelease];
+		
 	}
 	return self;
 }
@@ -71,6 +79,10 @@
     [self reload];
     [self.tableView scrollToTop:YES];
 	
+}
+
+-(void)newMonitor{
+	//new monitor ui
 }
 
 
