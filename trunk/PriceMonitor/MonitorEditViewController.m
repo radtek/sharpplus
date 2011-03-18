@@ -45,6 +45,17 @@
 	
 }
 
+//event handler
+-(IBAction)categoryDoneEditing:(id)sender{
+	[sender resignFirstResponder];
+}
+
+-(IBAction)backgroundClicking:(id)sender{
+	[edtTime resignFirstResponder];
+	[edtPrice resignFirstResponder];
+	[edtCategory resignFirstResponder];
+}
+
 - (void)dealloc {
 	[lblName release];
 	[edtCategory release];

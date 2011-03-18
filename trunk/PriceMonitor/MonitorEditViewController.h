@@ -26,4 +26,7 @@
 @property (retain, nonatomic) UITextField* edtTime;
 @property (retain, nonatomic) UISegmentedControl* segTime;
 
+-(IBAction)categoryDoneEditing:(id)sender;
+-(IBAction)backgroundClicking:(id)sender;
+
 @end
