@@ -11,8 +11,19 @@
 
 @interface MonitorEditViewController : TTViewController {
 	IBOutlet UILabel* lblName;
+	IBOutlet UITextField* edtCategory;
+	IBOutlet UISegmentedControl* segCondition;
+	IBOutlet UITextField* edtPrice;
+	IBOutlet UITextField* edtTime;
+	IBOutlet UISegmentedControl* segTime;
+	NSInteger _action;
 }
 
 @property (retain, nonatomic) UILabel* lblName;
+@property (retain, nonatomic) UITextField* edtCategory;
+@property (retain, nonatomic) UISegmentedControl* segCondition;
+@property (retain, nonatomic) UITextField* edtPrice;
+@property (retain, nonatomic) UITextField* edtTime;
+@property (retain, nonatomic) UISegmentedControl* segTime;
 
 @end

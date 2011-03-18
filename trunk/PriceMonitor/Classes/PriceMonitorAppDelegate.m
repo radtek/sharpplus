@@ -48,7 +48,10 @@
 	[map from:@"tt://tabbar" toSharedViewController:[TabBarController class]];
 	
 	// A new monitor edit controllers will be created each time you open a monitor URL
-	[map from:@"tt://monitorEdit/(initWithMonitor:)" toViewController:[MonitorEditViewController class]];
+	//[map from:@"tt://monitorEdit/(initWithMonitor:)" toModalViewController:[MonitorEditViewController class]];
+	// The ordering controller will appear as a modal view controller, animated from bottom to top
+	[map from:@"tt://monitorEdit?action=(initWithAction:)"
+				toModalViewController:[MonitorEditViewController class]];	
 	//compare price
 	[map from:@"tt://compareItem/(initWithItem:)" toViewController:[CompareViewController class]];
 
