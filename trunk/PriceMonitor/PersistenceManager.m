@@ -89,6 +89,26 @@ static PersistenceManager *sharedMgr = nil;
 		NSAssert(0, @"failed to create table");
 		return ;
 	}
+	//create monitorlist table
+	success &= [db executeUpdate:@"create table if not exists MonitorList ("
+			   "ItemId integer primary key autoincrement,"
+			   "Name varchar not null,"
+			   "Price integer not null,"
+			   "Area varchar,"
+			   "Category varchar not null,"
+			   "Condition integer not null,"
+			   "MonitorTime integer not null,"
+			   "TimeType integer not null)"];
+	//insert test data
+	success &= [db executeUpdate:@"insert or replace into MonitorList values(1, 'test', 1234, 'tokyo', 'other', 1,12,1)"];
+	success &= [db executeUpdate:@"insert or replace into MonitorList values(2, 'test2', 12345, 'kanagawa', 'food', 2,10,0)"];
+	success &= [db executeUpdate:@"insert or replace into MonitorList values(3, 'test3', 123456, 'yokohama', 'food', 3,5,0)"];
+	
+    if (!success){
+	   NSLog([db lastErrorMessage]);
+	   NSAssert(0, [db lastErrorMessage] );
+	   return ;
+    }
 	
 	self.database = db;
 	
