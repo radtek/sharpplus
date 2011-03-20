@@ -53,7 +53,10 @@
 	[map from:@"tt://monitorEdit?action=(initWithAction:)"
 				toModalViewController:[MonitorEditViewController class]];	
 	//compare price
-	[map from:@"tt://compareItem/(initWithItem:)" toViewController:[CompareViewController class]];
+//	[map from:@"tt://compareItem?action=((initWithAction:)" 
+//				toViewController:[MonitorEditViewController class]];
+	[map from:@"tt://compareItem?action=(initWithAction:)"
+		toViewController:[CompareViewController class]];	
 
 	//[map from:@"tt://search" toSharedViewController:[SearchController class]];
 	//[map from:@"tt://monitor" toSharedViewController:[MonitorController class]];
@@ -67,6 +70,7 @@
 	if (![navigator restoreViewControllers]) {
 		// This is the first launch, so we just start with the tab bar
 		[navigator openURLAction:[TTURLAction actionWithURLPath:@"tt://tabbar"]];
+		//[navigator openURLAction:[TTURLAction actionWithURLPath:@"tt://compareItem?action=new&itemId=K1235"]];
 	}	
 }
 

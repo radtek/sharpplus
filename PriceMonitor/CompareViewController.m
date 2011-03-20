@@ -14,12 +14,13 @@
 
 @synthesize itemId = _itemId;
 
-- (id)initWithItem:(NSString*)itemId {
+//- (id)initwithItem:(NSString*)action query:(NSDictionary*)query{
+- (id)initWithAction:(NSString*)action query:(NSDictionary*)query  {
 	if (self = [super initWithNibName:@"CompareViewController" bundle:nil]) {
 		
-		self.itemId = itemId;
+		self.itemId = [query objectForKey:@"itemId"];
 		
-		self.title = [NSString stringWithFormat:@"Compare Price %@", itemId];
+		self.title = [NSString stringWithFormat:@"Compare Price %@", self.itemId];
 		self.navigationItem.backBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle: @"Item List"
 										  style: UIBarButtonItemStyleBordered
@@ -28,10 +29,15 @@
 		//                                         @"tt://monitorEdit?action=new&item=123"
 		//NSString* url = [NSString stringWithFormat:@"tt://monitorEdit?action=new&item=%@", itemId];
 		//NSString* url = @"tt://monitorEdit?action=new&item=123";//[NSString stringWithFormat:@"tt://monitorEdit?action=new&item=%@", itemId];
-		NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=new&item=%@&name=%@", itemId];
+		NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&item=%@&name=%@", action,self.itemId];
+
+		NSString* button =@"Edit Monitor";
 		
+		if ([action isEqualToString:@"new"]){
+			button = @"New Monitor";
+		}
 		self.navigationItem.rightBarButtonItem =
-		[[[UIBarButtonItem alloc] initWithTitle:@"New Monitor" 
+		[[[UIBarButtonItem alloc] initWithTitle:button 
 										  style:UIBarButtonItemStyleBordered
 										 target:url
 										 action:@selector(openURLFromButton:)] autorelease];
