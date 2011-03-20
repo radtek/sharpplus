@@ -11,10 +11,11 @@
 
 @implementation MonitorItem
 
-@synthesize itemId,price, name, area, category, condition, time, timeType;
+@synthesize monitorId, itemId,price, name, area, category, condition, time, timeType;
 
 - (void)dealloc
 {
+	[itemId release];
 	[name release];
 	[area release];
 	[category release];

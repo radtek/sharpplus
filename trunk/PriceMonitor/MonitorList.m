@@ -72,15 +72,16 @@ static MonitorList *sharedMonitorList = nil;
 
 -(void) loadFromDb{
 	PersistenceManager * mgr = [PersistenceManager mgr];
-	FMResultSet* rs = [mgr.database executeQuery:@"select * from MonitorList order by category, itemId"];
+	FMResultSet* rs = [mgr.database executeQuery:@"select * from MonitorList order by category, monitorId"];
     NSMutableArray* sections = [[NSMutableArray alloc] init];
 	NSMutableArray* items= [[NSMutableArray alloc] init]; 
 	NSMutableArray* detailArray = NULL;
 	
 	while ([rs next]) {
 		MonitorItem* item = [[MonitorItem alloc] init];
-		
-		item.itemId = [rs intForColumn:@"ItemId"];
+
+		item.monitorId = [rs intForColumn:@"MonitorId"];
+		item.itemId = [rs stringForColumn:@"ItemId"];
 		item.name = [rs stringForColumn:@"Name"];
 		item.price = [rs intForColumn:@"Price"];
 		NSString* category = [rs stringForColumn:@"Category"];

@@ -23,7 +23,8 @@ typedef enum{
 } MonitorTime;
 
 @interface MonitorItem : NSObject {
-	NSInteger itemId;
+	NSInteger monitorId;
+	NSString* itemId;
 	NSString* name;
 	NSInteger price;
 	NSString* area;
@@ -33,7 +34,8 @@ typedef enum{
 	MonitorTime timeType;
 }
 
-@property (nonatomic, assign) NSInteger itemId;
+@property (nonatomic, assign) NSInteger monitorId;
+@property (nonatomic, retain) NSString* itemId;
 @property (nonatomic, retain) NSString *name;
 @property (nonatomic, assign) NSInteger price;
 @property (nonatomic, retain) NSString *area;
