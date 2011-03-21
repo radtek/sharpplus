@@ -21,6 +21,7 @@
 	MonitorItem* item;
 	NSInteger result;
 	NSInteger price;
+	NSString* category;
 }
 
 @property (retain, nonatomic) UILabel* lblName;
@@ -34,6 +35,7 @@
 @property (retain, nonatomic) MonitorItem* item;
 @property (assign, nonatomic) NSInteger result;
 @property (assign, nonatomic) NSInteger price;
+@property (retain, nonatomic) NSString* category;
 
 -(IBAction)categoryDoneEditing:(id)sender;
 -(IBAction)backgroundClicking:(id)sender;

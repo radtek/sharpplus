@@ -16,6 +16,7 @@
 	NSString *shopArea;
     NSString *shopURL;
 	NSString *hasStock;
+	NSString *category;
 }
 
 @property (nonatomic, retain) NSString *price;
@@ -24,5 +25,6 @@
 @property (nonatomic, retain) NSString *shopURL;
 @property (nonatomic, retain) NSString *shopArea;
 @property (nonatomic, retain) NSString *hasStock;
+@property (nonatomic, retain) NSString *category;
 
 @end

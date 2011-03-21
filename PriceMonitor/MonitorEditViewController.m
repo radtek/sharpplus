@@ -8,12 +8,14 @@
 
 #import "MonitorEditViewController.h"
 #import "SearchResult.h"
+#import "CompareResult.h"
 
 
 
 @implementation MonitorEditViewController
 
-@synthesize lblName, edtCategory,segCondition, edtPrice, edtTime, segTime, action, itemId, item, result, price;
+@synthesize lblName, edtCategory,segCondition, edtPrice,
+			edtTime, segTime, action, itemId, item, result, price, category;
 
 // private
 
@@ -44,6 +46,13 @@
 		self.itemId = [query objectForKey:@"itemId"];
 		self.result = [[query objectForKey:@"id"] intValue];
 		self.price = [[query objectForKey:@"price"] intValue];
+		CompareResult* compare= (CompareResult*)[[query objectForKey:@"cmpId"] intValue];
+		if (compare){
+			self.category = compare.category;
+		}else {
+			self.category=@"Other";
+		}
+
 		
 		
 		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc]
@@ -68,7 +77,7 @@
 		SearchResult* rslt= (SearchResult*)self.result;
 		self.lblName.text = rslt.title;
 		self.edtPrice.text = [NSString stringWithFormat:@"%d", self.price];
-		
+		self.edtCategory.text = self.category;
 	}
 	else {
 		//load monitor information from db 

@@ -21,6 +21,7 @@
 	NSArray *prices = [root selectElements:@"p.fontPrice a"];
 	NSArray *shops  = [root selectElements:@"td.shopname a"];
 	
+	Element * category = [root selectElement:@"span.category"];	
     
     totalObjectsAvailableOnServer = [prices count];
     // Now construct our domain-specific object.
@@ -29,6 +30,7 @@
 				
         result.price = [[[prices objectAtIndex:i] contentsText] stringByConvertingHTMLToPlainText];
         result.shopName = [[[shops objectAtIndex:i] contentsText] stringByConvertingHTMLToPlainText];
+		result.category = [[category contentsText] stringByConvertingHTMLToPlainText];
 
         [self.objects addObject:result];
     }
