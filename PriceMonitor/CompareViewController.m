@@ -13,6 +13,7 @@
 @implementation CompareViewController
 
 @synthesize itemId = _itemId;
+@synthesize action = _action;
 
 //- (id)initwithItem:(NSString*)action query:(NSDictionary*)query{
 - (id)initWithAction:(NSString*)action query:(NSDictionary*)query  {
@@ -26,22 +27,11 @@
 										  style: UIBarButtonItemStyleBordered
 										 target: nil
 										 action: nil] autorelease];	
-		//                                         @"tt://monitorEdit?action=new&item=123"
-		//NSString* url = [NSString stringWithFormat:@"tt://monitorEdit?action=new&item=%@", itemId];
-		//NSString* url = @"tt://monitorEdit?action=new&item=123";//[NSString stringWithFormat:@"tt://monitorEdit?action=new&item=%@", itemId];
-		NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&name=%@", action,self.itemId];
-
-		NSString* button =@"Edit Monitor";
-		
 		if ([action isEqualToString:@"new"]){
-			button = @"New Monitor";
+			self.action = 0;
+		}else{
+			self.action = 1;
 		}
-		self.navigationItem.rightBarButtonItem =
-		[[[UIBarButtonItem alloc] initWithTitle:button 
-										  style:UIBarButtonItemStyleBordered
-										 target:url
-										 action:@selector(openURLFromButton:)] autorelease];
-		
 	}
 	return self;
 }
@@ -87,10 +77,34 @@
 	
 }
 
--(void)newMonitor{
-	//new monitor ui
+- (void)modelDidFinishLoad:(id<TTModel>)model{
+	//  if (self.modelState == TTModelStateNone) {
+	//    self.title = @"None";
+	//  } else if (self.modelState == TTModelStateLoading) {
+	//    self.title = @"Loading";
+	//if (self.modelState == TTModelStateLoaded) {
+	[super modelDidFinishLoad:model];
+	
+		NSString* strAction= @"new";
+		NSString* button =@"New Monitor";
+		
+		if (self.action==1){
+			strAction=@"edit";
+			button = @"Edit Monitor";
+		}
+		NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&name=%@", strAction,self.itemId, @""];
+		self.navigationItem.rightBarButtonItem =
+		[[[UIBarButtonItem alloc] initWithTitle:button 
+										  style:UIBarButtonItemStyleBordered
+										 target:url
+										 action:@selector(openURLFromButton:)] autorelease];
+	//} 
+	//else if (self.modelState == TTModelStateLoaded|TTModelStateReloading) {
+	//    self.title = @"Reloading";
+	//  } else if (self.modelState == TTModelStateLoadedError) {
+	//    self.title = @"LoadedError";
+	//  }
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 -(void)dealloc {
