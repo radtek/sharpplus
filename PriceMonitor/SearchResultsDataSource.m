@@ -24,8 +24,7 @@
 		//extract id from url
 		NSArray* urlList = [result.detailURL componentsSeparatedByString:@"/"];
 		NSInteger index = [urlList count] - 2;
-		NSString* url =[NSString stringWithFormat:@"tt://compareItem?action=new&itemId=%@", [urlList objectAtIndex:index]];
-		//NSString* url =[NSString stringWithFormat:@"tt://monitorEdit/1", [urlList objectAtIndex:index]];
+		NSString* url =[NSString stringWithFormat:@"tt://compareItem?action=new&itemId=%@&id=%d", [urlList objectAtIndex:index], result];
 		
         [self.items addObject:[TTTableSubtitleItem itemWithText:result.title 
 							subtitle:result.detail
