@@ -41,9 +41,12 @@
 	return self;
 }
 
--(void) saveToDb{
+-(void) saveToDb:(NSInteger) action{
+	
 	PersistenceManager * mgr = [PersistenceManager mgr];
-	BOOL success=[mgr.database executeUpdate:@"update MonitorList set price=? , category=?, condition=?, MonitorTime=? , timeType=?"
+	BOOL success;
+	if (action == 1){// edit
+		success=[mgr.database executeUpdate:@"update MonitorList set price=? , category=?, condition=?, MonitorTime=? , timeType=?"
 							   " where monitorId=?", 
 		 [NSNumber numberWithInt:self.price],
 	     self.category, 
@@ -51,6 +54,19 @@
 		 [NSNumber numberWithInt:self.time],
 		 [NSNumber numberWithInt:self.timeType],
 	     [NSNumber numberWithInt:self.monitorId]];
+    }else {
+		success=[mgr.database executeUpdate:@"insert into MonitorList (itemId, name, price, category, condition, MonitorTime, timeType)"
+				 " values(?,?, ?, ?, ?,?,?)",
+				 self.itemId,
+				 self.name,
+				 [NSNumber numberWithInt:self.price],
+				 self.category, 
+				 [NSNumber numberWithInt:self.condition],
+				 [NSNumber numberWithInt:self.time],
+				 [NSNumber numberWithInt:self.timeType]];
+		
+	}
+
 	if (!success){
 		NSLog([mgr.database lastErrorMessage]);
 	}

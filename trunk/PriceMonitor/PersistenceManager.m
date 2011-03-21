@@ -90,7 +90,7 @@ static PersistenceManager *sharedMgr = nil;
 		return ;
 	}
 	//create monitorlist table
-	[db executeUpdate:@"drop table MonitorList"];
+	//[db executeUpdate:@"drop table MonitorList"];
 	success &= [db executeUpdate:@"create table if not exists MonitorList ("
 			   "monitorId integer primary key autoincrement,"
 			   "itemId varchar not null,"
@@ -102,9 +102,9 @@ static PersistenceManager *sharedMgr = nil;
 			   "MonitorTime integer not null,"
 			   "TimeType integer not null)"];
 	//insert test data
-	success &= [db executeUpdate:@"insert or replace into MonitorList values(1,'K0000215539', 'test', 1234, 'tokyo', 'other', 1,12,1)"];
-	success &= [db executeUpdate:@"insert or replace into MonitorList values(2,'K0000125739', 'test2', 12345, 'kanagawa', 'food', 2,10,0)"];
-	success &= [db executeUpdate:@"insert or replace into MonitorList values(3,'K0000156263', 'test3', 123456, 'yokohama', 'food', 3,5,0)"];
+	//success &= [db executeUpdate:@"insert or replace into MonitorList values(1,'K0000215539', 'test', 1234, 'tokyo', 'other', 1,12,1)"];
+	//success &= [db executeUpdate:@"insert or replace into MonitorList values(2,'K0000125739', 'test2', 12345, 'kanagawa', 'food', 2,10,0)"];
+	//success &= [db executeUpdate:@"insert or replace into MonitorList values(3,'K0000156263', 'test3', 123456, 'yokohama', 'food', 3,5,0)"];
 	
     if (!success){
 	   NSLog([db lastErrorMessage]);
