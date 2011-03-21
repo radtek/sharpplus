@@ -29,7 +29,7 @@
 		//                                         @"tt://monitorEdit?action=new&item=123"
 		//NSString* url = [NSString stringWithFormat:@"tt://monitorEdit?action=new&item=%@", itemId];
 		//NSString* url = @"tt://monitorEdit?action=new&item=123";//[NSString stringWithFormat:@"tt://monitorEdit?action=new&item=%@", itemId];
-		NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&item=%@&name=%@", action,self.itemId];
+		NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&name=%@", action,self.itemId];
 
 		NSString* button =@"Edit Monitor";
 		

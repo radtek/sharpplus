@@ -44,4 +44,6 @@ typedef enum{
 @property (nonatomic, assign) NSInteger time;
 @property (nonatomic, assign) MonitorTime timeType;
 
+-(id) initWithItemId:(NSString*)_itemId;
+
 @end

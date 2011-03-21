@@ -7,7 +7,7 @@
 //
 
 #import <Three20/Three20.h>
-
+#import "MonitorItem.h"
 
 @interface MonitorEditViewController : TTViewController {
 	IBOutlet UILabel* lblName;
@@ -16,7 +16,9 @@
 	IBOutlet UITextField* edtPrice;
 	IBOutlet UITextField* edtTime;
 	IBOutlet UISegmentedControl* segTime;
-	NSInteger _action;
+	NSInteger action;
+	NSString* itemId;
+	MonitorItem* item;
 }
 
 @property (retain, nonatomic) UILabel* lblName;
@@ -25,6 +27,9 @@
 @property (retain, nonatomic) UITextField* edtPrice;
 @property (retain, nonatomic) UITextField* edtTime;
 @property (retain, nonatomic) UISegmentedControl* segTime;
+@property (retain, nonatomic) NSString* itemId;
+@property (assign, nonatomic) NSInteger action;
+@property (retain, nonatomic) MonitorItem* item;
 
 -(IBAction)categoryDoneEditing:(id)sender;
 -(IBAction)backgroundClicking:(id)sender;

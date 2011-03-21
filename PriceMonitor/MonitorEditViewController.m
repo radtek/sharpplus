@@ -9,9 +9,10 @@
 #import "MonitorEditViewController.h"
 
 
+
 @implementation MonitorEditViewController
 
-@synthesize lblName, edtCategory,segCondition, edtPrice, edtTime, segTime;
+@synthesize lblName, edtCategory,segCondition, edtPrice, edtTime, segTime, action, itemId, item;
 
 // private
 
@@ -22,10 +23,13 @@
 - (id)initWithAction:(NSString*)action query:(NSDictionary*)query  {
 	if (self = [super initWithNibName:@"MonitorEditViewController" bundle:nil]) {
 		if ([action isEqualToString:@"new"]){
-			_action = 0;
+			self.action = 0;
 		}else{
-			_action = 1;
+			self.action = 1;
 		}
+		
+		self.itemId = [query objectForKey:@"itemId"];
+		
 		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc]
 												   initWithTitle:@"Done" style:UIBarButtonItemStyleDone
 												   target:self action:@selector(dismiss)] autorelease];
@@ -33,7 +37,7 @@
 												  initWithTitle:@"Cancel" style:UIBarButtonItemStyleBordered
 												  target:self action:@selector(dismiss)] autorelease];
 	
-		self.title = [NSString stringWithFormat:@"Edit Monitor %@", [query objectForKey:@"item"]];
+		self.title = [NSString stringWithFormat:@"Edit Monitor %@", [query objectForKey:@"name"]];
 	}
 	return self;
 }
@@ -41,8 +45,21 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
-	self.lblName.text = @"Edit Monitor Item";
-	
+	if (action==0)
+	{
+		//new
+	}
+	else {
+		//load monitor information from db 
+		//self.lblName.text = @"Edit Monitor Item";
+		self.item = [[MonitorItem alloc] initWithItemId:self.itemId];
+		self.lblName.text = self.item.name;
+		self.edtCategory.text = self.item.category;
+		self.edtPrice.text = [NSString stringWithFormat:@"%d", self.item.price];
+		self.edtTime.text = [NSString stringWithFormat:@"%d", self.item.time];
+		self.segCondition.selectedSegmentIndex = self.item.condition;
+		self.segTime.selectedSegmentIndex = self.item.timeType;	
+	}
 }
 
 //event handler
@@ -57,6 +74,8 @@
 }
 
 - (void)dealloc {
+	[item release];
+	[itemId release];
 	[lblName release];
 	[edtCategory release];
 	[segCondition release];
