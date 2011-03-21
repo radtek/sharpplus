@@ -41,6 +41,21 @@
 	return self;
 }
 
+-(void) saveToDb{
+	PersistenceManager * mgr = [PersistenceManager mgr];
+	BOOL success=[mgr.database executeUpdate:@"update MonitorList set price=? , category=?, condition=?, MonitorTime=? , timeType=?"
+							   " where monitorId=?", 
+		 [NSNumber numberWithInt:self.price],
+	     self.category, 
+		 [NSNumber numberWithInt:self.condition],
+		 [NSNumber numberWithInt:self.time],
+		 [NSNumber numberWithInt:self.timeType],
+	     [NSNumber numberWithInt:self.monitorId]];
+	if (!success){
+		NSLog([mgr.database lastErrorMessage]);
+	}
+}
+
 - (void)dealloc
 {
 	[itemId release];

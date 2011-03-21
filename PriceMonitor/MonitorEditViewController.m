@@ -20,6 +20,18 @@
 	[self dismissModalViewControllerAnimated:YES];
 }
 
+- (void) updateItem{
+	//update information
+	self.item.category = self.edtCategory.text;
+	self.item.price = [self.edtPrice.text intValue];
+	self.item.time = [self.edtTime.text intValue];
+	self.item.condition = self.segCondition.selectedSegmentIndex;
+	self.item.timeType = self.segTime.selectedSegmentIndex;
+	//save to db
+	[self.item saveToDb];
+	[self dismissModalViewControllerAnimated:YES];
+}
+
 - (id)initWithAction:(NSString*)action query:(NSDictionary*)query  {
 	if (self = [super initWithNibName:@"MonitorEditViewController" bundle:nil]) {
 		if ([action isEqualToString:@"new"]){
@@ -32,7 +44,7 @@
 		
 		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc]
 												   initWithTitle:@"Done" style:UIBarButtonItemStyleDone
-												   target:self action:@selector(dismiss)] autorelease];
+												   target:self action:@selector(updateItem)] autorelease];
 		self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc]
 												  initWithTitle:@"Cancel" style:UIBarButtonItemStyleBordered
 												  target:self action:@selector(dismiss)] autorelease];
