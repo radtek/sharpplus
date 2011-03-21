@@ -7,12 +7,13 @@
 //
 
 #import "MonitorEditViewController.h"
+#import "SearchResult.h"
 
 
 
 @implementation MonitorEditViewController
 
-@synthesize lblName, edtCategory,segCondition, edtPrice, edtTime, segTime, action, itemId, item;
+@synthesize lblName, edtCategory,segCondition, edtPrice, edtTime, segTime, action, itemId, item, result, price;
 
 // private
 
@@ -41,6 +42,9 @@
 		}
 		
 		self.itemId = [query objectForKey:@"itemId"];
+		self.result = [[query objectForKey:@"id"] intValue];
+		self.price = [[query objectForKey:@"price"] intValue];
+		
 		
 		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc]
 												   initWithTitle:@"Done" style:UIBarButtonItemStyleDone
@@ -60,6 +64,11 @@
 	if (action==0)
 	{
 		//new
+		
+		SearchResult* rslt= (SearchResult*)self.result;
+		self.lblName.text = rslt.title;
+		self.edtPrice.text = [NSString stringWithFormat:@"%d", self.price];
+		
 	}
 	else {
 		//load monitor information from db 

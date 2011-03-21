@@ -9,19 +9,25 @@
 #import "CompareViewController.h"
 #import "CompareResultsModel.h"
 #import "CompareResultsDataSource.h"
+#import "SearchResult.h"
+#import "CompareResult.h"
 
 @implementation CompareViewController
 
 @synthesize itemId = _itemId;
 @synthesize action = _action;
+@synthesize name = _name;
+@synthesize result = _result;
 
 //- (id)initwithItem:(NSString*)action query:(NSDictionary*)query{
 - (id)initWithAction:(NSString*)action query:(NSDictionary*)query  {
 	if (self = [super initWithNibName:@"CompareViewController" bundle:nil]) {
 		
 		self.itemId = [query objectForKey:@"itemId"];
+		self.result = [[query objectForKey:@"id"] intValue];
+		SearchResult* rslt = (SearchResult*)self.result;
 		
-		self.title = [NSString stringWithFormat:@"Compare Price %@", self.itemId];
+		self.title = [NSString stringWithFormat:@"Compare Price %@", rslt.title];
 		self.navigationItem.backBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle: @"Item List"
 										  style: UIBarButtonItemStyleBordered
@@ -46,29 +52,11 @@
 }
 
 - (void)createModel {
-	//	NSString * nibString = nil;
-	//	
-	//	if (self.nibName) {
-	//		nibString = [@"NIB: " stringByAppendingString:self.nibName];
-	//		
-	//	} else {
-	//		nibString = @"Called without a NIB";
-	//	}
-	//	
-	//	self.dataSource = [TTSectionedDataSource dataSourceWithObjects:
-	//					   @"TTTableViewController",
-	//					   [TTTableTextItem itemWithText:@"This demonstates a table"],
-	//					   [TTTableTextItem itemWithText:nibString],
-	//					   
-	//					   nil];
 	// Initialize our TTTableViewDataSource and our TTModel.
 	id<TTTableViewDataSource> ds = [CompareResultsDataSource dataSourceWithItems:nil];
 	ds.model = CreateCompareModelWithCurrentSettings();
 	
 	// By setting the dataSource property, the model property for this
-	// class (SearchTableViewController) will automatically be hooked up 
-	// to point at the same model that the dataSource points at, 
-	// which we just instantiated above.
 	self.dataSource = ds;
 
     [(id<CompareResultsModel>)self.model setItemId:self.itemId];
@@ -85,25 +73,31 @@
 	//if (self.modelState == TTModelStateLoaded) {
 	[super modelDidFinishLoad:model];
 	
-		NSString* strAction= @"new";
-		NSString* button =@"New Monitor";
+	NSString* strAction= @"new";
+	NSString* button =@"New Monitor";
 		
-		if (self.action==1){
-			strAction=@"edit";
-			button = @"Edit Monitor";
-		}
-		NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&name=%@", strAction,self.itemId, @""];
-		self.navigationItem.rightBarButtonItem =
+	if (self.action==1){
+		strAction=@"edit";
+		button = @"Edit Monitor";
+	}
+	//get the lowest price
+	NSString* strPrice= @"0";
+	
+	NSArray* results = [(id<CompareResultsModel>)self.model results];
+	if ( [results count]> 0){
+		CompareResult*	compare = (CompareResult*)[results objectAtIndex:0];
+		//remove ¥ and ,
+		strPrice= [compare.price stringByReplacingOccurrencesOfString:@"¥" withString:@""];
+		strPrice = [strPrice stringByReplacingOccurrencesOfString:@"," withString:@""];
+		
+	}
+	NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&id=%d&price=%@", 
+					 strAction,self.itemId, self.result, strPrice];
+	self.navigationItem.rightBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle:button 
-										  style:UIBarButtonItemStyleBordered
-										 target:url
-										 action:@selector(openURLFromButton:)] autorelease];
-	//} 
-	//else if (self.modelState == TTModelStateLoaded|TTModelStateReloading) {
-	//    self.title = @"Reloading";
-	//  } else if (self.modelState == TTModelStateLoadedError) {
-	//    self.title = @"LoadedError";
-	//  }
+								  style:UIBarButtonItemStyleBordered
+								  target:url
+								  action:@selector(openURLFromButton:)] autorelease];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

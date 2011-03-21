@@ -28,21 +28,6 @@
 }
 
 - (void)createModel {
-//	NSString * nibString = nil;
-//	
-//	if (self.nibName) {
-//		nibString = [@"NIB: " stringByAppendingString:self.nibName];
-//		
-//	} else {
-//		nibString = @"Called without a NIB";
-//	}
-//	
-//	self.dataSource = [TTSectionedDataSource dataSourceWithObjects:
-//					   @"TTTableViewController",
-//					   [TTTableTextItem itemWithText:@"This demonstates a table"],
-//					   [TTTableTextItem itemWithText:nibString],
-//					   
-//					   nil];
 	// Initialize our TTTableViewDataSource and our TTModel.
 	id<TTTableViewDataSource> ds = [SearchResultsDataSource dataSourceWithItems:nil];
 	ds.model = CreateSearchModelWithCurrentSettings();

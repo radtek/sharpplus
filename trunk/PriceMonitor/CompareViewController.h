@@ -11,10 +11,14 @@
 
 @interface CompareViewController : TTTableViewController {
 	NSString* _itemId;
-
+	NSInteger _action;
+	NSString* _name;	
+	NSInteger _result;
 }
 
 @property (nonatomic,retain) NSString* itemId;
-
+@property (nonatomic,assign) NSInteger action;
+@property (nonatomic,retain) NSString* name;
+@property (nonatomic,assign) NSInteger result;
 
 @end
