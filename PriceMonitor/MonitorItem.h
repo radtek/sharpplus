@@ -45,6 +45,6 @@ typedef enum{
 @property (nonatomic, assign) MonitorTime timeType;
 
 -(id) initWithItemId:(NSString*)_itemId;
--(void) saveToDb;
+-(void) saveToDb:(NSInteger)action;
 
 @end

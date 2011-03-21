@@ -31,7 +31,7 @@
 	self.item.condition = self.segCondition.selectedSegmentIndex;
 	self.item.timeType = self.segTime.selectedSegmentIndex;
 	//save to db
-	[self.item saveToDb];
+	[self.item saveToDb:self.action];
 	[self dismissModalViewControllerAnimated:YES];
 }
 
@@ -73,15 +73,17 @@
 	if (action==0)
 	{
 		//new
+		self.item = [[MonitorItem alloc] init];
 		
 		SearchResult* rslt= (SearchResult*)self.result;
 		self.lblName.text = rslt.title;
 		self.edtPrice.text = [NSString stringWithFormat:@"%d", self.price];
 		self.edtCategory.text = self.category;
+		self.item.name = rslt.title; 
+		self.item.itemId= self.itemId;
 	}
 	else {
 		//load monitor information from db 
-		//self.lblName.text = @"Edit Monitor Item";
 		self.item = [[MonitorItem alloc] initWithItemId:self.itemId];
 		self.lblName.text = self.item.name;
 		self.edtCategory.text = self.item.category;
