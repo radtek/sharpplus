@@ -84,15 +84,15 @@
 	NSString* strPrice= @"0";
 	
 	NSArray* results = [(id<CompareResultsModel>)self.model results];
+	CompareResult*	compare = nil;
 	if ( [results count]> 0){
-		CompareResult*	compare = (CompareResult*)[results objectAtIndex:0];
+		compare = (CompareResult*)[results objectAtIndex:0];
 		//remove ¥ and ,
 		strPrice= [compare.price stringByReplacingOccurrencesOfString:@"¥" withString:@""];
 		strPrice = [strPrice stringByReplacingOccurrencesOfString:@"," withString:@""];
-		
 	}
-	NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&id=%d&price=%@", 
-					 strAction,self.itemId, self.result, strPrice];
+	NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&id=%d&price=%@&cmpId=%d", 
+					 strAction,self.itemId, self.result, strPrice, compare];
 	self.navigationItem.rightBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle:button 
 								  style:UIBarButtonItemStyleBordered
