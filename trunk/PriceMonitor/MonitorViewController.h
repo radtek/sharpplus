@@ -13,4 +13,6 @@
 
 }
 
+-(IBAction)toggleDelete:(id)sender;
+
 @end

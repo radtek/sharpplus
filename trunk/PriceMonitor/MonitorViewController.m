@@ -9,10 +9,14 @@
 #import "MonitorViewController.h"
 #import "MonitorList.h"
 #import "MonitorItem.h"
+#import "MonitorDataSource.h"
 
 
 @implementation MonitorViewController
 
+-(IBAction)toggleDelete:(id)sender{
+	[self.tableView setEditing:!self.tableView.editing animated:YES];
+}
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
@@ -20,10 +24,11 @@
 	self.title = @"Monitor";
 	UIImage* image = [UIImage imageNamed:@"tab.png"];
 	self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
-	self.navigationItem.leftBarButtonItem =
-    [[[UIBarButtonItem alloc] initWithTitle:@"Edit" style:UIBarButtonItemStyleBordered
-									 target:@"tt://monitorEdit?action=new&item=123"
-									 action:@selector(openURLFromButton:)] autorelease];
+	self.navigationItem.rightBarButtonItem =
+    [[[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStyleBordered
+									 target:self
+									 action:@selector(toggleDelete:)] autorelease];
+	
 	MonitorList* list = [MonitorList monitorList];
 	NSMutableArray* items = [[NSMutableArray alloc] initWithCapacity:100];
 	for (NSInteger i=0; i< [list.itemArray count]; i++) {
@@ -38,7 +43,7 @@
 		[items addObject:details];
 	}
 	
-	self.dataSource = [TTSectionedDataSource dataSourceWithItems:items sections:list.sectionArray];
+	self.dataSource = [MonitorDataSource dataSourceWithItems:items sections:list.sectionArray];
 }
 
 @end
