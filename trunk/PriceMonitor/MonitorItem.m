@@ -72,6 +72,16 @@
 	}
 }
 
+-(void)delete{
+	//delete from db
+	PersistenceManager * mgr = [PersistenceManager mgr];
+	BOOL success = [mgr.database executeUpdate:@"delete from MonitorList where monitorId=?",
+					[NSNumber numberWithInt:self.monitorId]];
+	if (!success){
+		NSLog([mgr.database lastErrorMessage]);
+	}
+}
+
 - (void)dealloc
 {
 	[itemId release];

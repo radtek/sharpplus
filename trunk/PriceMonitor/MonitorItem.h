@@ -46,5 +46,6 @@ typedef enum{
 
 -(id) initWithItemId:(NSString*)_itemId;
 -(void) saveToDb:(NSInteger)action;
+-(void)delete;
 
 @end

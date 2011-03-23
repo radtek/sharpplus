@@ -7,7 +7,6 @@
 //
 
 #import "MonitorList.h"
-#import "MonitorItem.h"
 #import "PersistenceManager.h"
 
 
@@ -104,4 +103,19 @@ static MonitorList *sharedMonitorList = nil;
 	self.itemArray = items;
 }
 
+-(MonitorItem*)getMonitorItem:(NSIndexPath*)indexPath{
+	return [[self.itemArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+}
+
+-(MonitorItem*)deleteMonitorItem:(NSIndexPath*)indexPath{
+	MonitorItem* item= [[self.itemArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+	[item delete];
+	//remove from monitor list
+	NSMutableArray* arr = [self.itemArray objectAtIndex:indexPath.section];
+	[arr removeObjectAtIndex:indexPath.row];
+	if (![arr count]){
+		[self.itemArray removeObjectAtIndex:indexPath.section];
+		[self.sectionArray removeObjectAtIndex:indexPath.section];
+	}
+}
 @end
