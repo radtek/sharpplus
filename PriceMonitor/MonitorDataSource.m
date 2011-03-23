@@ -7,6 +7,7 @@
 //
 
 #import "MonitorDataSource.h"
+#import "MonitorList.h"
 
 
 @implementation MonitorDataSource
@@ -17,6 +18,10 @@
 	if (editingStyle == UITableViewCellEditingStyleDelete){
 		id object = [[self.items objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
 		//[self.model didDeleteObject:object atIndexPath:indexPath];
+		
+		//delete monitor from db and monitor list
+		MonitorList* list = [MonitorList monitorList];
+		[list deleteMonitorItem:indexPath];		
 		
 		if ([self removeItemAtIndexPath:indexPath andSectionIfEmpty:YES]){
 			[tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section ] withRowAnimation:UITableViewRowAnimationFade];

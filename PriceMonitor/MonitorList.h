@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "MonitorItem.h"
 
 @interface MonitorList : NSObject {
 	NSMutableArray* sectionArray;
@@ -19,5 +19,8 @@
 
 + (MonitorList *)monitorList;
 -(void) loadFromDb;
+-(MonitorItem*)getMonitorItem:(NSIndexPath*)indexPath;
+-(void)deleteMonitorItem:(NSIndexPath*)indexPath;
+
 
 @end
