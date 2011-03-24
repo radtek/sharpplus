@@ -11,8 +11,8 @@
 
 @interface ShopItemCell : TTTableTextItemCell {
 	
-	UILabel* _deliverPrice;
-	UILabel* _shop;
+	UILabel* _deliveryPrice;
+	UILabel* _shopName;
 	
 	TTImageView* _payImg1;
 	TTImageView* _payImg2;
@@ -23,8 +23,8 @@
 
 }
 
-@property (nonatomic, readonly, retain) UILabel*      deliverPrice;
-//@property (nonatomic, readonly, retain) UILabel*      shop;
+@property (nonatomic, readonly, retain) UILabel*      deliveryPrice;
+@property (nonatomic, readonly, retain) UILabel*      shopName;
 //
 //@property (nonatomic, readonly, retain) TTImageView*  payImg1;
 //@property (nonatomic, readonly, retain) TTImageView*  payImg2;

@@ -11,20 +11,20 @@
 
 @implementation ShopItem
 
-@synthesize deliverPrice=_deliverPrice, shop=_shop, payImg1=_payImg1, payImg2=_payImg2,
+@synthesize deliveryPrice=_deliveryPrice, shopName=_shopName, payImg1=_payImg1, payImg2=_payImg2,
 payImg3=_payImg3, area=_area, comment=_commnet;
 
-+(id)initItemWithShop:(NSString*)text deliverPrice:(NSString*)deliverPrice
++(id)initItemWithShop:(CompareResult*)shop
 {
 	ShopItem* item = [[[ShopItem alloc] init] autorelease];
-	item.text = text;
-	item.deliverPrice= deliverPrice;
+	item.text = shop.price;
+	item.deliveryPrice= shop.deliveryPrice;
 	
-	item.shop = @"";
+	item.shopName = shop.shopName;
 	item.payImg1 = @"";
 	item.payImg2 = @"";
 	item.payImg3 = @"";
-	item.area = @"";
+	item.area = shop.shopArea;
 	item.comment = @"";
 	
 	return item;
@@ -32,8 +32,8 @@ payImg3=_payImg3, area=_area, comment=_commnet;
 
 -(id)init{
 	if (self=[super init]){
-		_deliverPrice = nil;
-		_shop = nil;
+		_deliveryPrice = nil;
+		_shopName = nil;
 		_payImg1 = nil;
 		_payImg2 = nil;
 		_payImg3 = nil;
@@ -45,8 +45,8 @@ payImg3=_payImg3, area=_area, comment=_commnet;
 }
 
 -(void)dealloc{
-	TT_RELEASE_SAFELY(_deliverPrice);
-	TT_RELEASE_SAFELY(_shop);
+	TT_RELEASE_SAFELY(_deliveryPrice);
+	TT_RELEASE_SAFELY(_shopName);
 	TT_RELEASE_SAFELY(_payImg1);
 	TT_RELEASE_SAFELY(_payImg2);
 	TT_RELEASE_SAFELY(_payImg3);
@@ -56,8 +56,8 @@ payImg3=_payImg3, area=_area, comment=_commnet;
 
 -(id)initWithCoder:(NSCoder *)aDecoder{
 	if (self=[super initWithCoder:aDecoder]){
-		self.deliverPrice = [aDecoder decodeObjectForKey:@"deliverPrice"];
-		self.shop = [aDecoder decodeObjectForKey:@"shop"];
+		self.deliveryPrice = [aDecoder decodeObjectForKey:@"deliveryPrice"];
+		self.shopName = [aDecoder decodeObjectForKey:@"shopName"];
 		self.payImg1 = [aDecoder decodeObjectForKey:@"payImg1"];
 		self.payImg2 = [aDecoder decodeObjectForKey:@"payImg2"];
 		self.payImg3 = [aDecoder decodeObjectForKey:@"payImg3"];
@@ -68,11 +68,11 @@ payImg3=_payImg3, area=_area, comment=_commnet;
 
 -(void)encodeWithCoder:(NSCoder *)aCoder{
 	[super encodeWithCoder:aCoder];
-	if (self.deliverPrice){
-		[aCoder encodeObject:self.deliverPrice forKey:@"deliverPrice"];
+	if (self.deliveryPrice){
+		[aCoder encodeObject:self.deliveryPrice forKey:@"deliveryPrice"];
 	}
-	if (self.shop){
-		[aCoder encodeObject:self.shop forKey:@"shop"];
+	if (self.shopName){
+		[aCoder encodeObject:self.shopName forKey:@"shopName"];
 	}
 	if (self.payImg1){
 		[aCoder encodeObject:self.payImg1 forKey:@"payImg1"];
