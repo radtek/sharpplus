@@ -28,8 +28,7 @@
 //        [self.items addObject:[TTTableSubtitleItem itemWithText:result.price 
 //													   subtitle:result.shopName
 //													   URL:result.shopURL]
-        [self.items addObject:[ShopItem initItemWithShop:result.price 
-							   deliverPrice:result.deliveryPrice]
+        [self.items addObject:[ShopItem initItemWithShop:result]
 		];
     
     //TTLOG(@"Added %lu search result objects", (unsigned long)[self.items count]);

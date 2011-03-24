@@ -7,11 +7,12 @@
 //
 
 #import "Three20/Three20.h"
+#import "CompareResult.h"
 
 
 @interface ShopItem : TTTableTextItem {
-	NSString* _deliverPrice;
-	NSString* _shop;
+	NSString* _deliveryPrice;
+	NSString* _shopName;
 	NSString* _payImg1;
 	NSString* _payImg2;
 	NSString* _payImg3;
@@ -19,8 +20,8 @@
 	NSString* _comment;
 }
 
-@property (nonatomic,copy) NSString* deliverPrice;
-@property (nonatomic,copy) NSString* shop;
+@property (nonatomic,copy) NSString* deliveryPrice;
+@property (nonatomic,copy) NSString* shopName;
 @property (nonatomic,copy) NSString* payImg1;
 @property (nonatomic,copy) NSString* payImg2;
 @property (nonatomic,copy) NSString* payImg3;
@@ -28,6 +29,6 @@
 @property (nonatomic,copy) NSString* comment;
 
 
-+(id)initItemWithShop:(NSString*)text deliverPrice:(NSString*)deliverPrice;
++(id)initItemWithShop:(CompareResult*)shop;
 
 @end

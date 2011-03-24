@@ -42,16 +42,21 @@ static CGFloat kImageHeight = 16;
 	CGFloat height = TTSTYLEVAR(tableFont).ttLineHeight + kTableCellVPadding*2;
 	//calc deliverPrice size
 
-	if (item.deliverPrice) {
-		CGSize price2Size = [item.deliverPrice sizeWithFont:TTSTYLEVAR(tableFont) 
+	if (item.deliveryPrice) {
+		CGSize price2Size = [item.deliveryPrice sizeWithFont:TTSTYLEVAR(tableFont) 
 							constrainedToSize:CGSizeMake(maxWidth, CGFLOAT_MAX)
 											  lineBreakMode:UILineBreakModeWordWrap];
 		height +=  price2Size.height;
 	}
-	
+	//calc shop size
+	if (item.shopName) {
+		CGSize shopSize = [item.shopName sizeWithFont:TTSTYLEVAR(tableFont) 
+										   constrainedToSize:CGSizeMake(maxWidth, CGFLOAT_MAX)
+											   lineBreakMode:UILineBreakModeWordWrap];
+		height +=  shopSize.height;
+	}	
 	return height;
 	
-	//calc shop size
 	
 	//calc pay image size
 	
@@ -77,17 +82,19 @@ static CGFloat kImageHeight = 16;
 //		self.detailTextLabel.contentMode = UIViewContentModeTop;
 //		self.detailTextLabel.lineBreakMode = UILineBreakModeTailTruncation;
 //		self.detailTextLabel.numberOfLines = kTableMessageTextLineCount;
-		_deliverPrice = [[UILabel alloc] initWithFrame:CGRectZero];
-		[self.contentView addSubview:_deliverPrice];
+		_deliveryPrice = [[UILabel alloc] initWithFrame:CGRectZero];
+		[self.contentView addSubview:_deliveryPrice];
 		
+		_shopName = [[UILabel alloc] initWithFrame:CGRectZero];
+		[self.contentView addSubview:_shopName];
 	}
 	
 	return self;
 }
 
 -(void)dealloc{
-	TT_RELEASE_SAFELY(_deliverPrice);
-	TT_RELEASE_SAFELY(_shop);
+	TT_RELEASE_SAFELY(_deliveryPrice);
+	TT_RELEASE_SAFELY(_shopName);
 	TT_RELEASE_SAFELY(_payImg1);
 	TT_RELEASE_SAFELY(_payImg2);
 	TT_RELEASE_SAFELY(_payImg3);
@@ -104,7 +111,8 @@ static CGFloat kImageHeight = 16;
 	self.textLabel.top = kTableCellVPadding;
 	self.textLabel.left = kTableCellHPadding;
 	
-	_deliverPrice.frame = CGRectMake(kTableCellHPadding, self.textLabel.bottom, 300, TTSTYLEVAR(tableFont).ttLineHeight);
+	_deliveryPrice.frame = CGRectMake(kTableCellHPadding, self.textLabel.bottom, 300, TTSTYLEVAR(tableFont).ttLineHeight);
+	_shopName.frame = CGRectMake(kTableCellHPadding, self.deliveryPrice.bottom, 300, TTSTYLEVAR(tableFont).ttLineHeight);
 	
 }
 
@@ -114,21 +122,31 @@ static CGFloat kImageHeight = 16;
 		
 		ShopItem* item = object;
 		if (item.text.length) {
-			self.textLabel.text = item.text;
+			self.textLabel.text = [NSString stringWithFormat:@"価格:%@", item.text];
 		}
-		if (item.deliverPrice.length) {
-			self.deliverPrice.text = item.deliverPrice;
+		if (item.deliveryPrice.length) {
+			self.deliveryPrice.text = [NSString stringWithFormat:@"送料:%@" ,item.deliveryPrice];
+		}
+		if (item.shopName.length){
+			self.shopName.text = [NSString stringWithFormat:@"ショップ:%@" ,item.shopName];
 		}
 	}
 }
 
-- (UILabel*)deliverPrice {
-	if (!_deliverPrice) {
-		_deliverPrice = [[UILabel alloc] init];
-		[self.contentView addSubview:_deliverPrice];
+- (UILabel*)deliveryPrice {
+	if (!_deliveryPrice) {
+		_deliveryPrice = [[UILabel alloc] init];
+		[self.contentView addSubview:_deliveryPrice];
 	}
-	return _deliverPrice;
+	return _deliveryPrice;
 }
 
+- (UILabel*)shopName {
+	if (!_shopName) {
+		_shopName = [[UILabel alloc] init];
+		[self.contentView addSubview:_shopName];
+	}
+	return _shopName;
+}
 
 @end
