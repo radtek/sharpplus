@@ -27,9 +27,11 @@
     // Now construct our domain-specific object.
     for (NSUInteger i = 0; i < totalObjectsAvailableOnServer; i++) {
         CompareResult *result = [[[CompareResult alloc] init] autorelease];
-				
+		Element* shop = [shops objectAtIndex:i];
+		Element* deliverPrice = [[[[shop parent] parent] childElements] objectAtIndex:2];
         result.price = [[[prices objectAtIndex:i] contentsText] stringByConvertingHTMLToPlainText];
-        result.shopName = [[[shops objectAtIndex:i] contentsText] stringByConvertingHTMLToPlainText];
+		result.deliveryPrice = [[deliverPrice contentsText] stringByConvertingHTMLToPlainText];
+        result.shopName = [[shop contentsText] stringByConvertingHTMLToPlainText];
 		result.category = [[category contentsText] stringByConvertingHTMLToPlainText];
 
         [self.objects addObject:result];

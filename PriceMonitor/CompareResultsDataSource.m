@@ -9,6 +9,8 @@
 #import "CompareResultsDataSource.h"
 #import "CompareResult.h"
 #import "CompareResultsModel.h"
+#import "ShopItem.h"
+#import "ShopItemCell.h"
 
 
 @implementation CompareResultsDataSource
@@ -23,12 +25,28 @@
     // Construct an object that is suitable for the table view system
     // from each SearchResult domain object that we retrieve from the TTModel.
     for (CompareResult *result in [(id<CompareResultsModel>)self.model results])
-        [self.items addObject:[TTTableSubtitleItem itemWithText:result.price 
-													   subtitle:result.shopName
-													   URL:result.shopURL]
-		 ];
+//        [self.items addObject:[TTTableSubtitleItem itemWithText:result.price 
+//													   subtitle:result.shopName
+//													   URL:result.shopURL]
+        [self.items addObject:[ShopItem initItemWithShop:result.price 
+							   deliverPrice:result.deliveryPrice]
+		];
     
     //TTLOG(@"Added %lu search result objects", (unsigned long)[self.items count]);
 }
+
+- (Class)tableView:(UITableView*)tableView cellClassForObject:(id)object{
+     if ([object isKindOfClass:[ShopItem class]]) {  
+         return [ShopItemCell class];  
+     } else {  
+         return [super tableView:tableView cellClassForObject:object];  
+     }  	
+}
+
+- (void)tableView:(UITableView*)tableView prepareCell:(UITableViewCell*)cell  
+forRowAtIndexPath:(NSIndexPath*)indexPath {  
+    cell.accessoryType = UITableViewCellAccessoryNone;  
+}  
+
 
 @end

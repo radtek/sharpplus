@@ -38,6 +38,10 @@
 		}else{
 			self.action = 1;
 		}
+		
+		self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth  
+										| UIViewAutoresizingFlexibleHeight;  
+		self.variableHeightRows = YES;  
 	}
 	return self;
 }
@@ -99,6 +103,7 @@
 								  target:url
 								  action:@selector(openURLFromButton:)] autorelease];
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 -(void)dealloc {
