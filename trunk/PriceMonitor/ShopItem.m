@@ -21,9 +21,9 @@ payImg3=_payImg3, area=_area, comment=_commnet;
 	item.deliveryPrice= shop.deliveryPrice;
 	
 	item.shopName = shop.shopName;
-	item.payImg1 = @"";
-	item.payImg2 = @"";
-	item.payImg3 = @"";
+	item.payImg1 = shop.payImg1;
+	item.payImg2 = shop.payImg2;
+	item.payImg3 = shop.payImg3;
 	item.area = shop.shopArea;
 	item.comment = @"";
 	

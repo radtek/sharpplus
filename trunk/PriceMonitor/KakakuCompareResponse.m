@@ -20,8 +20,9 @@
 	DocumentRoot* root = [parser parseHTML: htmlStr];
 	NSArray *prices = [root selectElements:@"p.fontPrice a"];
 	NSArray *shops  = [root selectElements:@"td.shopname a"];
-	
 	Element * category = [root selectElement:@"span.category"];	
+	
+	NSArray *payList = [root selectElements:@"ul.payList li img"];
     
     totalObjectsAvailableOnServer = [prices count];
     // Now construct our domain-specific object.
@@ -33,6 +34,10 @@
 		result.deliveryPrice = [[deliverPrice contentsText] stringByConvertingHTMLToPlainText];
         result.shopName = [[shop contentsText] stringByConvertingHTMLToPlainText];
 		result.category = [[category contentsText] stringByConvertingHTMLToPlainText];
+		
+		result.payImg1 = [[payList objectAtIndex:0+3*i]  attribute:@"src"];
+		result.payImg2 = [[payList objectAtIndex:1+3*i] attribute:@"src"];
+		result.payImg3 = [[payList objectAtIndex:2+3*i] attribute:@"src"];
 
         [self.objects addObject:result];
     }
