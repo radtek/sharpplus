@@ -62,6 +62,9 @@ static CGFloat kImageHeight = 16;
 	}
 	
 	//calc area size
+	if (item.area){
+		height += TTSTYLEVAR(tableFont).ttLineHeight;
+	}
 	
 	//calc comment size
 	return height;	
@@ -97,7 +100,8 @@ static CGFloat kImageHeight = 16;
 		[self.contentView addSubview:_payImg2];
 		_payImg3 = [[TTImageView alloc] initWithFrame:CGRectZero];
 		[self.contentView addSubview:_payImg3];
-		
+		_area = [[UILabel alloc] initWithFrame:CGRectZero];
+		[self.contentView addSubview:_area];		
 	}
 	
 	return self;
@@ -130,6 +134,7 @@ static CGFloat kImageHeight = 16;
 	_payImg2.frame = CGRectMake(_payImg1.right, self.shopName.bottom+2, kImageWidth, kImageHeight);
 	_payImg3.frame = CGRectMake(_payImg2.right, self.shopName.bottom+2, kImageWidth, kImageHeight);
 
+	_area.frame = CGRectMake(kTableCellHPadding, self.payMethod.bottom, 300,  TTSTYLEVAR(tableFont).ttLineHeight);
 	
 }
 
@@ -148,7 +153,7 @@ static CGFloat kImageHeight = 16;
 			self.shopName.text = [NSString stringWithFormat:@"ショップ:%@" ,item.shopName];
 		}
 		
-		self.payMethod.text = @"支払方法";
+		self.payMethod.text = @"支払方法:";
 		if (item.payImg1.length){
 			self.payImg1.urlPath = item.payImg1;
 		}
@@ -158,7 +163,9 @@ static CGFloat kImageHeight = 16;
 		if (item.payImg3.length){
 			self.payImg3.urlPath = item.payImg3;
 		}
-		
+		if (item.area.length){
+			self.area.text = [NSString stringWithFormat:@"地域:%@", item.area];
+		}		
 	}
 }
 
@@ -210,5 +217,12 @@ static CGFloat kImageHeight = 16;
 	return _payImg3;
 }
 
+- (UILabel*)area {
+	if (!_area) {
+		_area = [[UILabel alloc] init];
+		[self.contentView addSubview:_area];
+	}
+	return _area;
+}
 
 @end

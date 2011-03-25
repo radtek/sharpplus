@@ -32,7 +32,7 @@
 @property (nonatomic, readonly, retain) TTImageView*  payImg2;
 @property (nonatomic, readonly, retain) TTImageView*  payImg3;
 //
-//@property (nonatomic, readonly, retain) UILabel*      area;
+@property (nonatomic, readonly, retain) UILabel*      area;
 //@property (nonatomic, readonly, retain) UILabel*      comment;
 
 
