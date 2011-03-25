@@ -55,15 +55,16 @@ static CGFloat kImageHeight = 16;
 											   lineBreakMode:UILineBreakModeWordWrap];
 		height +=  shopSize.height;
 	}	
-	return height;
-	
 	
 	//calc pay image size
+	if (item.payImg1){
+		height += TTSTYLEVAR(tableFont).ttLineHeight;
+	}
 	
 	//calc area size
 	
 	//calc comment size
-	
+	return height;	
 }
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString*)identifier {
@@ -87,6 +88,16 @@ static CGFloat kImageHeight = 16;
 		
 		_shopName = [[UILabel alloc] initWithFrame:CGRectZero];
 		[self.contentView addSubview:_shopName];
+		
+		_payMethod = [[UILabel alloc] initWithFrame:CGRectZero];
+		[self.contentView addSubview:_payMethod];
+		_payImg1 = [[TTImageView alloc] initWithFrame:CGRectZero];
+		[self.contentView addSubview:_payImg1];
+		_payImg2 = [[TTImageView alloc] initWithFrame:CGRectZero];
+		[self.contentView addSubview:_payImg2];
+		_payImg3 = [[TTImageView alloc] initWithFrame:CGRectZero];
+		[self.contentView addSubview:_payImg3];
+		
 	}
 	
 	return self;
@@ -95,6 +106,7 @@ static CGFloat kImageHeight = 16;
 -(void)dealloc{
 	TT_RELEASE_SAFELY(_deliveryPrice);
 	TT_RELEASE_SAFELY(_shopName);
+	TT_RELEASE_SAFELY(_payMethod);
 	TT_RELEASE_SAFELY(_payImg1);
 	TT_RELEASE_SAFELY(_payImg2);
 	TT_RELEASE_SAFELY(_payImg3);
@@ -113,6 +125,11 @@ static CGFloat kImageHeight = 16;
 	
 	_deliveryPrice.frame = CGRectMake(kTableCellHPadding, self.textLabel.bottom, 300, TTSTYLEVAR(tableFont).ttLineHeight);
 	_shopName.frame = CGRectMake(kTableCellHPadding, self.deliveryPrice.bottom, 300, TTSTYLEVAR(tableFont).ttLineHeight);
+	_payMethod.frame = CGRectMake(kTableCellHPadding, self.shopName.bottom, 80, TTSTYLEVAR(tableFont).ttLineHeight);
+	_payImg1.frame = CGRectMake(_payMethod.right, self.shopName.bottom+2, kImageWidth, kImageHeight);
+	_payImg2.frame = CGRectMake(_payImg1.right, self.shopName.bottom+2, kImageWidth, kImageHeight);
+	_payImg3.frame = CGRectMake(_payImg2.right, self.shopName.bottom+2, kImageWidth, kImageHeight);
+
 	
 }
 
@@ -130,6 +147,18 @@ static CGFloat kImageHeight = 16;
 		if (item.shopName.length){
 			self.shopName.text = [NSString stringWithFormat:@"ショップ:%@" ,item.shopName];
 		}
+		
+		self.payMethod.text = @"支払方法";
+		if (item.payImg1.length){
+			self.payImg1.urlPath = item.payImg1;
+		}
+		if (item.payImg2.length){
+			self.payImg2.urlPath = item.payImg2;
+		}
+		if (item.payImg3.length){
+			self.payImg3.urlPath = item.payImg3;
+		}
+		
 	}
 }
 
@@ -148,5 +177,38 @@ static CGFloat kImageHeight = 16;
 	}
 	return _shopName;
 }
+
+- (UILabel*)payMethod {
+	if (!_payMethod) {
+		_payMethod = [[UILabel alloc] init];
+		[self.contentView addSubview:_payMethod];
+	}
+	return _payMethod;
+}
+
+- (TTImageView*)payImg1 {
+	if (!_payImg1) {
+		_payImg1 = [[TTImageView alloc] init];
+		[self.contentView addSubview:_payImg1];
+	}
+	return _payImg1;
+}
+
+- (TTImageView*)payImg2 {
+	if (!_payImg2) {
+		_payImg2 = [[TTImageView alloc] init];
+		[self.contentView addSubview:_payImg2];
+	}
+	return _payImg2;
+}
+
+- (TTImageView*)payImg3 {
+	if (!_payImg3) {
+		_payImg3 = [[TTImageView alloc] init];
+		[self.contentView addSubview:_payImg3];
+	}
+	return _payImg3;
+}
+
 
 @end

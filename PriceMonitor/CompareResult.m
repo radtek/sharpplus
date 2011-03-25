@@ -11,7 +11,8 @@
 
 @implementation CompareResult
 
-@synthesize price, deliveryPrice, shopName, shopArea, shopURL, hasStock, category;
+@synthesize price, deliveryPrice, shopName, shopArea, shopURL, hasStock, category,
+			payImg1,payImg2, payImg3;
 
 - (void)dealloc
 {
@@ -22,6 +23,10 @@
     [shopURL release];
     [hasStock release];
 	[category release];
+	[payImg1 release];
+	[payImg2 release];
+	[payImg3 release];
+	
     [super dealloc];
 }
 
