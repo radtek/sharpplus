@@ -22,6 +22,7 @@
 	NSString *payImg1;
 	NSString *payImg2;
 	NSString *payImg3;
+	NSString *comment;
 	
 }
 
@@ -36,5 +37,6 @@
 @property (nonatomic, retain) NSString *payImg1;
 @property (nonatomic, retain) NSString *payImg2;
 @property (nonatomic, retain) NSString *payImg3;
+@property (nonatomic, retain) NSString *comment;
 
 @end

@@ -18,6 +18,7 @@
 	NSString* _payImg3;
 	NSString* _area;
 	NSString* _comment;
+	
 }
 
 @property (nonatomic,copy) NSString* deliveryPrice;
@@ -27,7 +28,6 @@
 @property (nonatomic,copy) NSString* payImg3;
 @property (nonatomic,copy) NSString* area;
 @property (nonatomic,copy) NSString* comment;
-
 
 +(id)initItemWithShop:(CompareResult*)shop;
 

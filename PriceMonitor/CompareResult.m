@@ -12,7 +12,7 @@
 @implementation CompareResult
 
 @synthesize price, deliveryPrice, shopName, shopArea, shopURL, hasStock, category,
-			payImg1,payImg2, payImg3;
+			payImg1,payImg2, payImg3, comment;
 
 - (void)dealloc
 {
@@ -26,7 +26,7 @@
 	[payImg1 release];
 	[payImg2 release];
 	[payImg3 release];
-	
+	[comment release];
     [super dealloc];
 }
 

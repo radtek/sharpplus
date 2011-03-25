@@ -12,7 +12,7 @@
 @implementation ShopItem
 
 @synthesize deliveryPrice=_deliveryPrice, shopName=_shopName, payImg1=_payImg1, payImg2=_payImg2,
-payImg3=_payImg3, area=_area, comment=_commnet;
+payImg3=_payImg3, area=_area, comment=_comment;
 
 +(id)initItemWithShop:(CompareResult*)shop
 {
@@ -25,7 +25,7 @@ payImg3=_payImg3, area=_area, comment=_commnet;
 	item.payImg2 = shop.payImg2;
 	item.payImg3 = shop.payImg3;
 	item.area = shop.shopArea;
-	item.comment = @"";
+	item.comment = shop.comment;
 	
 	return item;
 }

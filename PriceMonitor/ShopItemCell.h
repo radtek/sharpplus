@@ -21,7 +21,8 @@
 	
 	UILabel* _area;
 	UILabel* _comment;
-
+	
+	
 }
 
 @property (nonatomic, readonly, retain) UILabel*      deliveryPrice;
@@ -33,7 +34,8 @@
 @property (nonatomic, readonly, retain) TTImageView*  payImg3;
 //
 @property (nonatomic, readonly, retain) UILabel*      area;
-//@property (nonatomic, readonly, retain) UILabel*      comment;
+@property (nonatomic, readonly, retain) UILabel*      comment;
+
 
 
 @end
