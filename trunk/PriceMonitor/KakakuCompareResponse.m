@@ -20,6 +20,7 @@
 	DocumentRoot* root = [parser parseHTML: htmlStr];
 	NSArray *prices = [root selectElements:@"p.fontPrice a"];
 	NSArray *shops  = [root selectElements:@"td.shopname a"];
+	NSArray *comments = [root selectElements:@"td.alignL"];
 	Element * category = [root selectElement:@"span.category"];	
 	
 	NSArray *payList = [root selectElements:@"ul.payList li img"];
@@ -40,6 +41,10 @@
 		result.payImg2 = [[payList objectAtIndex:1+3*i] attribute:@"src"];
 		result.payImg3 = [[payList objectAtIndex:2+3*i] attribute:@"src"];
 		result.shopArea = [[area contentsText] stringByConvertingHTMLToPlainText];
+		Element* comment = [[comments objectAtIndex:i] selectElement:@"p.font11"];
+		if (comment){
+			result.comment = [[comment contentsText] stringByConvertingHTMLToPlainText];
+		}
 
         [self.objects addObject:result];
     }

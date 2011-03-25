@@ -43,17 +43,11 @@ static CGFloat kImageHeight = 16;
 	//calc deliverPrice size
 
 	if (item.deliveryPrice) {
-		CGSize price2Size = [item.deliveryPrice sizeWithFont:TTSTYLEVAR(tableFont) 
-							constrainedToSize:CGSizeMake(maxWidth, CGFLOAT_MAX)
-											  lineBreakMode:UILineBreakModeWordWrap];
-		height +=  price2Size.height;
+		height +=  TTSTYLEVAR(tableFont).ttLineHeight;
 	}
 	//calc shop size
 	if (item.shopName) {
-		CGSize shopSize = [item.shopName sizeWithFont:TTSTYLEVAR(tableFont) 
-										   constrainedToSize:CGSizeMake(maxWidth, CGFLOAT_MAX)
-											   lineBreakMode:UILineBreakModeWordWrap];
-		height +=  shopSize.height;
+		height +=  TTSTYLEVAR(tableFont).ttLineHeight;
 	}	
 	
 	//calc pay image size
@@ -67,6 +61,13 @@ static CGFloat kImageHeight = 16;
 	}
 	
 	//calc comment size
+	if (item.comment){
+		CGSize commentSize = [item.comment sizeWithFont:TTSTYLEVAR(tableFont) 
+										   constrainedToSize:CGSizeMake(maxWidth-80, CGFLOAT_MAX)
+											   lineBreakMode:UILineBreakModeWordWrap];
+		height+=commentSize.height;
+		
+	}
 	return height;	
 }
 
@@ -78,14 +79,6 @@ static CGFloat kImageHeight = 16;
 		self.textLabel.textAlignment = UITextAlignmentLeft;
 		self.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
 		self.textLabel.adjustsFontSizeToFitWidth = YES;
-//		
-//		self.detailTextLabel.font = TTSTYLEVAR(font);
-//		self.detailTextLabel.textColor = TTSTYLEVAR(tableSubTextColor);
-//		self.detailTextLabel.highlightedTextColor = TTSTYLEVAR(highlightedTextColor);
-//		self.detailTextLabel.textAlignment = UITextAlignmentLeft;
-//		self.detailTextLabel.contentMode = UIViewContentModeTop;
-//		self.detailTextLabel.lineBreakMode = UILineBreakModeTailTruncation;
-//		self.detailTextLabel.numberOfLines = kTableMessageTextLineCount;
 		_deliveryPrice = [[UILabel alloc] initWithFrame:CGRectZero];
 		[self.contentView addSubview:_deliveryPrice];
 		
@@ -102,6 +95,16 @@ static CGFloat kImageHeight = 16;
 		[self.contentView addSubview:_payImg3];
 		_area = [[UILabel alloc] initWithFrame:CGRectZero];
 		[self.contentView addSubview:_area];		
+		_comment = [[UILabel alloc] initWithFrame:CGRectZero];
+		[self.contentView addSubview:_comment];		
+		
+		self.detailTextLabel.font = TTSTYLEVAR(font);
+		self.detailTextLabel.textColor = TTSTYLEVAR(tableSubTextColor);
+		self.detailTextLabel.highlightedTextColor = TTSTYLEVAR(highlightedTextColor);
+		self.detailTextLabel.textAlignment = UITextAlignmentLeft;
+		self.detailTextLabel.contentMode = UIViewContentModeTop;
+		self.detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
+		self.detailTextLabel.numberOfLines = 0;
 	}
 	
 	return self;
@@ -135,6 +138,8 @@ static CGFloat kImageHeight = 16;
 	_payImg3.frame = CGRectMake(_payImg2.right, self.shopName.bottom+2, kImageWidth, kImageHeight);
 
 	_area.frame = CGRectMake(kTableCellHPadding, self.payMethod.bottom, 300,  TTSTYLEVAR(tableFont).ttLineHeight);
+	_comment.frame = CGRectMake(kTableCellHPadding, self.area.bottom, 80,  TTSTYLEVAR(tableFont).ttLineHeight);
+	self.detailTextLabel.frame =CGRectMake(self.comment.right, self.area.bottom, self.detailTextLabel.width,  self.detailTextLabel.height);
 	
 }
 
@@ -165,7 +170,18 @@ static CGFloat kImageHeight = 16;
 		}
 		if (item.area.length){
 			self.area.text = [NSString stringWithFormat:@"地域:%@", item.area];
-		}		
+		}
+		if (item.comment.length){
+			self.comment.text = @"コメント:";
+			self.detailTextLabel.text= item.comment;
+			
+			CGSize commentSize = [item.comment sizeWithFont:TTSTYLEVAR(tableFont) 
+										  constrainedToSize:CGSizeMake(300-80, CGFLOAT_MAX)
+											  lineBreakMode:UILineBreakModeWordWrap];
+			
+			self.detailTextLabel.frame =CGRectMake(0, 0, commentSize.width,  commentSize.height);
+			
+		}
 	}
 }
 
@@ -223,6 +239,14 @@ static CGFloat kImageHeight = 16;
 		[self.contentView addSubview:_area];
 	}
 	return _area;
+}
+
+- (UILabel*)comment{
+	if (!_comment) {
+		_comment = [[UILabel alloc] init];
+		[self.contentView addSubview:_comment];
+	}
+	return _comment;
 }
 
 @end
