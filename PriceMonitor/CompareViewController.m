@@ -11,6 +11,7 @@
 #import "CompareResultsDataSource.h"
 #import "SearchResult.h"
 #import "CompareResult.h"
+#import "MonitorItem.h"
 
 @implementation CompareViewController
 
@@ -18,6 +19,7 @@
 @synthesize action = _action;
 @synthesize name = _name;
 @synthesize result = _result;
+@synthesize headerView = _headerView, product = _product , spec = _spec;
 
 //- (id)initwithItem:(NSString*)action query:(NSDictionary*)query{
 - (id)initWithAction:(NSString*)action query:(NSDictionary*)query  {
@@ -25,33 +27,38 @@
 		
 		self.itemId = [query objectForKey:@"itemId"];
 		self.result = [[query objectForKey:@"id"] intValue];
-		SearchResult* rslt = (SearchResult*)self.result;
 		
-		self.title = [NSString stringWithFormat:@"Compare Price %@", rslt.title];
+		if ([action isEqualToString:@"new"]){
+			self.action = 0;
+			SearchResult* rslt = (SearchResult*)self.result;
+			self.name = rslt.title;
+			
+		}else{
+			self.action = 1;
+			MonitorItem* rslt = (MonitorItem*)self.result;
+			self.name = rslt.name;
+		}
+		
+		
+		self.title = @"価格比較";
+		
 		self.navigationItem.backBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle: @"Item List"
 										  style: UIBarButtonItemStyleBordered
 										 target: nil
 										 action: nil] autorelease];	
-		if ([action isEqualToString:@"new"]){
-			self.action = 0;
-		}else{
-			self.action = 1;
-		}
 		
-		self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth  
-										| UIViewAutoresizingFlexibleHeight;  
+		self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth  ;
+										//| UIViewAutoresizingFlexibleHeight;  
 		self.variableHeightRows = YES;  
 	}
 	return self;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	
-	//self.tableView.tableHeaderView = self.headerView;
+
 	//self.tableView.tableFooterView = self.footerView;
 }
 
@@ -102,12 +109,19 @@
 								  style:UIBarButtonItemStyleBordered
 								  target:url
 								  action:@selector(openURLFromButton:)] autorelease];
+	self.tableView.tableHeaderView = self.headerView;
+	
+	self.product.text = self.name;	
+	
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 -(void)dealloc {
-	//TT_RELEASE_SAFELY(_headerView);
+	TT_RELEASE_SAFELY(_headerView);
+	TT_RELEASE_SAFELY(_product);
+	TT_RELEASE_SAFELY(_spec);
+	
 	[_itemId release];
 	[super dealloc];
 }

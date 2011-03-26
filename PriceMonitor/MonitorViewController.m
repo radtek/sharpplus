@@ -36,7 +36,7 @@
 		NSMutableArray* srcDetails = [list.itemArray objectAtIndex:i];
 		for (NSInteger j=0; j<[srcDetails count]; j++) {
 			MonitorItem* item = [srcDetails objectAtIndex:j];
-			NSString* url = [[NSString alloc] initWithFormat:@"tt://compareItem?action=edit&itemId=%@",item.itemId];
+			NSString* url = [[NSString alloc] initWithFormat:@"tt://compareItem?action=edit&itemId=%@&id=%d",item.itemId, item];
 			TTTableTextItem* tableItem = [TTTableTextItem itemWithText:item.name URL:url];
 			[details addObject:tableItem];
 		}
