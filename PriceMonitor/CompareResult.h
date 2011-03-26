@@ -17,6 +17,7 @@
     NSString *shopURL;
 	NSString *hasStock;
 	NSString *category;
+	NSString *spec;
 	
 	//paylist
 	NSString *payImg1;
@@ -33,6 +34,7 @@
 @property (nonatomic, retain) NSString *shopArea;
 @property (nonatomic, retain) NSString *hasStock;
 @property (nonatomic, retain) NSString *category;
+@property (nonatomic, retain) NSString *spec;
 
 @property (nonatomic, retain) NSString *payImg1;
 @property (nonatomic, retain) NSString *payImg2;

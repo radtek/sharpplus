@@ -113,6 +113,13 @@
 	
 	self.product.text = self.name;	
 	
+	CompareResult* rslt= [[(id<CompareResultsModel>)model results] objectAtIndex:0];
+	if (rslt.spec){
+		self.spec.text = rslt.spec;
+	}else {
+		self.spec.text = @"";
+	}
+
 }
 
 
