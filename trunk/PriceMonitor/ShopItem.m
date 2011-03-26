@@ -18,6 +18,8 @@ payImg3=_payImg3, area=_area, comment=_comment;
 {
 	ShopItem* item = [[[ShopItem alloc] init] autorelease];
 	item.text = shop.price;
+	item.URL = [NSString stringWithFormat:@"http://s.kakaku.com%@", shop.shopURL];	
+//	NSLog(item.URL);
 	item.deliveryPrice= shop.deliveryPrice;
 	
 	item.shopName = shop.shopName;

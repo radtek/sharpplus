@@ -41,7 +41,7 @@
 	TTURLMap* map = navigator.URLMap;
 	
 	// Any URL that doesn't match will fall back on this one, and open in the web browser
-	//[map from:@"*" toViewController:[TTWebController class]];
+	[map from:@"*" toViewController:[TTWebController class]];
 	
 	// The tab bar controller is shared, meaning there will only ever be one created.  Loading
 	// This URL will make the existing tab bar controller appear if it was not visible.

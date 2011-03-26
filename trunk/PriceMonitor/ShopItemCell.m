@@ -42,23 +42,23 @@ static CGFloat kImageHeight = 16;
 	CGFloat height = TTSTYLEVAR(tableFont).ttLineHeight + kTableCellVPadding*2;
 	//calc deliverPrice size
 
-	if (item.deliveryPrice) {
+	//if (item.deliveryPrice) {
 		height +=  TTSTYLEVAR(tableFont).ttLineHeight;
-	}
+	//}
 	//calc shop size
-	if (item.shopName) {
+	//if (item.shopName) {
 		height +=  TTSTYLEVAR(tableFont).ttLineHeight;
-	}	
+	//}	
 	
 	//calc pay image size
-	if (item.payImg1){
+	//if (item.payImg1){
 		height += TTSTYLEVAR(tableFont).ttLineHeight;
-	}
+	//}
 	
 	//calc area size
-	if (item.area){
+	//if (item.area){
 		height += TTSTYLEVAR(tableFont).ttLineHeight;
-	}
+	//}
 	
 	//calc comment size
 	if (item.comment){
@@ -68,6 +68,10 @@ static CGFloat kImageHeight = 16;
 		height+=commentSize.height;
 		
 	}
+	else {
+		height+=TTSTYLEVAR(tableFont).ttLineHeight;
+	}
+
 	return height;	
 }
 
@@ -105,6 +109,8 @@ static CGFloat kImageHeight = 16;
 		self.detailTextLabel.contentMode = UIViewContentModeTop;
 		self.detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
 		self.detailTextLabel.numberOfLines = 0;
+		self.detailTextLabel.frame = CGRectZero;
+		
 	}
 	
 	return self;
@@ -140,7 +146,6 @@ static CGFloat kImageHeight = 16;
 	_area.frame = CGRectMake(kTableCellHPadding, self.payMethod.bottom, 300,  TTSTYLEVAR(tableFont).ttLineHeight);
 	_comment.frame = CGRectMake(kTableCellHPadding, self.area.bottom, 80,  TTSTYLEVAR(tableFont).ttLineHeight);
 	self.detailTextLabel.frame =CGRectMake(self.comment.right, self.area.bottom, self.detailTextLabel.width,  self.detailTextLabel.height);
-	
 }
 
 - (void)setObject:(id)object {
@@ -151,27 +156,29 @@ static CGFloat kImageHeight = 16;
 		if (item.text.length) {
 			self.textLabel.text = [NSString stringWithFormat:@"価格:%@", item.text];
 		}
-		if (item.deliveryPrice.length) {
+
+		if (item.deliveryPrice) {
 			self.deliveryPrice.text = [NSString stringWithFormat:@"送料:%@" ,item.deliveryPrice];
 		}
-		if (item.shopName.length){
+		
+		if (item.shopName){
 			self.shopName.text = [NSString stringWithFormat:@"ショップ:%@" ,item.shopName];
 		}
 		
 		self.payMethod.text = @"支払方法:";
-		if (item.payImg1.length){
+		if (item.payImg1){
 			self.payImg1.urlPath = item.payImg1;
 		}
-		if (item.payImg2.length){
+		if (item.payImg2){
 			self.payImg2.urlPath = item.payImg2;
 		}
-		if (item.payImg3.length){
+		if (item.payImg3){
 			self.payImg3.urlPath = item.payImg3;
 		}
-		if (item.area.length){
+		if (item.area){
 			self.area.text = [NSString stringWithFormat:@"地域:%@", item.area];
 		}
-		if (item.comment.length){
+		if (item.comment){
 			self.comment.text = @"コメント:";
 			self.detailTextLabel.text= item.comment;
 			
@@ -181,6 +188,8 @@ static CGFloat kImageHeight = 16;
 			
 			self.detailTextLabel.frame =CGRectMake(0, 0, commentSize.width,  commentSize.height);
 			
+		}else {
+			self.detailTextLabel.text = @"";
 		}
 	}
 }
