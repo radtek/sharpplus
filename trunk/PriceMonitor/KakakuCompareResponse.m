@@ -22,6 +22,7 @@
 	NSArray *shops  = [root selectElements:@"td.shopname p.wordwrapShop a"];
 	NSArray *comments = [root selectElements:@"td.alignL"];
 	Element *category = [root selectElement:@"span.category"];	
+	Element *spec = [root selectElement:@"div#specBox p"];
 	NSArray *shopUrls  = [root selectElements:@"div.shopInfoBtn a"];
 	
 	NSArray *payList = [root selectElements:@"ul.payList li img"];
@@ -39,6 +40,9 @@
 		result.deliveryPrice = [[[deliveryPrice selectElement:@"p a"] contentsText] stringByConvertingHTMLToPlainText];
         result.shopName = [[[shops objectAtIndex:i] contentsText] stringByConvertingHTMLToPlainText];
 		result.category = [[category contentsText] stringByConvertingHTMLToPlainText];
+		if (spec && 0==i){
+			result.spec = [[spec contentsText] stringByConvertingHTMLToPlainText];
+		}
 		
 		result.payImg1 = [[payList objectAtIndex:0+3*i]  attribute:@"src"];
 		result.payImg2 = [[payList objectAtIndex:1+3*i] attribute:@"src"];
