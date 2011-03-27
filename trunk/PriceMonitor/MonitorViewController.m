@@ -16,7 +16,7 @@
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
 	if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]){
-		self.title = @"Monitor";
+		self.title = @"モニター";
 		UIImage* image = [UIImage imageNamed:@"tab.png"];
 		self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
 		self.navigationItem.rightBarButtonItem =
