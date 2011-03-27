@@ -18,12 +18,20 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
+	if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]){
+		self.title = @"Setting";
+		UIImage* image = [UIImage imageNamed:@"tab.png"];
+		self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
+		
+		
+	}
+	
+	return self;
+}
+
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	
-	self.title = @"Setting";
-	UIImage* image = [UIImage imageNamed:@"tab.png"];
-	self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
 	
 	NSArray* array = [[NSArray alloc] initWithObjects:@"Popular", @"Low Price", @"High Price", @"Date", nil];
 	self.pickerData = array;

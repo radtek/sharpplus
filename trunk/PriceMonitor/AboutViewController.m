@@ -12,13 +12,15 @@
 @implementation AboutViewController
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-- (void)viewDidLoad {
-	[super viewDidLoad];
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
+	if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]){
+		self.title = @"About";
+		UIImage* image = [UIImage imageNamed:@"tab.png"];
+		self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
+		
+	}
 	
-	self.title = @"About";
-	UIImage* image = [UIImage imageNamed:@"tab.png"];
-	self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
-	
+	return self;
 }
 
 @end
