@@ -14,20 +14,26 @@
 
 @implementation MonitorViewController
 
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
+	if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]){
+		self.title = @"Monitor";
+		UIImage* image = [UIImage imageNamed:@"tab.png"];
+		self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
+		self.navigationItem.rightBarButtonItem =
+		[[[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStyleBordered
+										 target:self
+										 action:@selector(toggleDelete:)] autorelease];
+	}
+				
+	return self;
+}
+				
 -(IBAction)toggleDelete:(id)sender{
 	[self.tableView setEditing:!self.tableView.editing animated:YES];
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	
-	self.title = @"Monitor";
-	UIImage* image = [UIImage imageNamed:@"tab.png"];
-	self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
-	self.navigationItem.rightBarButtonItem =
-    [[[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStyleBordered
-									 target:self
-									 action:@selector(toggleDelete:)] autorelease];
 	
 	MonitorList* list = [MonitorList monitorList];
 	NSMutableArray* items = [[NSMutableArray alloc] initWithCapacity:100];
