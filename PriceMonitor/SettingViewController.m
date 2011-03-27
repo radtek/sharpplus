@@ -20,7 +20,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
 	if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]){
-		self.title = @"Setting";
+		self.title = @"設定";
 		UIImage* image = [UIImage imageNamed:@"tab.png"];
 		self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
 		
