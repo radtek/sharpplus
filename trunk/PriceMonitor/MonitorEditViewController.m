@@ -30,6 +30,7 @@
 	self.item.time = [self.edtTime.text intValue];
 	self.item.condition = self.segCondition.selectedSegmentIndex;
 	self.item.timeType = self.segTime.selectedSegmentIndex;
+	self.item.checkTime = [NSDate date];
 	//save to db
 	[self.item saveToDb:self.action];
 	[self dismissModalViewControllerAnimated:YES];
@@ -81,6 +82,8 @@
 		self.edtCategory.text = self.category;
 		self.item.name = rslt.title; 
 		self.item.itemId= self.itemId;
+		self.item.currPrice = self.price;
+		self.item.prevPrice = self.price;
 	}
 	else {
 		//load monitor information from db 
@@ -91,6 +94,7 @@
 		self.edtTime.text = [NSString stringWithFormat:@"%d", self.item.time];
 		self.segCondition.selectedSegmentIndex = self.item.condition;
 		self.segTime.selectedSegmentIndex = self.item.timeType;	
+		self.item.currPrice = self.price;
 	}
 }
 

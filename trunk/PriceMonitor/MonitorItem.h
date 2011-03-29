@@ -26,23 +26,32 @@ typedef enum{
 	NSInteger monitorId;
 	NSString* itemId;
 	NSString* name;
-	NSInteger price;
+	NSUInteger price;
 	NSString* area;
 	NSString* category;
 	MonitorCondition condition;
-	NSInteger time;
+	NSUInteger time;
 	MonitorTime timeType;
+	
+	//
+	NSUInteger currPrice;
+	NSUInteger prevPrice;
+	NSDate* checkTime;
 }
 
 @property (nonatomic, assign) NSInteger monitorId;
 @property (nonatomic, retain) NSString* itemId;
 @property (nonatomic, retain) NSString *name;
-@property (nonatomic, assign) NSInteger price;
+@property (nonatomic, assign) NSUInteger price;
 @property (nonatomic, retain) NSString *area;
 @property (nonatomic, retain) NSString *category;
 @property (nonatomic, assign) MonitorCondition condition;
-@property (nonatomic, assign) NSInteger time;
+@property (nonatomic, assign) NSUInteger time;
 @property (nonatomic, assign) MonitorTime timeType;
+
+@property (nonatomic, assign) NSUInteger currPrice;
+@property (nonatomic, assign) NSUInteger prevPrice;
+@property (nonatomic, retain) NSDate* checkTime;
 
 -(id) initWithItemId:(NSString*)_itemId;
 -(void) saveToDb:(NSInteger)action;

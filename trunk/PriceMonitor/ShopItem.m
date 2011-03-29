@@ -54,6 +54,7 @@ payImg3=_payImg3, area=_area, comment=_comment;
 	TT_RELEASE_SAFELY(_payImg3);
 	TT_RELEASE_SAFELY(_area);
 	TT_RELEASE_SAFELY(_comment);
+	[super dealloc];
 }
 
 -(id)initWithCoder:(NSCoder *)aDecoder{
