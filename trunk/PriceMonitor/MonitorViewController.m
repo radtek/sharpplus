@@ -9,6 +9,7 @@
 #import "MonitorViewController.h"
 #import "MonitorList.h"
 #import "MonitorItem.h"
+#import "MonitorTableItem.h"
 #import "MonitorDataSource.h"
 
 
@@ -20,9 +21,10 @@
 		UIImage* image = [UIImage imageNamed:@"tab.png"];
 		self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
 		self.navigationItem.rightBarButtonItem =
-		[[[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStyleBordered
+		[[[UIBarButtonItem alloc] initWithTitle:@"削除" style:UIBarButtonItemStyleBordered
 										 target:self
 										 action:@selector(toggleDelete:)] autorelease];
+		self.variableHeightRows = YES; 
 	}
 				
 	return self;
@@ -34,6 +36,8 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth  ;
+	//| UIViewAutoresizingFlexibleHeight;  	
 	
 	MonitorList* list = [MonitorList monitorList];
 	NSMutableArray* items = [[NSMutableArray alloc] initWithCapacity:100];
@@ -43,7 +47,8 @@
 		for (NSInteger j=0; j<[srcDetails count]; j++) {
 			MonitorItem* item = [srcDetails objectAtIndex:j];
 			NSString* url = [[NSString alloc] initWithFormat:@"tt://compareItem?action=edit&itemId=%@&id=%d",item.itemId, item];
-			TTTableTextItem* tableItem = [TTTableTextItem itemWithText:item.name URL:url];
+//			TTTableTextItem* tableItem = [TTTableTextItem itemWithText:item.name URL:url];
+			MonitorTableItem* tableItem = [MonitorTableItem initItemWithMonitor:item url:url];
 			[details addObject:tableItem];
 		}
 		[items addObject:details];

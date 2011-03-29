@@ -9,11 +9,11 @@
 #import <Foundation/Foundation.h>
 
 typedef enum {
-    ConditionLesssEqual,//<=
+    ConditionLessEqual,//<=
     ConditionLess,//<
 	ConditionLarge,//>
 	ConditionLargeEqual,//>=
-    ConditionDefault = ConditionLesssEqual
+    ConditionDefault = ConditionLessEqual
 } MonitorCondition;
 
 typedef enum{

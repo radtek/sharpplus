@@ -14,16 +14,20 @@
 	NSUInteger _prevPrice;
 	NSUInteger _currPrice;
 	NSUInteger _price;
-	NSString* _checkTime;
+	NSDate* _checkTime;
+	
+	MonitorCondition _condition;
+	
 }
 
 @property (nonatomic,assign) NSUInteger price;
 @property (nonatomic,assign) NSUInteger prevPrice;
 @property (nonatomic,assign) NSUInteger currPrice;
-@property (nonatomic,copy)   NSString*  checkTime;
+@property (nonatomic,copy)   NSDate*  checkTime;
+@property (nonatomic,assign) MonitorCondition condition;
 
 
-+(id)initItemWithMonitor:(MonitorItem*)monitor;
++(id)initItemWithMonitor:(MonitorItem*)monitor url:(NSString*)url;
 
 @end
 

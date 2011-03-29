@@ -89,6 +89,9 @@ static MonitorList *sharedMonitorList = nil;
 		item.condition = [rs intForColumn:@"Condition"];
 		item.time = [rs intForColumn:@"MonitorTime"];
 		item.timeType = [rs intForColumn:@"TimeType"];
+		item.currPrice = [rs intForColumn:@"CurrPrice"];
+		item.prevPrice = [rs intForColumn:@"PrevPrice"];
+		item.checkTime = [rs dateForColumn:@"CheckTime"];
 		
 		if (!([sections containsObject:category])){
 			detailArray = [[NSMutableArray alloc] init];
