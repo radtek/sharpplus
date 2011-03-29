@@ -8,6 +8,8 @@
 
 #import "MonitorDataSource.h"
 #import "MonitorList.h"
+#import "MonitorTableItem.h"
+#import "MonitorTableItemCell.h"
 
 
 @implementation MonitorDataSource
@@ -44,4 +46,13 @@
 //		return indexPath;
 //	}
 //}
+
+- (Class)tableView:(UITableView*)tableView cellClassForObject:(id)object{
+	if ([object isKindOfClass:[MonitorTableItem class]]) {  
+		return [MonitorTableItemCell class];  
+	} else {  
+		return [super tableView:tableView cellClassForObject:object];  
+	}  	
+}
+
 @end

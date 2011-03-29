@@ -11,20 +11,19 @@
 
 @implementation MonitorTableItem
 
-@synthesize prevPrice=_prevPrice, price=_price, currPrice=_currPrice, checkTime=_checkTime;
+@synthesize prevPrice=_prevPrice, price=_price, currPrice=_currPrice, 
+			checkTime=_checkTime, condition = _condition;
 
-+(id)initItemWithMonitor:(MonitorItem*)monitor
++(id)initItemWithMonitor:(MonitorItem*)monitor url:(NSString*)url
 {
 	MonitorTableItem* item = [[[MonitorTableItem alloc] init] autorelease];
 	item.text = monitor.name;
-	//item.URL = [NSString stringWithFormat:@"http://s.kakaku.com%@", shop.shopURL];	
+	item.URL = url;	
 	item.price= monitor.price;
-	
-//NSInteger monitorId;
-//NSString* itemId;
-//MonitorCondition condition;
-//NSInteger time;
-//MonitorTime timeType;
+	item.currPrice = monitor.currPrice;
+	item.prevPrice = monitor.prevPrice;
+	item.checkTime = monitor.checkTime;
+	item.condition = monitor.condition;
 	
 	return item;
 }
@@ -35,6 +34,7 @@
 		_currPrice = 0;
 		_price = 0;
 		_checkTime = nil;
+		_condition = ConditionLessEqual;
 	}
 	
 	return self;
@@ -51,23 +51,19 @@
 		self.currPrice = [aDecoder decodeObjectForKey:@"currPrice"];
 		self.prevPrice = [aDecoder decodeObjectForKey:@"prevPrice"];
 		self.checkTime = [aDecoder decodeObjectForKey:@"checkTime"];
+		//self.condition = [aDecoder decodeObjectForKey:@"condition"];
 	}
 }
 
 -(void)encodeWithCoder:(NSCoder *)aCoder{
 	[super encodeWithCoder:aCoder];
-	if (self.currPrice){
-		[aCoder encodeObject:self.currPrice forKey:@"currPrice"];
-	}
-	if (self.prevPrice){
-		[aCoder encodeObject:self.prevPrice forKey:@"prevPrice"];
-	}
-	if (self.price){
-		[aCoder encodeObject:self.price forKey:@"price"];
-	}
+	[aCoder encodeObject:self.currPrice forKey:@"currPrice"];
+	[aCoder encodeObject:self.prevPrice forKey:@"prevPrice"];
+	[aCoder encodeObject:self.price forKey:@"price"];
 	if (self.checkTime){
 		[aCoder encodeObject:self.checkTime forKey:@"checkTime"];
 	}
+	//[aCoder encodeObject:self.condition forKey:@"condition"];
 }
 
 @end
