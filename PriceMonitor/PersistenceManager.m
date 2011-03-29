@@ -100,7 +100,10 @@ static PersistenceManager *sharedMgr = nil;
 			   "Category varchar not null,"
 			   "Condition integer not null,"
 			   "MonitorTime integer not null,"
-			   "TimeType integer not null)"];
+			   "TimeType integer not null,"
+			   "CurrPrice integer not null,"
+			   "PrevPrice integer not null,"
+			   "CheckTime varchar not null)"];
 	//insert test data
 	//success &= [db executeUpdate:@"insert or replace into MonitorList values(1,'K0000215539', 'test', 1234, 'tokyo', 'other', 1,12,1)"];
 	//success &= [db executeUpdate:@"insert or replace into MonitorList values(2,'K0000125739', 'test2', 12345, 'kanagawa', 'food', 2,10,0)"];
