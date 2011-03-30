@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
+	<string>ja_JP</string>
 	<key>PROVISIONING_PROFILE_ALLOW</key>
 	<string>NO</string>
 	<key>PROVISIONING_PROFILE_REQUIRED</key>
