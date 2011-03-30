@@ -55,7 +55,7 @@ const static NSUInteger kKakakuBatchSize = 1;   // The number of results to pull
     NSString *url = [NSString stringWithFormat:@"%@%@/?category=&c=&sort=%@&n=%@&act=Page&page=%@", 
 					 @"http://kakaku.com/search_results/", strQuery, [settings displaySort], viewCount, offset];
     TTURLRequest *request = [TTURLRequest requestWithURL:url delegate:self];
-    request.cachePolicy = cachePolicy;
+    request.cachePolicy = TTURLRequestCachePolicyNoCache;//cachePolicy;
     request.response = responseProcessor;
     request.httpMethod = @"GET";
     

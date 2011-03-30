@@ -85,11 +85,11 @@
 	[super modelDidFinishLoad:model];
 	
 	NSString* strAction= @"new";
-	NSString* button =@"New Monitor";
+	NSString* button =@"新規モニター";
 		
 	if (self.action==1){
 		strAction=@"edit";
-		button = @"Edit Monitor";
+		button = @"編集モニター";
 	}
 	//get the lowest price
 	NSString* strPrice= @"0";
@@ -102,13 +102,15 @@
 		strPrice= [compare.price stringByReplacingOccurrencesOfString:@"¥" withString:@""];
 		strPrice = [strPrice stringByReplacingOccurrencesOfString:@"," withString:@""];
 	}
-	NSString* url = [NSString stringWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&id=%d&price=%@&cmpId=%d", 
+//	NSString* url = [NSString stringWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&id=%d&price=%@&cmpId=%d", 
+	NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&id=%d&price=%@&cmpId=%d", 
 					 strAction,self.itemId, self.result, strPrice, compare];
 	self.navigationItem.rightBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle:button 
 								  style:UIBarButtonItemStyleBordered
 								  target:url
 								  action:@selector(openURLFromButton:)] autorelease];
+
 	self.tableView.tableHeaderView = self.headerView;
 	
 	self.product.text = self.name;	

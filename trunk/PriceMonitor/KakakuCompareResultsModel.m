@@ -47,7 +47,7 @@ const static NSUInteger kKakakuBatchSize = 1;   // The number of results to pull
     
 	NSString* strQuery = [NSString stringWithFormat:@"http://kakaku.com/item/%@/", itemId];
     TTURLRequest *request = [TTURLRequest requestWithURL:strQuery delegate:self];
-    request.cachePolicy = cachePolicy;
+    request.cachePolicy = TTURLRequestCachePolicyNoCache;//cachePolicy;
     request.response = responseProcessor;
     request.httpMethod = @"GET";
     
