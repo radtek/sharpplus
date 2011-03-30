@@ -24,6 +24,8 @@
 	self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
 	
 	self.tableView.tableHeaderView = self.headerView;
+	//self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth  ;
+	
 	//self.tableView.tableFooterView = self.footerView;
 }
 

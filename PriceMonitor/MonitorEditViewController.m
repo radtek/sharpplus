@@ -74,7 +74,7 @@
 	if (action==0)
 	{
 		//new
-		self.item = [[MonitorItem alloc] init];
+		self.item = [[[MonitorItem alloc] init] autorelease];
 		
 		SearchResult* rslt= (SearchResult*)self.result;
 		self.lblName.text = rslt.title;
@@ -87,7 +87,7 @@
 	}
 	else {
 		//load monitor information from db 
-		self.item = [[MonitorItem alloc] initWithItemId:self.itemId];
+		self.item = [[[MonitorItem alloc] initWithItemId:self.itemId] autorelease];
 		self.lblName.text = self.item.name;
 		self.edtCategory.text = self.item.category;
 		self.edtPrice.text = [NSString stringWithFormat:@"%d", self.item.price];

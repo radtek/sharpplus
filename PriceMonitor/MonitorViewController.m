@@ -40,13 +40,13 @@
 	//| UIViewAutoresizingFlexibleHeight;  	
 	
 	MonitorList* list = [MonitorList monitorList];
-	NSMutableArray* items = [[NSMutableArray alloc] initWithCapacity:100];
+	NSMutableArray* items = [[[NSMutableArray alloc] init] autorelease];
 	for (NSInteger i=0; i< [list.itemArray count]; i++) {
-		NSMutableArray* details = [[NSMutableArray alloc] initWithCapacity:100];
+		NSMutableArray* details = [[[NSMutableArray alloc] init] autorelease];
 		NSMutableArray* srcDetails = [list.itemArray objectAtIndex:i];
 		for (NSInteger j=0; j<[srcDetails count]; j++) {
 			MonitorItem* item = [srcDetails objectAtIndex:j];
-			NSString* url = [[NSString alloc] initWithFormat:@"tt://compareItem?action=edit&itemId=%@&id=%d",item.itemId, item];
+			NSString* url = [NSString stringWithFormat:@"tt://compareItem?action=edit&itemId=%@&id=%d",item.itemId, item];
 //			TTTableTextItem* tableItem = [TTTableTextItem itemWithText:item.name URL:url];
 			MonitorTableItem* tableItem = [MonitorTableItem initItemWithMonitor:item url:url];
 			[details addObject:tableItem];
