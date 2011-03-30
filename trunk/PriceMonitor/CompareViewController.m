@@ -102,7 +102,7 @@
 		strPrice= [compare.price stringByReplacingOccurrencesOfString:@"¥" withString:@""];
 		strPrice = [strPrice stringByReplacingOccurrencesOfString:@"," withString:@""];
 	}
-	NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&id=%d&price=%@&cmpId=%d", 
+	NSString* url = [NSString stringWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&id=%d&price=%@&cmpId=%d", 
 					 strAction,self.itemId, self.result, strPrice, compare];
 	self.navigationItem.rightBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle:button 
