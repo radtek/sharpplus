@@ -43,7 +43,7 @@
 		self.title = @"価格比較";
 		
 		self.navigationItem.backBarButtonItem =
-		[[[UIBarButtonItem alloc] initWithTitle: @"Item List"
+		[[[UIBarButtonItem alloc] initWithTitle: @"モニター"
 										  style: UIBarButtonItemStyleBordered
 										 target: nil
 										 action: nil] autorelease];	
