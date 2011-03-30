@@ -34,9 +34,7 @@
 	[self.tableView setEditing:!self.tableView.editing animated:YES];
 }
 
-- (void)viewDidLoad {
-	[super viewDidLoad];
-	self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth  ;
+- (void) loadMonitorList {
 	//| UIViewAutoresizingFlexibleHeight;  	
 	
 	MonitorList* list = [MonitorList monitorList];
@@ -55,7 +53,22 @@
 	}
 	
 	self.dataSource = [MonitorDataSource dataSourceWithItems:items sections:list.sectionArray];
+
 }
 
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth  ;
+//	[self loadMonitorList];
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+	[super viewWillAppear:animated];
+	
+	MonitorList* list = [MonitorList monitorList];
+	[list loadFromDb];
+	[self loadMonitorList];	
+	[self.tableView reloadData];
+}
 @end
 
