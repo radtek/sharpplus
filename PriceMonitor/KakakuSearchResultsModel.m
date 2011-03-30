@@ -48,19 +48,10 @@ const static NSUInteger kKakakuBatchSize = 1;   // The number of results to pull
     NSString *offset = [NSString stringWithFormat:@"%lu", (unsigned long)recordOffset];
 	GlobalSettings* settings = [GlobalSettings settings];
 	NSString *viewCount = [NSString stringWithFormat:@"%lu", (unsigned long)(settings.displayCount+1)*20];
-//    NSString *batchSize = [NSString stringWithFormat:@"%lu", (unsigned long)kYahooBatchSize];
-    
-    // Construct the request.
-//    NSString *host = @"http://kakaku.com";
-//    NSString *path = @"/search_results/";
-//    NSDictionary *parameters = [NSDictionary dictionaryWithObjectsAndKeys:
-//                                searchTerms, @"query",
-//                                nil];
 	NSArray* listStr = [Utils splitString:searchTerms separator:@" "];
 	NSString* strQuery = [Utils separatedText:listStr separator:@"+"];
 	
     //http://kakaku.com/search_results/mac+air/?category=&c=&act=Page&page=2        
-    //NSString *url = [NSString stringWithFormat:@"%@%@", @"http://kakaku.com/search_results/?query=", strQuery];
     NSString *url = [NSString stringWithFormat:@"%@%@/?category=&c=&sort=%@&n=%@&act=Page&page=%@", 
 					 @"http://kakaku.com/search_results/", strQuery, [settings displaySort], viewCount, offset];
     TTURLRequest *request = [TTURLRequest requestWithURL:url delegate:self];

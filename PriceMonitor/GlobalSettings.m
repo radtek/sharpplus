@@ -104,7 +104,7 @@ static GlobalSettings *sharedSettings = nil;
 }
 
 -(NSString*)displaySort{
-	NSArray *array = [[NSArray alloc] initWithObjects:@"popular", @"priceb", @"pricet", @"date", nil];
+	NSArray *array = [NSArray arrayWithObjects:@"popular", @"priceb", @"pricet", @"date", nil];
 	return [array objectAtIndex:displayOrder];
 }
 		
