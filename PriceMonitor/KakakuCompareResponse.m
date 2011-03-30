@@ -19,11 +19,11 @@
 	ElementParser* parser = [[[ElementParser alloc] init] autorelease];
 	DocumentRoot* root = [parser parseHTML: htmlStr];
 	NSArray *prices = [root selectElements:@"td.alignR"];
-	NSArray *shops  = [root selectElements:@"td.shopname p.wordwrapShop a"];
+	NSArray *shops  = [root selectElements:@"td.shopname a"];
 	NSArray *comments = [root selectElements:@"td.alignL"];
 	Element *category = [root selectElement:@"span.category"];	
 	Element *spec = [root selectElement:@"div#specBox p"];
-	NSArray *shopUrls  = [root selectElements:@"div.shopInfoBtn a"];
+	NSArray *shopUrls  = [root selectElements:@"td.shopname a"];
 	
 	NSArray *payList = [root selectElements:@"ul.payList li img"];
     
