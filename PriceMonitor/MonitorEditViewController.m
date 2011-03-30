@@ -40,8 +40,10 @@
 	if (self = [super initWithNibName:@"MonitorEditViewController" bundle:nil]) {
 		if ([action isEqualToString:@"new"]){
 			self.action = 0;
+			self.title = @"新規モニター";
 		}else{
 			self.action = 1;
+			self.title = @"編集モニター";
 		}
 		
 		self.itemId = [query objectForKey:@"itemId"];
@@ -51,19 +53,18 @@
 		if (compare){
 			self.category = compare.category;
 		}else {
-			self.category=@"Other";
+			self.category=@"その他";
 		}
 
 		
 		
 		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc]
-												   initWithTitle:@"Done" style:UIBarButtonItemStyleDone
+												   initWithTitle:@"完了" style:UIBarButtonItemStyleDone
 												   target:self action:@selector(updateItem)] autorelease];
 		self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc]
-												  initWithTitle:@"Cancel" style:UIBarButtonItemStyleBordered
+												  initWithTitle:@"キャンセル" style:UIBarButtonItemStyleBordered
 												  target:self action:@selector(dismiss)] autorelease];
 	
-		self.title = [NSString stringWithFormat:@"Edit Monitor %@", [query objectForKey:@"name"]];
 	}
 	return self;
 }
