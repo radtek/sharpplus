@@ -33,7 +33,7 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
-	NSArray* array = [[NSArray alloc] initWithObjects:@"Popular", @"Low Price", @"High Price", @"Date", nil];
+	NSArray* array = [[NSArray alloc] initWithObjects:@"標準", @"価格の安い順", @"価格の高い順", @"発売日順", nil];
 	self.pickerData = array;
 	[array release];	
 	
