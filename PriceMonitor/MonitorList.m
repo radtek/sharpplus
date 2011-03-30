@@ -72,12 +72,12 @@ static MonitorList *sharedMonitorList = nil;
 -(void) loadFromDb{
 	PersistenceManager * mgr = [PersistenceManager mgr];
 	FMResultSet* rs = [mgr.database executeQuery:@"select * from MonitorList order by category, monitorId"];
-    NSMutableArray* sections = [[NSMutableArray alloc] init];
-	NSMutableArray* items= [[NSMutableArray alloc] init]; 
+    NSMutableArray* sections = [[[NSMutableArray alloc] init] autorelease];
+	NSMutableArray* items= [[[NSMutableArray alloc] init] autorelease]; 
 	NSMutableArray* detailArray = NULL;
 	
 	while ([rs next]) {
-		MonitorItem* item = [[MonitorItem alloc] init];
+		MonitorItem* item = [[[MonitorItem alloc] init] autorelease];
 
 		item.monitorId = [rs intForColumn:@"MonitorId"];
 		item.itemId = [rs stringForColumn:@"ItemId"];
@@ -94,7 +94,7 @@ static MonitorList *sharedMonitorList = nil;
 		item.checkTime = [rs dateForColumn:@"CheckTime"];
 		
 		if (!([sections containsObject:category])){
-			detailArray = [[NSMutableArray alloc] init];
+			detailArray = [[[NSMutableArray alloc] init] autorelease];
 			
 			[sections addObject:category];
 			[items addObject:detailArray];		
