@@ -19,13 +19,13 @@
 }
 
 + (NSString*)cstringToString:(NSData*)data{
-	NSString* str=[[NSString stringWithCString:[data bytes] encoding:NSShiftJISStringEncoding] autorelease] ;
+	NSString* str=[NSString stringWithCString:[data bytes] encoding:NSShiftJISStringEncoding];
 	
 	return str;
 }
 
 + (NSData*)stringToData:(NSString*)string{
-	NSData* testData = [[string dataUsingEncoding:NSUTF8StringEncoding] autorelease];
+	NSData* testData = [string dataUsingEncoding:NSUTF8StringEncoding] ;
 	return testData;
 }
 
@@ -43,6 +43,7 @@
 		else 
 			[str appendFormat:@"%@%@", separator, [listStrings objectAtIndex:i]];
 	}
+	[str autorelease];
 	
 	return str;
 }
