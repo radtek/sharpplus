@@ -34,7 +34,7 @@
 		
 	}
     
-	[self.items addObject:[TTTableMoreButton itemWithText:@"More"]];
+	[self.items addObject:[TTTableMoreButton itemWithText:@"他の製品を読み込む..."]];
     //TTLOG(@"Added %lu search result objects", (unsigned long)[self.items count]);
 }
 
