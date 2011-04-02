@@ -19,6 +19,7 @@
 
 @synthesize window;
 
+@synthesize session;
 
 #pragma mark -
 #pragma mark Application lifecycle
@@ -34,6 +35,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
+	
+    session = [[DIOSConnect alloc] init];
+	
 	TTNavigator* navigator = [TTNavigator navigator];
 	//navigator.persistenceMode = TTNavigatorPersistenceModeAll;
 	navigator.window = self.window;
