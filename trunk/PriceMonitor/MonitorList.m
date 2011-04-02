@@ -81,6 +81,7 @@ static MonitorList *sharedMonitorList = nil;
 
 		item.monitorId = [rs intForColumn:@"MonitorId"];
 		item.itemId = [rs stringForColumn:@"ItemId"];
+		item.nodeId = [rs stringForColumn:@"NodeId"];
 		item.name = [rs stringForColumn:@"Name"];
 		item.price = [rs intForColumn:@"Price"];
 		NSString* category = [rs stringForColumn:@"Category"];
