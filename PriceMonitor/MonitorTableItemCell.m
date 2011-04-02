@@ -34,7 +34,7 @@ static CGFloat kImageHeight = 16;
 @implementation MonitorTableItemCell
 
 + (CGFloat)tableView:(UITableView*)tableView rowHeightForObject:(id)object{
-	CGFloat height = TTSTYLEVAR(tableFont).ttLineHeight*3 + kTableCellVPadding*2;
+	CGFloat height = TTSTYLEVAR(tableFont).ttLineHeight*4 + kTableCellVPadding*2;
 	
 	return height;	
 }
@@ -83,11 +83,8 @@ static CGFloat kImageHeight = 16;
 
 - (void)layoutSubviews {
 	[super layoutSubviews];
-	
-	[self.textLabel sizeToFit]; 
-	self.textLabel.top = kTableCellVPadding;
-	self.textLabel.left = kTableCellHPadding;
-	
+	//[self.textLabel sizeToFit]; 
+	self.textLabel.frame = CGRectMake(kTableCellHPadding, kTableCellHPadding, 260, TTSTYLEVAR(tableFont).ttLineHeight*2);
 	_targetLbl.frame = CGRectMake(kTableCellHPadding, self.textLabel.bottom, 260, TTSTYLEVAR(tableFont).ttLineHeight);
 	_targetImg.frame = CGRectMake(self.targetLbl.right, self.textLabel.bottom+3, kImageWidth, kImageWidth);
 	_price.frame = CGRectMake(kTableCellHPadding, self.targetLbl.bottom, 260, TTSTYLEVAR(tableFont).ttLineHeight);
