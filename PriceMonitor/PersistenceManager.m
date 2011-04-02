@@ -92,8 +92,9 @@ static PersistenceManager *sharedMgr = nil;
 	//create monitorlist table
 	//[db executeUpdate:@"drop table MonitorList"];
 	success &= [db executeUpdate:@"create table if not exists MonitorList ("
-			   "monitorId integer primary key autoincrement,"
-			   "itemId varchar not null,"
+			   "MonitorId integer primary key autoincrement,"
+			   "ItemId varchar not null,"
+			   "NodeId varchar not null,"
 			   "Name varchar not null,"
 			   "Price integer not null,"
 			   "Area varchar,"
