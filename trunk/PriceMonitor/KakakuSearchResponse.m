@@ -40,7 +40,14 @@
         result.title = [[product contentsText] stringByConvertingHTMLToPlainText];
         result.imageURL = [[image contentsText] stringByConvertingHTMLToPlainText];
 
-		result.detail = [[price contentsText] stringByConvertingHTMLToPlainText];
+		NSInteger val= [[[price contentsText] stringByConvertingHTMLToPlainText] intValue];
+		
+		NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+		formatter.numberStyle = NSNumberFormatterCurrencyStyle;
+		NSString *strMoney = [formatter stringFromNumber:[NSNumber numberWithInt:val]];
+		[formatter release];
+		
+		result.detail = strMoney;
 		result.detailURL = [[itemUrl contentsText] stringByConvertingHTMLToPlainText];
         [self.objects addObject:result];
     }
