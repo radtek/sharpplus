@@ -15,7 +15,7 @@
 	// Parse the XML document.
 
 	@try {
-		NSString* htmlStr=[Utils cstringToString:data];
+		NSString* htmlStr=[Utils cstringToShiftJis:data];
 		
 		ElementParser* parser = [[[ElementParser alloc] init] autorelease];
 		DocumentRoot* root = [parser parseHTML: htmlStr];

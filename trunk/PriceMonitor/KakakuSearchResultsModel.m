@@ -51,9 +51,16 @@ const static NSUInteger kKakakuBatchSize = 1;   // The number of results to pull
 	NSArray* listStr = [Utils splitString:searchTerms separator:@" "];
 	NSString* strQuery = [Utils separatedText:listStr separator:@"+"];
 	
-    //http://kakaku.com/search_results/mac+air/?category=&c=&act=Page&page=2        
-    NSString *url = [NSString stringWithFormat:@"%@%@/?category=&c=&sort=%@&n=%@&act=Page&page=%@", 
-					 @"http://kakaku.com/search_results/", strQuery, [settings displaySort], viewCount, offset];
+    //http://kakaku.com/search_results/mac+air/?category=&c=&act=Page&page=2     
+	//http://api.kakaku.com/WebAPI/ItemSearch/Ver1.0/ItemSearch.aspx?Keyword=%E3%82%A2%E3%82%AF%E3%82%AA%E3%82%B9+LED&resultset=medium&categorygroup=kaden&pagenum=1&minprice=100000&maxprice=150000&ApiKey=1d1283ee00e0882692243ef57f73288f
+    NSString *url = [NSString stringWithFormat:@"%@%@&resultset=medium&categorygroup=ALL&pagenum=%@&SortOrder=%@&HitNum=%@&ApiKey=%@", 
+					 @"http://api.kakaku.com/WebAPI/ItemSearch/Ver1.0/ItemSearch.aspx?Keyword=", 
+					 strQuery, 
+					 offset,
+					 [settings displaySort], 
+					 viewCount,
+					 @"1d1283ee00e0882692243ef57f73288f"];
+	NSLog(url);
     TTURLRequest *request = [TTURLRequest requestWithURL:url delegate:self];
     request.cachePolicy = TTURLRequestCachePolicyNoCache;//cachePolicy;
     request.response = responseProcessor;
