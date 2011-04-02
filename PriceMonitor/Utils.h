@@ -15,6 +15,7 @@
 
 + (NSString*)dataToString:(NSData*)data;
 + (NSString*)cstringToString:(NSData*)data;
++ (NSString*)cstringToShiftJis:(NSData *)data;
 
 + (NSData*)stringToData:(NSString*)string;
 

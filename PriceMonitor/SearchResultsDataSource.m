@@ -34,7 +34,8 @@
 		
 	}
     
-	[self.items addObject:[TTTableMoreButton itemWithText:@"他の製品を読み込む..."]];
+	if ([self.items count]< [(id<SearchResultsModel>)self.model totalResultsAvailableOnServer])
+		[self.items addObject:[TTTableMoreButton itemWithText:@"他の製品を読み込む..."]];
     //TTLOG(@"Added %lu search result objects", (unsigned long)[self.items count]);
 }
 

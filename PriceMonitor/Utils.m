@@ -19,7 +19,15 @@
 }
 
 + (NSString*)cstringToString:(NSData*)data{
+//	NSString* str=[NSString stringWithCString:[data bytes] encoding:NSShiftJISStringEncoding];
+	NSString* str=[NSString stringWithCString:[data bytes] encoding:NSUTF8StringEncoding];
+	
+	return str;
+}
+
++ (NSString*)cstringToShiftJis:(NSData*)data{
 	NSString* str=[NSString stringWithCString:[data bytes] encoding:NSShiftJISStringEncoding];
+	//NSString* str=[NSString stringWithCString:[data bytes] encoding:NSUTF8StringEncoding];
 	
 	return str;
 }
