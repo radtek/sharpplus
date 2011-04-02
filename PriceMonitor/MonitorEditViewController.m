@@ -77,11 +77,11 @@
 		//new
 		self.item = [[[MonitorItem alloc] init] autorelease];
 		
-		SearchResult* rslt= (SearchResult*)self.result;
-		self.lblName.text = rslt.title;
+		NSString* name= (NSString*)self.result;
+		self.lblName.text = name;
 		self.edtPrice.text = [NSString stringWithFormat:@"%d", self.price];
 		self.edtCategory.text = self.category;
-		self.item.name = rslt.title; 
+		self.item.name = name; 
 		self.item.itemId= self.itemId;
 		self.item.currPrice = self.price;
 		self.item.prevPrice = self.price;

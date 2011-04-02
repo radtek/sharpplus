@@ -44,7 +44,7 @@
 		
 		self.navigationItem.backBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle: @"モニター"
-										  style: UIBarButtonItemStyleBordered
+										 style: UIBarButtonItemStyleBordered
 										 target: nil
 										 action: nil] autorelease];	
 		
@@ -104,7 +104,7 @@
 	}
 //	NSString* url = [NSString stringWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&id=%d&price=%@&cmpId=%d", 
 	NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&id=%d&price=%@&cmpId=%d", 
-					 strAction,self.itemId, self.result, strPrice, compare];
+					 strAction,self.itemId, self.name, strPrice, compare];
 	self.navigationItem.rightBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle:button 
 								  style:UIBarButtonItemStyleBordered
