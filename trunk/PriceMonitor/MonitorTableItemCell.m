@@ -20,6 +20,7 @@
 
 // Core
 #import "Three20Core/TTCorePreprocessorMacros.h"
+#import "Utils.h"
 
 extern const CGFloat    kTableCellSmallMargin;
 extern const CGFloat    kTableCellSpacing;
@@ -49,6 +50,8 @@ static CGFloat kImageHeight = 16;
 		self.textLabel.adjustsFontSizeToFitWidth = YES;
 		
 		_targetLbl = [[UILabel alloc] initWithFrame:CGRectZero];
+		_targetLbl.lineBreakMode = UILineBreakModeTailTruncation;
+		_targetLbl.adjustsFontSizeToFitWidth = YES;
 		[self.contentView addSubview:_targetLbl];
 		
 		_price = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -104,10 +107,12 @@ static CGFloat kImageHeight = 16;
 			self.textLabel.text = item.text;
 		}
 		
-		self.targetLbl.text = [NSString stringWithFormat:@"目標:現価(%d)%@設定値(%d)" ,
-							item.currPrice,[conditionArr objectAtIndex:item.condition] ,item.price];
+		self.targetLbl.text = [NSString stringWithFormat:@"目標:現価(%@)%@設定値(%@)" ,
+							[Utils intToCurrency:item.currPrice],
+							[conditionArr objectAtIndex:item.condition] ,
+							[Utils intToCurrency:item.price]];
 		
-		self.price.text = [NSString stringWithFormat:@"現価:%d" ,item.currPrice];
+		self.price.text = [NSString stringWithFormat:@"現価:%@" ,[Utils intToCurrency:item.currPrice]];
 		BOOL ok=NO;
 		
 		switch (item.condition) {

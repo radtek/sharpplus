@@ -42,12 +42,7 @@
 
 		NSInteger val= [[[price contentsText] stringByConvertingHTMLToPlainText] intValue];
 		
-		NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-		formatter.numberStyle = NSNumberFormatterCurrencyStyle;
-		NSString *strMoney = [formatter stringFromNumber:[NSNumber numberWithInt:val]];
-		[formatter release];
-		
-		result.detail = strMoney;
+		result.detail = [Utils intToCurrency:val];
 		result.detailURL = [[itemUrl contentsText] stringByConvertingHTMLToPlainText];
         [self.objects addObject:result];
     }
