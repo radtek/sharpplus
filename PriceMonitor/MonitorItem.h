@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "DIOSNode.h"
 
 typedef enum {
     ConditionLessEqual,//<=
@@ -56,5 +57,7 @@ typedef enum{
 -(id) initWithItemId:(NSString*)_itemId;
 -(void) saveToDb:(NSInteger)action;
 -(void)delete;
+-(void) setCCKField:(NSMutableDictionary*)node field:(NSString*)field value:(NSString*) value;
+
 
 @end

@@ -8,11 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import <Three20/Three20.h>
+#import "DIOSConnect.h"
 
 @interface PriceMonitorAppDelegate : NSObject <UIApplicationDelegate> {
     UIWindow *window;
+    DIOSConnect *session;
 }
 
+@property (nonatomic, retain) DIOSConnect *session;
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 
 @end
