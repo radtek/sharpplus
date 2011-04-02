@@ -123,7 +123,7 @@
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Condition</string>
+						<string key="IBUIText">条件</string>
 						<reference key="IBUITextColor" ref="994120017"/>
 						<reference key="IBUIHighlightedColor" ref="97684420"/>
 						<int key="IBUIBaselineAdjustment">1</int>
@@ -208,7 +208,7 @@
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Price($)</string>
+						<string key="IBUIText">価格(¥)</string>
 						<reference key="IBUITextColor" ref="994120017"/>
 						<reference key="IBUIHighlightedColor" ref="97684420"/>
 						<int key="IBUIBaselineAdjustment">1</int>
@@ -224,7 +224,7 @@
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Monitor Time</string>
+						<string key="IBUIText">監視時間</string>
 						<reference key="IBUITextColor" ref="994120017"/>
 						<reference key="IBUIHighlightedColor" ref="97684420"/>
 						<int key="IBUIBaselineAdjustment">1</int>
@@ -241,8 +241,8 @@
 						<int key="IBSelectedSegmentIndex">0</int>
 						<object class="NSArray" key="IBSegmentTitles">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>H</string>
-							<string>D</string>
+							<string>時</string>
+							<string>日</string>
 						</object>
 						<object class="NSMutableArray" key="IBSegmentWidths">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -299,7 +299,7 @@
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Category</string>
+						<string key="IBUIText">カテゴリ</string>
 						<reference key="IBUITextColor" ref="994120017"/>
 						<reference key="IBUIHighlightedColor" ref="97684420"/>
 						<int key="IBUIBaselineAdjustment">1</int>
@@ -411,7 +411,6 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="579344247"/>
 							<reference ref="979980515"/>
-							<reference ref="642712528"/>
 							<reference ref="492398295"/>
 							<reference ref="915463284"/>
 							<reference ref="562127060"/>
@@ -420,6 +419,7 @@
 							<reference ref="548114113"/>
 							<reference ref="599458494"/>
 							<reference ref="167761634"/>
+							<reference ref="642712528"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -534,7 +534,7 @@
 					</object>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSAffineTransform">
-						<bytes key="NSTransformStruct">P4AAAL+AAABByAAAw3gAAA</bytes>
+						<bytes key="NSTransformStruct">AUGgAABDQgAAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSAffineTransform">
