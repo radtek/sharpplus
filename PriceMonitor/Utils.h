@@ -21,6 +21,7 @@
 
 + (NSArray*)splitString:(NSString*)string separator:(NSString*)separator;
 + (NSString*)separatedText:(NSArray*)listStrings separator:(NSString*)separator;
++ (NSString*)intToCurrency:(NSUInteger)val;
 
 
 

@@ -55,4 +55,13 @@
 	
 	return str;
 }
+
++ (NSString*)intToCurrency:(NSUInteger)val{
+  NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+  formatter.numberStyle = NSNumberFormatterCurrencyStyle;
+  NSString *strMoney = [formatter stringFromNumber:[NSNumber numberWithInt:val]];
+  [formatter release];
+  return strMoney;
+}
+
 @end
