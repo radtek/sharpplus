@@ -42,7 +42,7 @@
 			Element* shopUrl = [shopUrls objectAtIndex:i];
 			
 			result.price = [[[price selectElement:@"p a"] contentsText] stringByConvertingHTMLToPlainText];
-			result.deliveryPrice = [[[deliveryPrice selectElement:@"p a"] contentsText] stringByConvertingHTMLToPlainText];
+			result.deliveryPrice = [[deliveryPrice  contentsText] stringByConvertingHTMLToPlainText];
 			result.shopName = [[[shops objectAtIndex:i] contentsText] stringByConvertingHTMLToPlainText];
 			result.category = [[category contentsText] stringByConvertingHTMLToPlainText];
 			if (spec && 0==i){
