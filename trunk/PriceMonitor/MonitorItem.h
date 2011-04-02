@@ -26,6 +26,7 @@ typedef enum{
 @interface MonitorItem : NSObject {
 	NSInteger monitorId;
 	NSString* itemId;
+	NSString* nodeId;
 	NSString* name;
 	NSUInteger price;
 	NSString* area;
@@ -42,6 +43,7 @@ typedef enum{
 
 @property (nonatomic, assign) NSInteger monitorId;
 @property (nonatomic, retain) NSString* itemId;
+@property (nonatomic, retain) NSString* nodeId;
 @property (nonatomic, retain) NSString *name;
 @property (nonatomic, assign) NSUInteger price;
 @property (nonatomic, retain) NSString *area;
