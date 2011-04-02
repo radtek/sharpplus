@@ -14,7 +14,8 @@
 
 @implementation MonitorItem
 
-@synthesize monitorId, itemId,price, name, area, category, condition, time, timeType, currPrice, prevPrice, checkTime;
+@synthesize monitorId, itemId, nodeId, price, name, area, category, condition, time, 
+			timeType, currPrice, prevPrice, checkTime;
 
 -(id) initWithItemId:(NSString*)_itemId{
 	[super init];
@@ -30,6 +31,7 @@
 
 	self.monitorId = [rs intForColumn:@"MonitorId"];
 	self.itemId = [rs stringForColumn:@"ItemId"];
+	self.nodeId = [rs stringForColumn:@"NodeId"];
 	self.name = [rs stringForColumn:@"Name"];
 	self.price = [rs intForColumn:@"Price"];
 	NSString* category = [rs stringForColumn:@"Category"];
@@ -86,6 +88,39 @@
 		 [NSNumber numberWithInt:self.currPrice],
 		 self.checkTime,
 	     [NSNumber numberWithInt:self.monitorId]];
+		
+		//update it to our drupal cck table
+		//save it to our drupal cck table
+		DIOSNode *node = [[DIOSNode alloc] initWithSession:[delegate session]];
+		NSMutableDictionary *nodeData = [[NSMutableDictionary alloc] init];
+		
+		//Price
+		[self setCCKField:nodeData field:@"field_monitor_price" value:[NSString stringWithFormat:@"%d", self.price]];
+		//Area
+		//[self setCCKField:nodeData field:@"field_monitor_area" value:self.area];
+		//Condition
+		[self setCCKField:nodeData field:@"field_monitor_condition" value:[NSString stringWithFormat:@"%d", self.condition]];
+		//Monitor Time
+		[self setCCKField:nodeData field:@"field_monitor_time" value:[NSString stringWithFormat:@"%d", self.time]];
+		//Monitor Time Type
+		[self setCCKField:nodeData field:@"field_time_type" value:[NSString stringWithFormat:@"%d", self.timeType]];
+		//Monitor Current Price
+		[self setCCKField:nodeData field:@"field_curr_price" value:[NSString stringWithFormat:@"%d", self.currPrice]];
+		//Monitor Check Time
+		[self setCCKField:nodeData field:@"field_check_time" value:@"now"];
+		[nodeData setObject:self.nodeId forKey:@"nid"];
+		
+		[nodeData setObject:@"now" forKey:@"date"];
+		if ([[[[delegate session] userInfo] objectForKey:@"uid"] isEqualToNumber:[NSNumber numberWithInt:0]]) {
+			[nodeData setObject:@"" forKey:@"name"];
+		} else if([[delegate session] userInfo] == nil){
+			[nodeData setObject:@"" forKey:@"name"];
+		} else {
+			[nodeData setObject:[[[delegate session] userInfo] objectForKey:@"name"] forKey:@"name"];
+		}
+		[node nodeSave:nodeData];
+		[self displayDebugDIOS:node];
+		[node release];		
     }else {
 		//save it to our drupal cck table
 		DIOSNode *node = [[DIOSNode alloc] initWithSession:[delegate session]];
@@ -125,14 +160,12 @@
 		[self displayDebugDIOS:node];
 		//save to db
 		id nid = [[node connResult] objectForKey:@"#data"];
-		NSLog(@"%@", [[node connResult] objectForKey:@"#data"]);
-		NSLog(@"%@", [NSString stringWithFormat:@"%@",nid]);
+		self.nodeId = [NSString stringWithFormat:@"%@",nid];
 		success=[mgr.database executeUpdate:
 				 @"insert into MonitorList (itemId, NodeId, name, price, category, condition, MonitorTime, timeType, CurrPrice, PrevPrice, CheckTime)"
 				 " values(?,?,?, ?, ?, ?,?,?, ?, ?, ?)",
 				 self.itemId,
-				 [NSString stringWithFormat:@"%@",nid],
-				 //nid,
+				 self.nodeId,
 				 self.name,
 				 [NSNumber numberWithInt:self.price],
 				 self.category, 
@@ -155,8 +188,16 @@
 -(void)delete{
 	//delete from db
 	PersistenceManager * mgr = [PersistenceManager mgr];
+	PriceMonitorAppDelegate* delegate = (PriceMonitorAppDelegate*)[[UIApplication sharedApplication] delegate];
+	
 	BOOL success = [mgr.database executeUpdate:@"delete from MonitorList where monitorId=?",
 					[NSNumber numberWithInt:self.monitorId]];
+	
+	//delete the record remotely
+	DIOSNode *node = [[DIOSNode alloc] initWithSession:[delegate session]];
+	[node nodeDelete:self.nodeId];
+	[self displayDebugDIOS:node];
+	[node release];  	
 	if (!success){
 		NSLog([mgr.database lastErrorMessage]);
 	}
