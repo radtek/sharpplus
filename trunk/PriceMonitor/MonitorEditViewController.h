@@ -8,6 +8,7 @@
 
 #import <Three20/Three20.h>
 #import "MonitorItem.h"
+#import "CompareViewController.h"
 
 @interface MonitorEditViewController : TTViewController {
 	IBOutlet UILabel* lblName;
@@ -19,9 +20,11 @@
 	NSInteger action;
 	NSString* itemId;
 	MonitorItem* item;
-	NSInteger result;
+	NSString* name;
 	NSInteger price;
 	NSString* category;
+	
+	CompareViewController* _compareView;
 }
 
 @property (retain, nonatomic) UILabel* lblName;
@@ -33,9 +36,9 @@
 @property (retain, nonatomic) NSString* itemId;
 @property (assign, nonatomic) NSInteger action;
 @property (retain, nonatomic) MonitorItem* item;
-@property (assign, nonatomic) NSInteger result;
 @property (assign, nonatomic) NSInteger price;
 @property (retain, nonatomic) NSString* category;
+@property (retain, nonatomic) NSString* name;
 
 -(IBAction)categoryDoneEditing:(id)sender;
 -(IBAction)backgroundClicking:(id)sender;

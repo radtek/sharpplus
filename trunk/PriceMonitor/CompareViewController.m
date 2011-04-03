@@ -15,7 +15,7 @@
 
 @implementation CompareViewController
 
-@synthesize itemId = _itemId;
+@synthesize itemId = _itemId, price=_price, category=_category;
 @synthesize action = _action;
 @synthesize name = _name;
 @synthesize result = _result;
@@ -92,19 +92,20 @@
 		button = @"編集モニター";
 	}
 	//get the lowest price
-	NSString* strPrice= @"0";
+	self.price= @"0";
+	self.category =@"その他";
 	
 	NSArray* results = [(id<CompareResultsModel>)self.model results];
 	CompareResult*	compare = nil;
 	if ( [results count]> 0){
 		compare = (CompareResult*)[results objectAtIndex:0];
 		//remove ¥ and ,
-		strPrice= [compare.price stringByReplacingOccurrencesOfString:@"¥" withString:@""];
-		strPrice = [strPrice stringByReplacingOccurrencesOfString:@"," withString:@""];
+		self.price= [compare.price stringByReplacingOccurrencesOfString:@"¥" withString:@""];
+		self.price = [self.price stringByReplacingOccurrencesOfString:@"," withString:@""];
+		self.category = compare.category;
 	}
-//	NSString* url = [NSString stringWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&id=%d&price=%@&cmpId=%d", 
-	NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&itemId=%@&id=%d&price=%@&cmpId=%d", 
-					 strAction,self.itemId, self.name, strPrice, compare];
+	NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&id=%d", 
+					 strAction,self];
 	self.navigationItem.rightBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle:button 
 								  style:UIBarButtonItemStyleBordered
@@ -124,14 +125,28 @@
 
 }
 
+-(void)setEditAction{
+	self.action = 1;
+	NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&id=%d", 
+					 @"edit",self];
+	
+	self.navigationItem.rightBarButtonItem =
+	[[[UIBarButtonItem alloc] initWithTitle:@"編集モニター" 
+									  style:UIBarButtonItemStyleBordered
+									 target:url
+									 action:@selector(openURLFromButton:)] autorelease];
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 -(void)dealloc {
 	TT_RELEASE_SAFELY(_headerView);
 	TT_RELEASE_SAFELY(_product);
 	TT_RELEASE_SAFELY(_spec);
+	TT_RELEASE_SAFELY(_itemId);
+	TT_RELEASE_SAFELY(_price);
+	TT_RELEASE_SAFELY(_name);
+	TT_RELEASE_SAFELY(_category);
 	
-	[_itemId release];
 	[super dealloc];
 }
 
