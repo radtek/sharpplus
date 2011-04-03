@@ -112,7 +112,26 @@ static CGFloat kImageHeight = 16;
 							[conditionArr objectAtIndex:item.condition] ,
 							[Utils intToCurrency:item.price]];
 		
-		self.price.text = [NSString stringWithFormat:@"現価:%@" ,[Utils intToCurrency:item.currPrice]];
+		//calc date difference 
+		NSTimeInterval diff= [item.checkTime timeIntervalSinceNow];
+		
+		NSString* strDiff= @"";
+		
+		NSInteger uiDiff = fabs(diff) / 60;
+		
+		if (uiDiff / 60){
+			uiDiff /=60;
+			if (uiDiff / 24){
+				strDiff =[NSString stringWithFormat:@"%d日前", uiDiff/24];
+			}else {
+				strDiff =[NSString stringWithFormat:@"%d時間前", uiDiff];
+			}
+		}else {
+			strDiff =[NSString stringWithFormat:@"%d分前", uiDiff];
+		}
+
+		
+		self.price.text = [NSString stringWithFormat:@"現価:%@(%@)" ,[Utils intToCurrency:item.currPrice], strDiff];
 		BOOL ok=NO;
 		
 		switch (item.condition) {
