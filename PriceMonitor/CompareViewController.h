@@ -13,7 +13,10 @@
 	NSString* _itemId;
 	NSInteger _action;
 	NSString* _name;	
+	NSString* _price;
 	NSInteger _result;
+	NSString* _category;
+	
 	UIView* _headerView;
 	UILabel* _product;
 	UILabel* _spec;
@@ -24,10 +27,13 @@
 @property (nonatomic,assign) NSInteger action;
 @property (nonatomic,retain) NSString* name;
 @property (nonatomic,assign) NSInteger result;
+@property (nonatomic,retain) NSString* price;
+@property (nonatomic,retain) NSString* category;
 
 @property (retain, nonatomic) IBOutlet UIView* headerView;
 @property (retain, nonatomic) IBOutlet UILabel* product;
 @property (retain, nonatomic) IBOutlet UILabel* spec;
 
+-(void)setEditAction;
 
 @end

@@ -14,8 +14,8 @@
 
 @implementation MonitorEditViewController
 
-@synthesize lblName, edtCategory,segCondition, edtPrice,
-			edtTime, segTime, action, itemId, item, result, price, category;
+@synthesize lblName, edtCategory,segCondition, edtPrice,name,
+			edtTime, segTime, action, itemId, item, price, category;
 
 // private
 
@@ -34,6 +34,9 @@
 	//save to db
 	[self.item saveToDb:self.action];
 	[self dismissModalViewControllerAnimated:YES];
+	
+	if (_compareView.action==0)
+		[_compareView setEditAction];
 }
 
 - (id)initWithAction:(NSString*)action query:(NSDictionary*)query  {
@@ -46,17 +49,12 @@
 			self.title = @"編集モニター";
 		}
 		
-		self.itemId = [query objectForKey:@"itemId"];
-		self.result = [[query objectForKey:@"id"] intValue];
-		self.price = [[query objectForKey:@"price"] intValue];
-		CompareResult* compare= (CompareResult*)[[query objectForKey:@"cmpId"] intValue];
-		if (compare){
-			self.category = compare.category;
-		}else {
-			self.category=@"その他";
-		}
-
-		
+		NSInteger rslt = [[query objectForKey:@"id"] intValue];
+		_compareView= (CompareViewController*)rslt;
+		self.itemId= _compareView.itemId;
+		self.category = _compareView.category;
+		self.price = [_compareView.price intValue];
+		self.name = _compareView.name;
 		
 		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc]
 												   initWithTitle:@"完了" style:UIBarButtonItemStyleDone
@@ -77,11 +75,10 @@
 		//new
 		self.item = [[[MonitorItem alloc] init] autorelease];
 		
-		NSString* name= (NSString*)self.result;
-		self.lblName.text = name;
+		self.lblName.text = self.name;
 		self.edtPrice.text = [NSString stringWithFormat:@"%d", self.price];
 		self.edtCategory.text = self.category;
-		self.item.name = name; 
+		self.item.name = self.name; 
 		self.item.itemId= self.itemId;
 		self.item.currPrice = self.price;
 		self.item.prevPrice = self.price;
