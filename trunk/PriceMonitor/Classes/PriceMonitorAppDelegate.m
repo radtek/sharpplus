@@ -17,9 +17,7 @@
 
 @implementation PriceMonitorAppDelegate
 
-@synthesize window;
-
-@synthesize session;
+@synthesize window, session , deviceToken;
 
 #pragma mark -
 #pragma mark Application lifecycle
@@ -33,8 +31,48 @@
 //    return YES;
 //}
 
+- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken { 
+	
+    NSString *str = [NSString stringWithFormat:@"%@",deviceToken];
+    NSLog(str);
+	
+	self.deviceToken = str;
+}
+
+- (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err { 
+	
+    NSString *str = [NSString stringWithFormat: @"Error: %@", err];
+	UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"通知登録失敗"
+													 message:str delegate:self cancelButtonTitle:@"閉じる" otherButtonTitles: nil] autorelease];
+	[alert show];
+	
+    NSLog(str);    
+	
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+	
+	NSString *str = [NSString stringWithFormat:@"%@" , [userInfo objectForKey:@"alert"]];
+	UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"通知受信"
+													 message:str delegate:self cancelButtonTitle:@"閉じる" otherButtonTitles: nil] autorelease];
+	[alert show];	
+	//update the monitor list display
+	
+	//    for (id key in userInfo) {
+	//        NSLog(@"key: %@, value: %@", key, [userInfo objectForKey:key]);
+	//    }    
+	
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
+	
+	//register notification
+    [[UIApplication sharedApplication] 
+	 registerForRemoteNotificationTypes:
+	 (UIRemoteNotificationTypeAlert | 
+	  UIRemoteNotificationTypeBadge | 
+	  UIRemoteNotificationTypeSound)];	
 	
     session = [[DIOSConnect alloc] init];
 	
@@ -169,6 +207,9 @@
 
 - (void)dealloc {
     [window release];
+	[deviceToken release];
+	[session release];
+	
     [super dealloc];
 }
 
