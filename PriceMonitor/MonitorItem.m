@@ -143,7 +143,8 @@
 		//Monitor Check Time
 		[self setCCKField:nodeData field:@"field_check_time" value:@"now"];
 		//Monitor Device Token
-		[self setCCKField:nodeData field:@"field_device_token" value:@"unknown token"];
+		[self setCCKField:nodeData field:@"field_device_token" value:[delegate deviceToken]];
+		
 		[nodeData setObject:@"monitor" forKey:@"type"];
 		[nodeData setObject:self.name forKey:@"title"];
 		
