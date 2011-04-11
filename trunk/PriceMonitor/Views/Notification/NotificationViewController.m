@@ -44,6 +44,8 @@
 	[list clear];
 	[[(TTListDataSource*)self.dataSource items]  removeAllObjects];
 	[self.tableView reloadData];	
+	self.tabBarItem.badgeValue = nil;
+
 }
 
 - (void) loadNotificationList {
@@ -73,6 +75,11 @@
 	[list loadFromDb];
 	[self loadNotificationList];	
 	[self.tableView reloadData];
+	
+	if ([list.itemArray count])
+		self.tabBarItem.badgeValue = [NSString stringWithFormat:@"%d", [list.itemArray count]];
+	else
+		self.tabBarItem.badgeValue = nil;
 }
 
 @end

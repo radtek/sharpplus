@@ -82,7 +82,8 @@
 	application.applicationIconBadgeNumber = 0;
 	NSDictionary *notif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
 	
-	self.updateMonitor = true;
+//	self.updateMonitor = true;
+	self.updateMonitor = false;
 	
     if (notif) {
 		
@@ -94,6 +95,7 @@
 		//Update Database
 		NotificationList* list = [NotificationList notificationList];
 		[list addNotification:str];		
+		self.updateMonitor = true;		
 		
 //        application.applicationIconBadgeNumber = 99;
 
