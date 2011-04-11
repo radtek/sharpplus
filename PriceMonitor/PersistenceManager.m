@@ -105,6 +105,11 @@ static PersistenceManager *sharedMgr = nil;
 			   "CurrPrice integer not null,"
 			   "PrevPrice integer not null,"
 			   "CheckTime varchar not null)"];
+	//create notification table
+	success &= [db executeUpdate:@"create table if not exists NotificationList ("
+				"NotificationId integer primary key autoincrement,"
+				"Notification varchar not null)"];
+	
 	//insert test data
 	//success &= [db executeUpdate:@"insert or replace into MonitorList values(1,'K0000215539', 'test', 1234, 'tokyo', 'other', 1,12,1)"];
 	//success &= [db executeUpdate:@"insert or replace into MonitorList values(2,'K0000125739', 'test2', 12345, 'kanagawa', 'food', 2,10,0)"];
