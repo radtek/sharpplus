@@ -19,7 +19,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
 	if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]){
 		self.title = @"モニター";
-		UIImage* image = [UIImage imageNamed:@"tab.png"];
+		UIImage* image = [UIImage imageNamed:@"monitor.png"];
 		self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
 		self.navigationItem.leftBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle:@"更新" style:UIBarButtonItemStyleBordered
