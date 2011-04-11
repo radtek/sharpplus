@@ -67,10 +67,25 @@
 	}
 }
 
+-(void) updatePrice{
+	PersistenceManager * mgr = [PersistenceManager mgr];
+	
+	BOOL success;
+	success=[mgr.database executeUpdate:
+			 @"update MonitorList set CurrPrice=?, CheckTime=? "
+			 " where monitorId=?", 
+			 [NSNumber numberWithInt:self.currPrice],
+			 self.checkTime,
+			 [NSNumber numberWithInt:self.monitorId]];
+	if (!success){
+		NSLog([mgr.database lastErrorMessage]);
+	}
+	
+}
+
 -(void) saveToDb:(NSInteger) action{
 	
 	PersistenceManager * mgr = [PersistenceManager mgr];
-
 
 	BOOL success;
 	PriceMonitorAppDelegate* delegate = (PriceMonitorAppDelegate*)[[UIApplication sharedApplication] delegate];

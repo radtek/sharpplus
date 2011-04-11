@@ -19,7 +19,7 @@
 
 @implementation PriceMonitorAppDelegate
 
-@synthesize window, session , deviceToken;
+@synthesize window, session , deviceToken, updateMonitor;
 
 #pragma mark -
 #pragma mark Application lifecycle
@@ -44,6 +44,7 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+	self.updateMonitor = true;
 	application.applicationIconBadgeNumber -=1;
 	NSString *str = [NSString stringWithFormat:@"%@" , [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 
@@ -81,6 +82,7 @@
 	application.applicationIconBadgeNumber = 0;
 	NSDictionary *notif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
 	
+	self.updateMonitor = true;
 	
     if (notif) {
 		
