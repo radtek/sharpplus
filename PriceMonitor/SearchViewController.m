@@ -20,7 +20,7 @@
 	[super viewDidLoad];
 	
 	self.title = @"検索";
-	UIImage* image = [UIImage imageNamed:@"tab.png"];
+	UIImage* image = [UIImage imageNamed:@"search.png"];
 	self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
 	
 	self.tableView.tableHeaderView = self.headerView;

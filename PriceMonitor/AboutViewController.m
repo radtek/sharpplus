@@ -15,7 +15,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
 	if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]){
 		self.title = @"モニターについて";
-		UIImage* image = [UIImage imageNamed:@"tab.png"];
+		UIImage* image = [UIImage imageNamed:@"home.png"];
 		self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
 		
 	}

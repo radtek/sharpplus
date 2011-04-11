@@ -16,7 +16,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
 	if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]){
 		self.title = @"通知";
-		UIImage* image = [UIImage imageNamed:@"tab.png"];
+		UIImage* image = [UIImage imageNamed:@"notification.png"];
 		self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
 		self.navigationItem.rightBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle:@"クリア" style:UIBarButtonItemStyleBordered
