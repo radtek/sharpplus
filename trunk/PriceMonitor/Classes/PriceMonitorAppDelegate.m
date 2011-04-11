@@ -14,6 +14,8 @@
 #import "MonitorEditViewController.h"
 #import "SearchViewController.h"
 #import "CompareViewController.h"
+#import "NotificationViewController.h"
+#import "NotificationList.h"
 
 @implementation PriceMonitorAppDelegate
 
@@ -43,10 +45,19 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	application.applicationIconBadgeNumber -=1;
+	NSString *str = [NSString stringWithFormat:@"%@" , [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+
+	//Update Database
+	NotificationList* list = [NotificationList notificationList];
+	[list addNotification:str];
+	
+	//navigate to monitor tab
+	TTNavigator* navigator = [TTNavigator navigator];
+//	[navigator openURLAction:[TTURLAction actionWithURLPath:[NSString stringWithFormat:@"tt://notification/%@", str]]];
+	[navigator openURLAction:[TTURLAction actionWithURLPath:@"tt://viewController/MonitorViewController"]];
 	
 	if (application.applicationState == UIApplicationStateActive) {
 	
-	  NSString *str = [NSString stringWithFormat:@"%@" , [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 	  UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"通知受信"
 													 message:str delegate:self cancelButtonTitle:@"閉じる" otherButtonTitles: nil] autorelease];
 	  [alert show];	
@@ -68,17 +79,20 @@
 	 UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
 #endif
 	application.applicationIconBadgeNumber = 0;
-	UILocalNotification *localNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+	NSDictionary *notif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
 	
 	
-    if (localNotif) {
+    if (notif) {
 		
-//		NSString *str = [NSString stringWithFormat:@"%@" , [[localNotif.userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+		NSString *str = [NSString stringWithFormat:@"%@" , [[notif objectForKey:@"aps"] objectForKey:@"alert"]];
+	
 //		UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"通知受信"
 //														 message:str delegate:self cancelButtonTitle:@"閉じる" otherButtonTitles: nil] autorelease];
 //		[alert show];	
+		//Update Database
+		NotificationList* list = [NotificationList notificationList];
+		[list addNotification:str];		
 		
-        application.applicationIconBadgeNumber = localNotif.applicationIconBadgeNumber-1;
 //        application.applicationIconBadgeNumber = 99;
 
 		//		NSLog([launchOptions description]);
@@ -99,6 +113,7 @@
 	// The tab bar controller is shared, meaning there will only ever be one created.  Loading
 	// This URL will make the existing tab bar controller appear if it was not visible.
 	[map from:@"tt://tabbar" toSharedViewController:[TabBarController class]];
+	[map from:@"tt://notification/(addNotification:)" toSharedViewController:[NotificationViewController class]];
 	
 	// A new monitor edit controllers will be created each time you open a monitor URL
 	//[map from:@"tt://monitorEdit/(initWithMonitor:)" toModalViewController:[MonitorEditViewController class]];
