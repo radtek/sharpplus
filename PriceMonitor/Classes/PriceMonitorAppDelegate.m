@@ -22,15 +22,6 @@
 #pragma mark -
 #pragma mark Application lifecycle
 
-//- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
-//    
-//    // Override point for customization after application launch.
-//    
-//    [self.window makeKeyAndVisible];
-//    
-//    return YES;
-//}
-
 - (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken { 
 	
     NSString *str = [NSString stringWithFormat:@"%@",deviceToken];
@@ -51,28 +42,48 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+	application.applicationIconBadgeNumber -=1;
 	
-	NSString *str = [NSString stringWithFormat:@"%@" , [userInfo objectForKey:@"alert"]];
-	UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"通知受信"
+	if (application.applicationState == UIApplicationStateActive) {
+	
+	  NSString *str = [NSString stringWithFormat:@"%@" , [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+	  UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"通知受信"
 													 message:str delegate:self cancelButtonTitle:@"閉じる" otherButtonTitles: nil] autorelease];
-	[alert show];	
+	  [alert show];	
+	}
 	//update the monitor list display
 	
-	//    for (id key in userInfo) {
-	//        NSLog(@"key: %@, value: %@", key, [userInfo objectForKey:key]);
-	//    }    
+//	    for (id key in userInfo) {
+//	        NSLog(@"key: %@, value: %@", key, [userInfo objectForKey:key]);
+//	    }    
 	
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-- (void)applicationDidFinishLaunching:(UIApplication *)application {
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
 	
 	//register notification
-    [[UIApplication sharedApplication] 
-	 registerForRemoteNotificationTypes:
-	 (UIRemoteNotificationTypeAlert | 
-	  UIRemoteNotificationTypeBadge | 
-	  UIRemoteNotificationTypeSound)];	
+#if !TARGET_IPHONE_SIMULATOR
+	[application registerForRemoteNotificationTypes: 
+	 UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
+#endif
+	application.applicationIconBadgeNumber = 0;
+	UILocalNotification *localNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+	
+	
+    if (localNotif) {
+		
+//		NSString *str = [NSString stringWithFormat:@"%@" , [[localNotif.userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+//		UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"通知受信"
+//														 message:str delegate:self cancelButtonTitle:@"閉じる" otherButtonTitles: nil] autorelease];
+//		[alert show];	
+		
+        application.applicationIconBadgeNumber = localNotif.applicationIconBadgeNumber-1;
+//        application.applicationIconBadgeNumber = 99;
+
+		//		NSLog([launchOptions description]);
+    }	
+	
 	
     session = [[DIOSConnect alloc] init];
 	
