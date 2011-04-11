@@ -11,6 +11,7 @@
 #import "MonitorItem.h"
 #import "MonitorTableItem.h"
 #import "MonitorDataSource.h"
+#import "PriceMonitorAppDelegate.h"
 
 
 @implementation MonitorViewController
@@ -20,6 +21,12 @@
 		self.title = @"モニター";
 		UIImage* image = [UIImage imageNamed:@"tab.png"];
 		self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
+		self.navigationItem.leftBarButtonItem =
+		[[[UIBarButtonItem alloc] initWithTitle:@"更新" style:UIBarButtonItemStyleBordered
+										 target:self
+										 action:@selector(updatePrice:)] autorelease];
+		
+		
 		self.navigationItem.rightBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle:@"削除" style:UIBarButtonItemStyleBordered
 										 target:self
@@ -32,6 +39,13 @@
 				
 -(IBAction)toggleDelete:(id)sender{
 	[self.tableView setEditing:!self.tableView.editing animated:YES];
+}
+
+-(IBAction)updatePrice:(id)sender{
+	//[self.tableView setEditing:!self.tableView.editing animated:YES];
+	PriceMonitorAppDelegate* delegate = (PriceMonitorAppDelegate*)[[UIApplication sharedApplication] delegate];
+	delegate.updateMonitor = true;
+	[self updateData];
 }
 
 - (void) loadMonitorList {
@@ -62,13 +76,18 @@
 //	[self loadMonitorList];
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-	[super viewWillAppear:animated];
-	
-	MonitorList* list = [MonitorList monitorList];
+- (void) updateData {
+  MonitorList* list = [MonitorList monitorList];
 	[list loadFromDb];
 	[self loadMonitorList];	
 	[self.tableView reloadData];
+
+}
+- (void)viewWillAppear:(BOOL)animated{
+	[super viewWillAppear:animated];
+	
+	[self updateData];
+
 }
 @end
 

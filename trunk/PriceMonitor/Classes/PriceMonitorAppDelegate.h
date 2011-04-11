@@ -14,11 +14,13 @@
     UIWindow *window;
     DIOSConnect *session;
 	NSString* deviceToken;
+	BOOL updateMonitor;
 }
 
 @property (nonatomic, retain) DIOSConnect *session;
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, copy) NSString* deviceToken;
+@property (nonatomic, assign) BOOL updateMonitor;
 
 @end
 

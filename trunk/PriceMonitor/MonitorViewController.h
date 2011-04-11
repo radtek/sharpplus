@@ -14,5 +14,6 @@
 }
 
 -(IBAction)toggleDelete:(id)sender;
+-(IBAction)updatePrice:(id)sender;
 
 @end

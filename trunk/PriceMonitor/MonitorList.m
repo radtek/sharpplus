@@ -8,6 +8,7 @@
 
 #import "MonitorList.h"
 #import "PersistenceManager.h"
+#import "PriceMonitorAppDelegate.h"
 
 
 @implementation MonitorList
@@ -70,6 +71,9 @@ static MonitorList *sharedMonitorList = nil;
 }
 
 -(void) loadFromDb{
+	PriceMonitorAppDelegate* delegate = (PriceMonitorAppDelegate*)[[UIApplication sharedApplication] delegate];
+	
+	
 	PersistenceManager * mgr = [PersistenceManager mgr];
 	FMResultSet* rs = [mgr.database executeQuery:@"select * from MonitorList order by category, monitorId"];
     NSMutableArray* sections = [[[NSMutableArray alloc] init] autorelease];
@@ -94,6 +98,26 @@ static MonitorList *sharedMonitorList = nil;
 		item.prevPrice = [rs intForColumn:@"PrevPrice"];
 		item.checkTime = [rs dateForColumn:@"CheckTime"];
 		
+		if (delegate.updateMonitor){
+			//update currPrice from drupal
+			DIOSNode *node = [[DIOSNode alloc] initWithSession:delegate.session];
+			[node nodeGet:item.nodeId];
+			NSLog(@"%@", node.connResult);
+			NSDictionary* nodeData = [node.connResult objectForKey:@"#data"];
+			id value = [[[nodeData valueForKey:@"field_curr_price"] objectAtIndex:0] valueForKey:@"value"];
+			item.currPrice = [value intValue];
+			value = [[[nodeData valueForKey:@"field_check_time"] objectAtIndex:0] valueForKey:@"value"];
+			//convert string to date
+			NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+			[dateFormat setDateFormat:@"yyyy-MM-dd hh:mm:ss"];
+			NSDate *date = [dateFormat dateFromString:value];  
+			[dateFormat release];
+			item.checkTime = date;
+		    //update database
+			[item updatePrice];
+			[node release];			
+		}
+		
 		if (!([sections containsObject:category])){
 			detailArray = [[[NSMutableArray alloc] init] autorelease];
 			
@@ -105,6 +129,8 @@ static MonitorList *sharedMonitorList = nil;
 	[rs close];		 
 	self.sectionArray = sections;
 	self.itemArray = items;
+	
+	delegate.updateMonitor = false;
 }
 
 -(MonitorItem*)getMonitorItem:(NSIndexPath*)indexPath{

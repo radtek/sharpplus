@@ -58,6 +58,7 @@ typedef enum{
 
 -(id) initWithItemId:(NSString*)_itemId;
 -(void) saveToDb:(NSInteger)action;
+-(void) updatePrice;
 -(void)delete;
 -(void) setCCKField:(NSMutableDictionary*)node field:(NSString*)field value:(NSString*) value;
 
