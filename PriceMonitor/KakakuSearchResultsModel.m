@@ -2,12 +2,26 @@
 #import "KakakuSearchResponse.h"
 #import "Utils.h"
 #import "GlobalSettings.h"
+#import "KakakuService.h"
+#import "PriceMonitorAppDelegate.h"
 
 const static NSUInteger kKakakuBatchSize = 1;   // The number of results to pull down with each request to the server.
 
 @implementation KakakuSearchResultsModel
 
-@synthesize searchTerms;
+@synthesize searchTerms, apiKey;
+
+- (void) displayDebugDIOS:(id)aDIOSConnect {
+	NSLog([aDIOSConnect responseStatusMessage]);
+	if([aDIOSConnect connResult] == nil) {
+		if([aDIOSConnect respondsToSelector:@selector(error)]) {
+			//[responseView setText:]; 
+			NSLog([NSString stringWithFormat:@"%@", [aDIOSConnect error]]);
+		}
+	} else {
+		NSLog([NSString stringWithFormat:@"%@", [aDIOSConnect connResult]]);
+	}
+}
 
 - (id)initWithResponseFormat:(SearchResponseFormat)responseFormat;
 {
@@ -18,6 +32,22 @@ const static NSUInteger kKakakuBatchSize = 1;   // The number of results to pull
                 break;
             case SearchResponseFormatXML:
                 responseProcessor = [[KakakuSearchResponse alloc] init];
+				//
+				if (!apiKey){
+					//send apikey request
+					PriceMonitorAppDelegate* delegate = (PriceMonitorAppDelegate*)[[UIApplication sharedApplication] delegate];
+					
+					KakakuService *serv = [[KakakuService alloc] initWithSession:[delegate session]];
+					[serv getKey];
+					[self displayDebugDIOS:serv];
+					self.apiKey = [serv.connResult objectForKey:@"#data"];
+					[serv release]; 
+					
+					NSLog(self.apiKey);
+					
+					//apiKey = @"1d1283ee00e0882692243ef57f73288f";					
+				}
+				
                 break;
             default:
                 [NSException raise:@"SearchResponseFormat unknown!" format:nil];
@@ -59,7 +89,8 @@ const static NSUInteger kKakakuBatchSize = 1;   // The number of results to pull
 					 offset,
 					 [settings displaySort], 
 					 viewCount,
-					 @"1d1283ee00e0882692243ef57f73288f"];
+					 //@"1d1283ee00e0882692243ef57f73288f"
+					 self.apiKey];
 	NSLog(url);
     TTURLRequest *request = [TTURLRequest requestWithURL:url delegate:self];
     request.cachePolicy = TTURLRequestCachePolicyNoCache;//cachePolicy;
@@ -74,6 +105,7 @@ const static NSUInteger kKakakuBatchSize = 1;   // The number of results to pull
 {
     [super reset];
     [searchTerms release];
+	[apiKey release];
     searchTerms = nil;
 	recordOffset = 1;
     [[responseProcessor objects] removeAllObjects];

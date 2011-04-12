@@ -9,8 +9,10 @@
     URLModelResponse *responseProcessor;
     NSString *searchTerms;
 	NSUInteger recordOffset;
+	NSString* apiKey;
 }
 
 // The designated initializer is defined in the SearchResultsModel protocol.
+@property (nonatomic,copy) NSString* apiKey;
 
 @end
