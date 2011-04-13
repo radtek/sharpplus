@@ -67,7 +67,7 @@
 	@catch (NSException * e) {
 //		NSLog(@"%d %@",totalObjectsAvailableOnServer, e);
 
-		return [NSError errorWithDomain:@"failed to parse html" code:100 userInfo:nil];
+		return [NSError errorWithDomain:@"HTMLの解析は失敗しました" code:100 userInfo:nil];
 	}
 }
 

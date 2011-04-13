@@ -97,32 +97,31 @@
 	
 	NSArray* results = [(id<CompareResultsModel>)self.model results];
 	CompareResult*	compare = nil;
+	self.spec.text = @"";
 	if ( [results count]> 0){
 		compare = (CompareResult*)[results objectAtIndex:0];
 		//remove ¥ and ,
 		self.price= [compare.price stringByReplacingOccurrencesOfString:@"¥" withString:@""];
 		self.price = [self.price stringByReplacingOccurrencesOfString:@"," withString:@""];
 		self.category = compare.category;
-	}
-	NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&id=%d", 
-					 strAction,self];
-	self.navigationItem.rightBarButtonItem =
+		if (compare.spec){
+			self.spec.text = compare.spec;
+		}	
+		
+		NSString* url = [[NSString alloc] initWithFormat:@"tt://monitorEdit?action=%@&id=%d", 
+						 strAction,self];
+		self.navigationItem.rightBarButtonItem =
 		[[[UIBarButtonItem alloc] initWithTitle:button 
-								  style:UIBarButtonItemStyleBordered
-								  target:url
-								  action:@selector(openURLFromButton:)] autorelease];
+										  style:UIBarButtonItemStyleBordered
+										 target:url
+										 action:@selector(openURLFromButton:)] autorelease];
+	}else {
+		self.spec.text = @"価格情報の登録がありません";
+	}
 
 	self.tableView.tableHeaderView = self.headerView;
 	
 	self.product.text = self.name;	
-	
-	CompareResult* rslt= [[(id<CompareResultsModel>)model results] objectAtIndex:0];
-	if (rslt.spec){
-		self.spec.text = rslt.spec;
-	}else {
-		self.spec.text = @"";
-	}
-
 }
 
 -(void)setEditAction{
