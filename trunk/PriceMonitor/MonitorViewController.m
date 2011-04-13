@@ -74,6 +74,17 @@
 	[super viewDidLoad];
 	self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth  ;
 //	[self loadMonitorList];
+	_bannerView = [[GADBannerView alloc] initWithFrame:CGRectMake(0, -50, GAD_SIZE_320x50.width, 
+																  GAD_SIZE_320x50.height)];
+	
+	_bannerView.adUnitID = @"a14da56a6fd301d";
+	_bannerView.rootViewController = self;
+	//self.tableView.tableHeaderView = _bannerView;
+	
+	GADRequest* request = [GADRequest request];
+	request.testing = YES;
+	_bannerView.delegate = self;
+	[_bannerView loadRequest:request];	
 }
 
 - (void) updateData {
@@ -88,6 +99,28 @@
 	
 	[self updateData];
 
+}
+
+#pragma mark Banner Delegate
+- (void)adViewDidReceiveAd:(GADBannerView *)view{
+	NSLog(@"receive ad");
+	[UIView beginAnimations:@"BannerSlide" context:nil];
+	_bannerView.frame = CGRectMake(0, 0, GAD_SIZE_320x50.width, 
+								   GAD_SIZE_320x50.height);
+	self.tableView.tableHeaderView = _bannerView;
+	[UIView commitAnimations];
+	
+}
+
+- (void)adView:(GADBannerView *)view
+didFailToReceiveAdWithError:(GADRequestError *)error{
+	NSLog(@"failed to receive the ad %@", [error localizedDescription]);
+}
+
+-(void) dealloc{
+	_bannerView.delegate = nil;
+	[_bannerView release];
+	[super dealloc];
 }
 @end
 

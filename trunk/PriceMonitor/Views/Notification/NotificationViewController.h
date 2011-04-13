@@ -7,9 +7,11 @@
 //
 
 #import <Three20/Three20.h>
+#import "GADBannerView.h"
 
 
-@interface NotificationViewController : TTTableViewController {
+@interface NotificationViewController : TTTableViewController<GADBannerViewDelegate> {
+	GADBannerView* _bannerView;
 
 }
 
