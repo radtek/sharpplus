@@ -11,9 +11,10 @@
 #import "SearchResultsDataSource.h"
 
 
+
 @implementation SearchViewController
 
-@synthesize headerView = _headerView;
+@synthesize headerView = _headerView, footerView = _footerView;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)viewDidLoad {
@@ -25,8 +26,19 @@
 	
 	self.tableView.tableHeaderView = self.headerView;
 	//self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth  ;
+	_bannerView = [[GADBannerView alloc] initWithFrame:CGRectMake(0, 0, GAD_SIZE_320x50.width, 
+																  GAD_SIZE_320x50.height)];
 	
-	//self.tableView.tableFooterView = self.footerView;
+	_bannerView.adUnitID = @"a14da56a6fd301d";
+	_bannerView.rootViewController = self;
+	[self.footerView addSubview:_bannerView];
+	self.tableView.tableFooterView = self.footerView;
+	
+	GADRequest* request = [GADRequest request];
+	request.testing = YES;
+	_bannerView.delegate = self;
+	
+	[_bannerView loadRequest:request];
 }
 
 - (void)createModel {
@@ -62,9 +74,44 @@
     [self.tableView scrollToTop:YES];
 }
 
+#pragma mark Banner Delegate
+- (void)adViewDidReceiveAd:(GADBannerView *)view{
+	NSLog(@"receive ad");
+	
+}
+
+- (void)adView:(GADBannerView *)view
+didFailToReceiveAdWithError:(GADRequestError *)error{
+	NSLog(@"failed to receive the ad %@", [error localizedDescription]);
+}
+
+- (void)adViewWillPresentScreen:(GADBannerView *)adView{
+}
+
+- (void)adViewWillDismissScreen:(GADBannerView *)adView{
+	
+}
+
+// Sent just after dismissing a full screen view.  Use this opportunity to
+// restart anything you may have stopped as part of adViewWillPresentScreen:.
+- (void)adViewDidDismissScreen:(GADBannerView *)adView{
+	
+}
+
+// Sent just before the application will background or terminate because the
+// user clicked on an ad that will launch another application (such as the App
+// Store).  The normal UIApplicationDelegate methods, like
+// applicationDidEnterBackground:, will be called immediately before this.
+- (void)adViewWillLeaveApplication:(GADBannerView *)adView{
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 -(void)dealloc {
+	_bannerView.delegate = nil;
+	TT_RELEASE_SAFELY(_bannerView);
 	TT_RELEASE_SAFELY(_headerView);
+	TT_RELEASE_SAFELY(_footerView);
 	[super dealloc];
 }
 
