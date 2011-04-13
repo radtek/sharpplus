@@ -247,6 +247,8 @@ static void icuRegexpFunc(sqlite3_context *p, int nArg, sqlite3_value **apArg){
   UBool res;
   const UChar *zString = sqlite3_value_text16(apArg[1]);
 
+  (void)nArg;  /* Unused parameter */
+
   /* If the left hand side of the regexp operator is NULL, 
   ** then the result is also NULL. 
   */
@@ -318,7 +320,7 @@ static void icuRegexpFunc(sqlite3_context *p, int nArg, sqlite3_value **apArg){
 ** of upper() or lower().
 **
 **     lower('I', 'en_us') -> 'i'
-**     lower('I', 'tr_tr') -> 'A}' (small dotless i)
+**     lower('I', 'tr_tr') -> 'Ä±' (small dotless i)
 **
 ** http://www.icu-project.org/userguide/posix.html#case_mappings
 */
@@ -454,7 +456,7 @@ int sqlite3IcuInit(sqlite3 *db){
     void *pContext;                           /* sqlite3_user_data() context */
     void (*xFunc)(sqlite3_context*,int,sqlite3_value**);
   } scalars[] = {
-    {"regexp",-1, SQLITE_ANY,          0, icuRegexpFunc},
+    {"regexp", 2, SQLITE_ANY,          0, icuRegexpFunc},
 
     {"lower",  1, SQLITE_UTF16,        0, icuCaseFunc16},
     {"lower",  2, SQLITE_UTF16,        0, icuCaseFunc16},
@@ -475,7 +477,7 @@ int sqlite3IcuInit(sqlite3 *db){
   int rc = SQLITE_OK;
   int i;
 
-  for(i=0; rc==SQLITE_OK && i<(sizeof(scalars)/sizeof(struct IcuScalar)); i++){
+  for(i=0; rc==SQLITE_OK && i<(int)(sizeof(scalars)/sizeof(scalars[0])); i++){
     struct IcuScalar *p = &scalars[i];
     rc = sqlite3_create_function(
         db, p->zName, p->nArg, p->enc, p->pContext, p->xFunc, 0, 0
@@ -497,4 +499,3 @@ int sqlite3_extension_init(
 #endif
 
 #endif
-

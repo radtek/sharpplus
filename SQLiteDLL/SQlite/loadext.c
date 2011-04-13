@@ -71,6 +71,11 @@
 # define sqlite3_complete16 0
 #endif
 
+#ifdef SQLITE_OMIT_DECLTYPE
+# define sqlite3_column_decltype16      0
+# define sqlite3_column_decltype        0
+#endif
+
 #ifdef SQLITE_OMIT_PROGRESS_CALLBACK
 # define sqlite3_progress_handler 0
 #endif
@@ -327,6 +332,10 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_next_stmt,
   sqlite3_sql,
   sqlite3_status,
+
+  /*
+  ** Added for 3.7.4
+  */
   sqlite3_backup_finish,
   sqlite3_backup_init,
   sqlite3_backup_pagecount,
