@@ -23,6 +23,8 @@
 + (NSString*)separatedText:(NSArray*)listStrings separator:(NSString*)separator;
 + (NSString*)intToCurrency:(NSUInteger)val;
 
-
++ (NSString *)trim:(NSString*)str;
++ (BOOL)isEmptyString:(NSString*)str;
++ (void)showAlert:(NSString*)title msg:(NSString*)msg;
 
 @end

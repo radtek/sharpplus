@@ -9,6 +9,7 @@
 #import "MonitorEditViewController.h"
 #import "SearchResult.h"
 #import "CompareResult.h"
+#import "Utils.h"
 
 
 
@@ -25,6 +26,17 @@
 
 - (void) updateItem{
 	//input value check
+	if ([Utils isEmptyString:self.edtCategory.text]){
+		[Utils showAlert:@"エラー" msg:@"カテゴリを入力ください"];
+		[self.edtCategory becomeFirstResponder];
+		return;
+	}
+
+	if ([Utils isEmptyString:self.edtPrice.text]){
+		[Utils showAlert:@"エラー" msg:@"価格を入力ください"];
+		[self.edtPrice becomeFirstResponder];
+		return;
+	}
 	
 	//update information
 	self.item.category = self.edtCategory.text;
@@ -34,6 +46,8 @@
 	self.item.checkTime = [NSDate date];
 	//save to db
 	[self.item saveToDb:self.action];
+	
+	[Utils showAlert:@"更新" msg:@"データが更新されました"];
 	[self dismissModalViewControllerAnimated:YES];
 	
 	if (_compareView.action==0)
