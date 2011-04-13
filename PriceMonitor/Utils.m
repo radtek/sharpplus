@@ -64,4 +64,18 @@
   return strMoney;
 }
 
++ (NSString *)trim:(NSString*)str {
+	return [str stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
++ (BOOL)isEmptyString:(NSString*)str {
+	return [[Utils trim:str] isEqualToString:@""];
+}
+
++ (void)showAlert:(NSString*)title msg:(NSString*)msg{
+	UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:title
+													 message:msg delegate:nil cancelButtonTitle:@"閉じる" otherButtonTitles: nil] autorelease];
+	[alert show];	
+}
+
 @end
