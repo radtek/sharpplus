@@ -102,6 +102,7 @@
 		//		NSLog([launchOptions description]);
     }	
 	
+	self.deviceToken = @"unknown deviceToken";
 	
     session = [[DIOSConnect alloc] init];
 	

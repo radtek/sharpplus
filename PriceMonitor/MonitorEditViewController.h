@@ -15,7 +15,6 @@
 	IBOutlet UITextField* edtCategory;
 	IBOutlet UISegmentedControl* segCondition;
 	IBOutlet UITextField* edtPrice;
-	IBOutlet UITextField* edtTime;
 	IBOutlet UISegmentedControl* segTime;
 	NSInteger action;
 	NSString* itemId;
@@ -31,7 +30,6 @@
 @property (retain, nonatomic) UITextField* edtCategory;
 @property (retain, nonatomic) UISegmentedControl* segCondition;
 @property (retain, nonatomic) UITextField* edtPrice;
-@property (retain, nonatomic) UITextField* edtTime;
 @property (retain, nonatomic) UISegmentedControl* segTime;
 @property (retain, nonatomic) NSString* itemId;
 @property (assign, nonatomic) NSInteger action;

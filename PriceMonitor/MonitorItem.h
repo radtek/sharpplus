@@ -18,9 +18,12 @@ typedef enum {
 } MonitorCondition;
 
 typedef enum{
-	TimeHour,
+	TimeHalfDay,
 	TimeDay,
-	TimeDefault = TimeHour
+	TimeTwoDay,
+	TimeThreeDay,
+	TimeWeek,
+	TimeDefault = TimeHalfDay
 } MonitorTime;
 
 @interface MonitorItem : NSObject {
@@ -32,7 +35,6 @@ typedef enum{
 	NSString* area;
 	NSString* category;
 	MonitorCondition condition;
-	NSUInteger time;
 	MonitorTime timeType;
 	
 	//
@@ -49,7 +51,6 @@ typedef enum{
 @property (nonatomic, retain) NSString *area;
 @property (nonatomic, retain) NSString *category;
 @property (nonatomic, assign) MonitorCondition condition;
-@property (nonatomic, assign) NSUInteger time;
 @property (nonatomic, assign) MonitorTime timeType;
 
 @property (nonatomic, assign) NSUInteger currPrice;

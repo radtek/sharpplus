@@ -92,7 +92,6 @@ static MonitorList *sharedMonitorList = nil;
 		item.category = category;
 		item.area = [rs stringForColumn:@"Area"];
 		item.condition = [rs intForColumn:@"Condition"];
-		item.time = [rs intForColumn:@"MonitorTime"];
 		item.timeType = [rs intForColumn:@"TimeType"];
 		item.currPrice = [rs intForColumn:@"CurrPrice"];
 		item.prevPrice = [rs intForColumn:@"PrevPrice"];

@@ -15,7 +15,7 @@
 @implementation MonitorEditViewController
 
 @synthesize lblName, edtCategory,segCondition, edtPrice,name,
-			edtTime, segTime, action, itemId, item, price, category;
+			segTime, action, itemId, item, price, category;
 
 // private
 
@@ -24,10 +24,11 @@
 }
 
 - (void) updateItem{
+	//input value check
+	
 	//update information
 	self.item.category = self.edtCategory.text;
 	self.item.price = [self.edtPrice.text intValue];
-	self.item.time = [self.edtTime.text intValue];
 	self.item.condition = self.segCondition.selectedSegmentIndex;
 	self.item.timeType = self.segTime.selectedSegmentIndex;
 	self.item.checkTime = [NSDate date];
@@ -89,7 +90,6 @@
 		self.lblName.text = self.item.name;
 		self.edtCategory.text = self.item.category;
 		self.edtPrice.text = [NSString stringWithFormat:@"%d", self.item.price];
-		self.edtTime.text = [NSString stringWithFormat:@"%d", self.item.time];
 		self.segCondition.selectedSegmentIndex = self.item.condition;
 		self.segTime.selectedSegmentIndex = self.item.timeType;	
 		self.item.currPrice = self.price;
@@ -102,7 +102,6 @@
 }
 
 -(IBAction)backgroundClicking:(id)sender{
-	[edtTime resignFirstResponder];
 	[edtPrice resignFirstResponder];
 	[edtCategory resignFirstResponder];
 }
@@ -114,7 +113,6 @@
 	[edtCategory release];
 	[segCondition release];
 	[edtPrice release];
-	[edtTime release];
 	[segTime release];
 	[super dealloc];
 }
