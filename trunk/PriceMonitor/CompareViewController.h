@@ -7,9 +7,10 @@
 //
 
 #import <Three20/Three20.h>
+#import "GADBannerView.h"
 
 
-@interface CompareViewController : TTTableViewController {
+@interface CompareViewController : TTTableViewController <GADBannerViewDelegate>{
 	NSString* _itemId;
 	NSInteger _action;
 	NSString* _name;	
@@ -18,6 +19,7 @@
 	NSString* _category;
 	
 	UIView* _headerView;
+	GADBannerView* _bannerView;
 	UILabel* _product;
 	UILabel* _spec;
 	

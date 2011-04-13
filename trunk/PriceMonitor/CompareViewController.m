@@ -118,10 +118,27 @@
 	}else {
 		self.spec.text = @"価格情報の登録がありません";
 	}
+	
+	//
+	_bannerView = [[GADBannerView alloc] initWithFrame:CGRectMake(0, -50, GAD_SIZE_320x50.width, 
+																  GAD_SIZE_320x50.height)];
+	
+	_bannerView.adUnitID = @"a14da56a6fd301d";
+	_bannerView.rootViewController = self;
+	[self.headerView addSubview:_bannerView];
+	
+	
+	[self.headerView addSubview:_bannerView];
 
 	self.tableView.tableHeaderView = self.headerView;
 	
 	self.product.text = self.name;	
+	
+	GADRequest* request = [GADRequest request];
+	request.testing = YES;
+	_bannerView.delegate = self;
+	[_bannerView loadRequest:request];
+	
 }
 
 -(void)setEditAction{
@@ -136,8 +153,32 @@
 									 action:@selector(openURLFromButton:)] autorelease];
 }
 
+#pragma mark Banner Delegate
+- (void)adViewDidReceiveAd:(GADBannerView *)view{
+	NSLog(@"receive ad");
+	[UIView beginAnimations:@"BannerSlide" context:nil];
+	CGRect newFrame =self.headerView.frame;
+	_bannerView.frame = CGRectMake(0, newFrame.size.height+1, GAD_SIZE_320x50.width, 
+								   GAD_SIZE_320x50.height);
+	newFrame.size.height += GAD_SIZE_320x50.height;
+	
+	self.headerView.frame = newFrame;
+	
+	[self.tableView setTableHeaderView:self.headerView];
+	[UIView commitAnimations];
+	
+}
+
+- (void)adView:(GADBannerView *)view
+didFailToReceiveAdWithError:(GADRequestError *)error{
+	NSLog(@"failed to receive the ad %@", [error localizedDescription]);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 -(void)dealloc {
+	_bannerView.delegate = nil;
+	[_bannerView release];
+	
 	TT_RELEASE_SAFELY(_headerView);
 	TT_RELEASE_SAFELY(_product);
 	TT_RELEASE_SAFELY(_spec);
