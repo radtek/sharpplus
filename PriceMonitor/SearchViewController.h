@@ -11,11 +11,9 @@
 
 @interface SearchViewController : TTTableViewController <UISearchBarDelegate, GADBannerViewDelegate>{
 	UIView* _headerView;
-	UIView* _footerView;
 	GADBannerView* _bannerView;
 }
 
 @property (retain, nonatomic) IBOutlet UIView* headerView;
-@property (retain, nonatomic) IBOutlet UIView* footerView;
 
 @end

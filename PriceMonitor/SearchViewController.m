@@ -14,7 +14,7 @@
 
 @implementation SearchViewController
 
-@synthesize headerView = _headerView, footerView = _footerView;
+@synthesize headerView = _headerView;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)viewDidLoad {
@@ -24,20 +24,18 @@
 	UIImage* image = [UIImage imageNamed:@"search.png"];
 	self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:self.title image:image tag:0] autorelease];
 	
-	self.tableView.tableHeaderView = self.headerView;
 	//self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth  ;
-	_bannerView = [[GADBannerView alloc] initWithFrame:CGRectMake(0, 0, GAD_SIZE_320x50.width, 
+	_bannerView = [[GADBannerView alloc] initWithFrame:CGRectMake(0, -50, GAD_SIZE_320x50.width, 
 																  GAD_SIZE_320x50.height)];
-	
+
 	_bannerView.adUnitID = @"a14da56a6fd301d";
 	_bannerView.rootViewController = self;
-	[self.footerView addSubview:_bannerView];
-	self.tableView.tableFooterView = self.footerView;
+	[self.headerView addSubview:_bannerView];
+	self.tableView.tableHeaderView = self.headerView;
 	
 	GADRequest* request = [GADRequest request];
 	request.testing = YES;
 	_bannerView.delegate = self;
-	
 	[_bannerView loadRequest:request];
 }
 
@@ -77,6 +75,15 @@
 #pragma mark Banner Delegate
 - (void)adViewDidReceiveAd:(GADBannerView *)view{
 	NSLog(@"receive ad");
+	[UIView beginAnimations:@"BannerSlide" context:nil];
+	CGRect newFrame =self.headerView.frame;
+	newFrame.size.height += GAD_SIZE_320x50.height;
+	_bannerView.frame = CGRectMake(0, 45, GAD_SIZE_320x50.width, 
+									  GAD_SIZE_320x50.height);
+	self.headerView.frame = newFrame;
+	
+	[self.tableView setTableHeaderView:self.headerView];
+	[UIView commitAnimations];
 	
 }
 
@@ -85,33 +92,11 @@ didFailToReceiveAdWithError:(GADRequestError *)error{
 	NSLog(@"failed to receive the ad %@", [error localizedDescription]);
 }
 
-- (void)adViewWillPresentScreen:(GADBannerView *)adView{
-}
-
-- (void)adViewWillDismissScreen:(GADBannerView *)adView{
-	
-}
-
-// Sent just after dismissing a full screen view.  Use this opportunity to
-// restart anything you may have stopped as part of adViewWillPresentScreen:.
-- (void)adViewDidDismissScreen:(GADBannerView *)adView{
-	
-}
-
-// Sent just before the application will background or terminate because the
-// user clicked on an ad that will launch another application (such as the App
-// Store).  The normal UIApplicationDelegate methods, like
-// applicationDidEnterBackground:, will be called immediately before this.
-- (void)adViewWillLeaveApplication:(GADBannerView *)adView{
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 -(void)dealloc {
 	_bannerView.delegate = nil;
 	TT_RELEASE_SAFELY(_bannerView);
 	TT_RELEASE_SAFELY(_headerView);
-	TT_RELEASE_SAFELY(_footerView);
 	[super dealloc];
 }
 
