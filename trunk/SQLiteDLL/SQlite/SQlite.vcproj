@@ -258,6 +258,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fts3_aux.c"
+				>
+			</File>
+			<File
 				RelativePath=".\fts3_expr.c"
 				>
 			</File>
