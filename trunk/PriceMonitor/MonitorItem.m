@@ -14,7 +14,7 @@
 
 @implementation MonitorItem
 
-@synthesize monitorId, itemId, nodeId, price, name, area, category, condition, time, 
+@synthesize monitorId, itemId, nodeId, price, name, area, category, condition, 
 			timeType, currPrice, prevPrice, checkTime;
 
 -(id) initWithItemId:(NSString*)_itemId{
@@ -38,7 +38,6 @@
 	self.category = category;
 	self.area = [rs stringForColumn:@"Area"];
 	self.condition = [rs intForColumn:@"Condition"];
-	self.time = [rs intForColumn:@"MonitorTime"];
 	self.timeType = [rs intForColumn:@"TimeType"];
 	
 	self.currPrice = [rs intForColumn:@"CurrPrice"];
@@ -92,13 +91,12 @@
 	
 	if (action == 1){// edit
 		success=[mgr.database executeUpdate:
-				 @"update MonitorList set price=? , category=?, condition=?, MonitorTime=? , timeType=?,"
+				 @"update MonitorList set price=? , category=?, condition=?, timeType=?,"
 				 "CurrPrice=?, CheckTime=? "
 				  " where monitorId=?", 
 		 [NSNumber numberWithInt:self.price],
 	     self.category, 
 		 [NSNumber numberWithInt:self.condition],
-		 [NSNumber numberWithInt:self.time],
 		 [NSNumber numberWithInt:self.timeType],
 		 [NSNumber numberWithInt:self.currPrice],
 		 self.checkTime,
@@ -115,8 +113,6 @@
 		//[self setCCKField:nodeData field:@"field_monitor_area" value:self.area];
 		//Condition
 		[self setCCKField:nodeData field:@"field_monitor_condition" value:[NSString stringWithFormat:@"%d", self.condition]];
-		//Monitor Time
-		[self setCCKField:nodeData field:@"field_monitor_time" value:[NSString stringWithFormat:@"%d", self.time]];
 		//Monitor Time Type
 		[self setCCKField:nodeData field:@"field_time_type" value:[NSString stringWithFormat:@"%d", self.timeType]];
 		//Monitor Current Price
@@ -149,8 +145,6 @@
 		//[self setCCKField:nodeData field:@"field_monitor_area" value:self.area];
 		//Condition
 		[self setCCKField:nodeData field:@"field_monitor_condition" value:[NSString stringWithFormat:@"%d", self.condition]];
-		//Monitor Time
-		[self setCCKField:nodeData field:@"field_monitor_time" value:[NSString stringWithFormat:@"%d", self.time]];
 		//Monitor Time Type
 		[self setCCKField:nodeData field:@"field_time_type" value:[NSString stringWithFormat:@"%d", self.timeType]];
 		//Monitor Current Price
@@ -178,15 +172,14 @@
 		id nid = [[node connResult] objectForKey:@"#data"];
 		self.nodeId = [NSString stringWithFormat:@"%@",nid];
 		success=[mgr.database executeUpdate:
-				 @"insert into MonitorList (itemId, NodeId, name, price, category, condition, MonitorTime, timeType, CurrPrice, PrevPrice, CheckTime)"
-				 " values(?,?,?, ?, ?, ?,?,?, ?, ?, ?)",
+				 @"insert into MonitorList (itemId, NodeId, name, price, category, condition, timeType, CurrPrice, PrevPrice, CheckTime)"
+				 " values(?,?,?, ?, ?,?,?, ?, ?, ?)",
 				 self.itemId,
 				 self.nodeId,
 				 self.name,
 				 [NSNumber numberWithInt:self.price],
 				 self.category, 
 				 [NSNumber numberWithInt:self.condition],
-				 [NSNumber numberWithInt:self.time],
 				 [NSNumber numberWithInt:self.timeType],
 				 [NSNumber numberWithInt:self.currPrice],
 				 [NSNumber numberWithInt:self.prevPrice],

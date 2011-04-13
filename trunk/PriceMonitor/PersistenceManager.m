@@ -100,7 +100,6 @@ static PersistenceManager *sharedMgr = nil;
 			   "Area varchar,"
 			   "Category varchar not null,"
 			   "Condition integer not null,"
-			   "MonitorTime integer not null,"
 			   "TimeType integer not null,"
 			   "CurrPrice integer not null,"
 			   "PrevPrice integer not null,"
