@@ -7,13 +7,15 @@
 //
 
 #import <Three20/Three20.h>
+#import "GADBannerView.h"
 
-
-@interface SearchViewController : TTTableViewController <UISearchBarDelegate>{
+@interface SearchViewController : TTTableViewController <UISearchBarDelegate, GADBannerViewDelegate>{
 	UIView* _headerView;
-
+	UIView* _footerView;
+	GADBannerView* _bannerView;
 }
 
 @property (retain, nonatomic) IBOutlet UIView* headerView;
+@property (retain, nonatomic) IBOutlet UIView* footerView;
 
 @end
