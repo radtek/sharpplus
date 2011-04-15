@@ -100,6 +100,9 @@ static CGFloat kImageHeight = 16;
 	if (_item != object) {
 		[super setObject:object];
 		
+		if (!object)
+			return;
+		
 		MonitorTableItem* item = object;
 		NSArray* conditionArr= [NSArray arrayWithObjects:@"<=", @"<", @">", @">=", nil];
 		

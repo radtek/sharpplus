@@ -9,6 +9,7 @@
 #import "MonitorList.h"
 #import "PersistenceManager.h"
 #import "PriceMonitorAppDelegate.h"
+#import "Utils.h"
 
 
 @implementation MonitorList
@@ -108,10 +109,10 @@ static MonitorList *sharedMonitorList = nil;
 			value = [[[nodeData valueForKey:@"field_check_time"] objectAtIndex:0] valueForKey:@"value"];
 			//convert string to date
 			NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-			[dateFormat setDateFormat:@"yyyy-MM-dd hh:mm:ss"];
+			[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 			NSDate *date = [dateFormat dateFromString:value];  
 			[dateFormat release];
-			item.checkTime = date;
+			item.checkTime = [Utils getLocalDateFromGregorianDate:date];
 		    //update database
 			[item updatePrice];
 			[node release];			
