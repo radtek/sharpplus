@@ -91,7 +91,7 @@
 							<int key="NSfFlags">16</int>
 						</object>
 						<int key="IBUIButtonType">1</int>
-						<string key="IBUINormalTitle">www.ipricemonitor.com</string>
+						<string key="IBUINormalTitle">monitor4price.com</string>
 						<reference key="IBUIHighlightedTitleColor" ref="846875059"/>
 						<object class="NSColor" key="IBUINormalTitleColor">
 							<int key="NSColorSpace">1</int>

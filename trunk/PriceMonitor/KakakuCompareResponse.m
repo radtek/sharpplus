@@ -49,9 +49,12 @@
 				result.spec = [[spec contentsText] stringByConvertingHTMLToPlainText];
 			}
 			
-			result.payImg1 = [[payList objectAtIndex:0+3*i]  attribute:@"src"];
-			result.payImg2 = [[payList objectAtIndex:1+3*i] attribute:@"src"];
-			result.payImg3 = [[payList objectAtIndex:2+3*i] attribute:@"src"];
+			if ([payList count]>0+3*i)
+				result.payImg1 = [[payList objectAtIndex:0+3*i]  attribute:@"src"];
+			if ([payList count]>1+3*i)
+				result.payImg2 = [[payList objectAtIndex:1+3*i] attribute:@"src"];
+			if ([payList count]>2+3*i)
+				result.payImg3 = [[payList objectAtIndex:2+3*i] attribute:@"src"];
 			result.shopArea = [[[area selectElement:@"a"] contentsText] stringByConvertingHTMLToPlainText];
 			result.shopURL = [shopUrl attribute:@"href"];
 			

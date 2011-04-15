@@ -58,6 +58,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	_bannerVisible =FALSE;
 
 	//self.tableView.tableFooterView = self.footerView;
 }
@@ -156,16 +157,19 @@
 #pragma mark Banner Delegate
 - (void)adViewDidReceiveAd:(GADBannerView *)view{
 	NSLog(@"receive ad");
-	[UIView beginAnimations:@"BannerSlide" context:nil];
-	CGRect newFrame =self.headerView.frame;
-	_bannerView.frame = CGRectMake(0, newFrame.size.height+1, GAD_SIZE_320x50.width, 
+	if (!_bannerVisible){
+		[UIView beginAnimations:@"BannerSlide" context:nil];
+		CGRect newFrame =self.headerView.frame;
+		_bannerView.frame = CGRectMake(0, newFrame.size.height+1, GAD_SIZE_320x50.width, 
 								   GAD_SIZE_320x50.height);
-	newFrame.size.height += GAD_SIZE_320x50.height;
+		newFrame.size.height += GAD_SIZE_320x50.height;
 	
-	self.headerView.frame = newFrame;
+		self.headerView.frame = newFrame;
 	
-	[self.tableView setTableHeaderView:self.headerView];
-	[UIView commitAnimations];
+		[self.tableView setTableHeaderView:self.headerView];
+		[UIView commitAnimations];
+		_bannerVisible = TRUE;
+	}
 	
 }
 

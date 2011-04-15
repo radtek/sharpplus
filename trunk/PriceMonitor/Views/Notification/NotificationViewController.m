@@ -8,7 +8,7 @@
 
 #import "NotificationViewController.h"
 #import "NotificationList.h"
-
+#import "Utils.h"
 
 @implementation NotificationViewController
 
@@ -64,6 +64,7 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	_bannerVisible =FALSE;
 	//self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth  ;
 	//	[self loadMonitorList];
 	_bannerView = [[GADBannerView alloc] initWithFrame:CGRectMake(0, -50, GAD_SIZE_320x50.width, 
@@ -96,17 +97,21 @@
 #pragma mark Banner Delegate
 - (void)adViewDidReceiveAd:(GADBannerView *)view{
 	NSLog(@"receive ad");
-	[UIView beginAnimations:@"BannerSlide" context:nil];
-	_bannerView.frame = CGRectMake(0, 0, GAD_SIZE_320x50.width, 
+	if (!_bannerVisible){
+		[UIView beginAnimations:@"BannerSlide" context:nil];
+		_bannerView.frame = CGRectMake(0, 0, GAD_SIZE_320x50.width, 
 								   GAD_SIZE_320x50.height);
-	self.tableView.tableHeaderView = _bannerView;
-	[UIView commitAnimations];
+		self.tableView.tableHeaderView = _bannerView;
+		[UIView commitAnimations];
+		_bannerVisible =TRUE;
+	}
 	
 }
 
 - (void)adView:(GADBannerView *)view
 didFailToReceiveAdWithError:(GADRequestError *)error{
 	NSLog(@"failed to receive the ad %@", [error localizedDescription]);
+	//[Utils showAlert:@"test" msg:[error localizedDescription]];
 }
 
 

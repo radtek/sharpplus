@@ -12,6 +12,7 @@
 
 @interface MonitorViewController : TTTableViewController <GADBannerViewDelegate> {
 	GADBannerView* _bannerView;
+	BOOL _bannerVisible;
 
 }
 
