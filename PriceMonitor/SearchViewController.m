@@ -19,6 +19,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	_bannerVisible = FALSE;
 	
 	self.title = @"検索";
 	UIImage* image = [UIImage imageNamed:@"search.png"];
@@ -75,15 +76,18 @@
 #pragma mark Banner Delegate
 - (void)adViewDidReceiveAd:(GADBannerView *)view{
 	NSLog(@"receive ad");
-	[UIView beginAnimations:@"BannerSlide" context:nil];
-	CGRect newFrame =self.headerView.frame;
-	newFrame.size.height += GAD_SIZE_320x50.height;
-	_bannerView.frame = CGRectMake(0, 45, GAD_SIZE_320x50.width, 
+	if (!_bannerVisible){
+		[UIView beginAnimations:@"BannerSlide" context:nil];
+		CGRect newFrame =self.headerView.frame;
+		newFrame.size.height += GAD_SIZE_320x50.height;
+		_bannerView.frame = CGRectMake(0, 45, GAD_SIZE_320x50.width, 
 									  GAD_SIZE_320x50.height);
-	self.headerView.frame = newFrame;
+		self.headerView.frame = newFrame;
 	
-	[self.tableView setTableHeaderView:self.headerView];
-	[UIView commitAnimations];
+		[self.tableView setTableHeaderView:self.headerView];
+		[UIView commitAnimations];
+		_bannerVisible = TRUE;
+	}
 	
 }
 

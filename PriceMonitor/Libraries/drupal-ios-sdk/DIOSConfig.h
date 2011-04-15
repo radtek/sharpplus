@@ -41,19 +41,21 @@
 
 #ifdef STAGE
 
-#define DRUPAL_API_KEY  @"0293441146ef285d062772692bed6fd1"
-#define DRUPAL_SERVICES_URL  @"http://www.flashavconverter.com/services/plist"
-#define DRUPAL_URL  @"http://www.flashavconverter.com"
-#define DRUPAL_DOMAIN @"www.flashavconverter.com" 
+//#define DRUPAL_API_KEY  @"0293441146ef285d062772692bed6fd1"
+#define DRUPAL_API_KEY  @"30ef6f64be45ad8192818be5ba6d566c"
+
+#define DRUPAL_SERVICES_URL  @"http://www.monitor4price.com/services/plist"
+#define DRUPAL_URL  @"http://www.monitor4price.com"
+#define DRUPAL_DOMAIN @"www.monitor4price.com" 
 
 #endif
 
 #ifdef DEV
 
-#define DRUPAL_API_KEY  @"0293441146ef285d062772692bed6fd1"
-#define DRUPAL_SERVICES_URL  @"http://www.flashavconverter.com/services/plist"
-#define DRUPAL_URL  @"http://www.flashavconverter.com"
-#define DRUPAL_DOMAIN @"www.flashavconverter.com" 
+#define DRUPAL_API_KEY  @"30ef6f64be45ad8192818be5ba6d566c"
+#define DRUPAL_SERVICES_URL  @"http://www.monitor4price.com/services/plist"
+#define DRUPAL_URL  @"http://www.monitor4price.com"
+#define DRUPAL_DOMAIN @"www.monitor4price.com" 
 
 #endif
 

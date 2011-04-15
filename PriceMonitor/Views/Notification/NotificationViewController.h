@@ -12,6 +12,7 @@
 
 @interface NotificationViewController : TTTableViewController<GADBannerViewDelegate> {
 	GADBannerView* _bannerView;
+	BOOL _bannerVisible;
 
 }
 

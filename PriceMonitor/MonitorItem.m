@@ -82,95 +82,79 @@
 	
 }
 
+-(void)updateRemote{
+	PriceMonitorAppDelegate* delegate = (PriceMonitorAppDelegate*)[[UIApplication sharedApplication] delegate];
+	
+	//save it to our drupal cck table
+	DIOSNode *node = [[DIOSNode alloc] initWithSession:[delegate session]];
+	NSMutableDictionary *nodeData = [[NSMutableDictionary alloc] init];
+	
+	//ItemId
+	[self setCCKField:nodeData field:@"field_itemid" value:self.itemId];
+	//Price
+	[self setCCKField:nodeData field:@"field_monitor_price" value:[NSString stringWithFormat:@"%d", self.price]];
+	//Area
+	//[self setCCKField:nodeData field:@"field_monitor_area" value:self.area];
+	//Condition
+	[self setCCKField:nodeData field:@"field_monitor_condition" value:[NSString stringWithFormat:@"%d", self.condition]];
+	//Monitor Time Type
+	[self setCCKField:nodeData field:@"field_time_type" value:[NSString stringWithFormat:@"%d", (int)self.timeType]];
+	//Monitor Current Price
+	[self setCCKField:nodeData field:@"field_curr_price" value:[NSString stringWithFormat:@"%d", self.currPrice]];
+	//Monitor Check Time
+	[self setCCKField:nodeData field:@"field_check_time" value:@"now"];
+	//Monitor Device Token
+	[self setCCKField:nodeData field:@"field_device_token" value:[delegate deviceToken]];
+	
+	[nodeData setObject:@"monitor" forKey:@"type"];
+	[nodeData setObject:self.name forKey:@"title"];
+	
+	[nodeData setObject:@"now" forKey:@"date"];
+	[nodeData setObject:@"1" forKey:@"status"];
+	if ([[[[delegate session] userInfo] objectForKey:@"uid"] isEqualToNumber:[NSNumber numberWithInt:0]]) {
+		[nodeData setObject:@"" forKey:@"name"];
+	} else if([[delegate session] userInfo] == nil){
+		[nodeData setObject:@"" forKey:@"name"];
+	} else {
+		[nodeData setObject:[[[delegate session] userInfo] objectForKey:@"name"] forKey:@"name"];
+	}
+	if (self.nodeId)
+		[nodeData setObject:self.nodeId forKey:@"nid"];
+	
+	[node nodeSave:nodeData];
+	[self displayDebugDIOS:node];
+	//save to db
+	if (!self.nodeId){
+		id nid = [[node connResult] objectForKey:@"#data"];
+		//otherwise there is a error
+		if ([nid isKindOfClass:[NSNumber class]])
+			self.nodeId = [NSString stringWithFormat:@"%@",nid];
+	}	
+	[node release];	
+}
+
 -(void) saveToDb:(NSInteger) action{
 	
 	PersistenceManager * mgr = [PersistenceManager mgr];
 
 	BOOL success;
-	PriceMonitorAppDelegate* delegate = (PriceMonitorAppDelegate*)[[UIApplication sharedApplication] delegate];
-	
 	if (action == 1){// edit
+		[self updateRemote];
 		success=[mgr.database executeUpdate:
 				 @"update MonitorList set price=? , category=?, condition=?, timeType=?,"
-				 "CurrPrice=?, CheckTime=? "
-				  " where monitorId=?", 
-		 [NSNumber numberWithInt:self.price],
-	     self.category, 
-		 [NSNumber numberWithInt:self.condition],
-		 [NSNumber numberWithInt:self.timeType],
-		 [NSNumber numberWithInt:self.currPrice],
-		 self.checkTime,
-	     [NSNumber numberWithInt:self.monitorId]];
-		
-		//update it to our drupal cck table
-		//save it to our drupal cck table
-		DIOSNode *node = [[DIOSNode alloc] initWithSession:[delegate session]];
-		NSMutableDictionary *nodeData = [[NSMutableDictionary alloc] init];
-		
-		//Price
-		[self setCCKField:nodeData field:@"field_monitor_price" value:[NSString stringWithFormat:@"%d", self.price]];
-		//Area
-		//[self setCCKField:nodeData field:@"field_monitor_area" value:self.area];
-		//Condition
-		[self setCCKField:nodeData field:@"field_monitor_condition" value:[NSString stringWithFormat:@"%d", self.condition]];
-		//Monitor Time Type
-		[self setCCKField:nodeData field:@"field_time_type" value:[NSString stringWithFormat:@"%d", self.timeType]];
-		//Monitor Current Price
-		[self setCCKField:nodeData field:@"field_curr_price" value:[NSString stringWithFormat:@"%d", self.currPrice]];
-		//Monitor Check Time
-		[self setCCKField:nodeData field:@"field_check_time" value:@"now"];
-		[nodeData setObject:self.nodeId forKey:@"nid"];
-		
-		[nodeData setObject:@"now" forKey:@"date"];
-		if ([[[[delegate session] userInfo] objectForKey:@"uid"] isEqualToNumber:[NSNumber numberWithInt:0]]) {
-			[nodeData setObject:@"" forKey:@"name"];
-		} else if([[delegate session] userInfo] == nil){
-			[nodeData setObject:@"" forKey:@"name"];
-		} else {
-			[nodeData setObject:[[[delegate session] userInfo] objectForKey:@"name"] forKey:@"name"];
-		}
-		[node nodeSave:nodeData];
-		[self displayDebugDIOS:node];
-		[node release];		
+				 "CurrPrice=?, CheckTime=?, NodeId=? "
+				 " where monitorId=?", 
+				 [NSNumber numberWithInt:self.price],
+				 self.category, 
+				 [NSNumber numberWithInt:self.condition],
+				 [NSNumber numberWithInt:self.timeType],
+				 [NSNumber numberWithInt:self.currPrice],
+				 self.checkTime,
+				 self.nodeId,
+				 [NSNumber numberWithInt:self.monitorId]];
     }else {
 		//save it to our drupal cck table
-		DIOSNode *node = [[DIOSNode alloc] initWithSession:[delegate session]];
-		NSMutableDictionary *nodeData = [[NSMutableDictionary alloc] init];
-		
-		//ItemId
-		[self setCCKField:nodeData field:@"field_itemid" value:self.itemId];
-		//Price
-		[self setCCKField:nodeData field:@"field_monitor_price" value:[NSString stringWithFormat:@"%d", self.price]];
-		//Area
-		//[self setCCKField:nodeData field:@"field_monitor_area" value:self.area];
-		//Condition
-		[self setCCKField:nodeData field:@"field_monitor_condition" value:[NSString stringWithFormat:@"%d", self.condition]];
-		//Monitor Time Type
-		[self setCCKField:nodeData field:@"field_time_type" value:[NSString stringWithFormat:@"%d", self.timeType]];
-		//Monitor Current Price
-		[self setCCKField:nodeData field:@"field_curr_price" value:[NSString stringWithFormat:@"%d", self.currPrice]];
-		//Monitor Check Time
-		[self setCCKField:nodeData field:@"field_check_time" value:@"now"];
-		//Monitor Device Token
-		[self setCCKField:nodeData field:@"field_device_token" value:[delegate deviceToken]];
-		
-		[nodeData setObject:@"monitor" forKey:@"type"];
-		[nodeData setObject:self.name forKey:@"title"];
-		
-		[nodeData setObject:@"now" forKey:@"date"];
-		[nodeData setObject:@"1" forKey:@"status"];
-		if ([[[[delegate session] userInfo] objectForKey:@"uid"] isEqualToNumber:[NSNumber numberWithInt:0]]) {
-			[nodeData setObject:@"" forKey:@"name"];
-		} else if([[delegate session] userInfo] == nil){
-			[nodeData setObject:@"" forKey:@"name"];
-		} else {
-			[nodeData setObject:[[[delegate session] userInfo] objectForKey:@"name"] forKey:@"name"];
-		}
-		[node nodeSave:nodeData];
-		[self displayDebugDIOS:node];
-		//save to db
-		id nid = [[node connResult] objectForKey:@"#data"];
-		self.nodeId = [NSString stringWithFormat:@"%@",nid];
+		[self updateRemote];		
 		success=[mgr.database executeUpdate:
 				 @"insert into MonitorList (itemId, NodeId, name, price, category, condition, timeType, CurrPrice, PrevPrice, CheckTime)"
 				 " values(?,?,?, ?, ?,?,?, ?, ?, ?)",
@@ -184,7 +168,6 @@
 				 [NSNumber numberWithInt:self.currPrice],
 				 [NSNumber numberWithInt:self.prevPrice],
 				 self.checkTime];
-		[node release];
 	}
 
 	if (!success){

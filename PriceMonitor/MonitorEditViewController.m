@@ -42,7 +42,25 @@
 	self.item.category = self.edtCategory.text;
 	self.item.price = [self.edtPrice.text intValue];
 	self.item.condition = self.segCondition.selectedSegmentIndex;
-	self.item.timeType = self.segTime.selectedSegmentIndex;
+	switch (self.segTime.selectedSegmentIndex) {
+		case 0:
+			self.item.timeType = TimeHalfDay;
+			break;
+		case 1:
+			self.item.timeType = TimeDay;
+			break;		
+		case 2:
+			self.item.timeType = TimeTwoDay;
+			break;
+		case 3:
+			self.item.timeType = TimeThreeDay;
+			break;
+		case 4:
+			self.item.timeType = TimeWeek;
+			break;
+		default:
+			break;
+	}
 	self.item.checkTime = [NSDate date];
 	//save to db
 	[self.item saveToDb:self.action];
@@ -105,7 +123,14 @@
 		self.edtCategory.text = self.item.category;
 		self.edtPrice.text = [NSString stringWithFormat:@"%d", self.item.price];
 		self.segCondition.selectedSegmentIndex = self.item.condition;
-		self.segTime.selectedSegmentIndex = self.item.timeType;	
+		switch (self.item.timeType) {
+			case TimeHalfDay:
+				self.segTime.selectedSegmentIndex = 0;
+				break;
+			default:
+				self.segTime.selectedSegmentIndex = self.item.timeType / 24;
+				break;
+		}
 		self.item.currPrice = self.price;
 	}
 }

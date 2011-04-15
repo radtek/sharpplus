@@ -20,6 +20,7 @@
 	
 	UIView* _headerView;
 	GADBannerView* _bannerView;
+	BOOL _bannerVisible;
 	UILabel* _product;
 	UILabel* _spec;
 	

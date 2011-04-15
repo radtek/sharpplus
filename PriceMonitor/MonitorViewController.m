@@ -72,6 +72,8 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	_bannerVisible =FALSE;
+	
 	self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth  ;
 //	[self loadMonitorList];
 	_bannerView = [[GADBannerView alloc] initWithFrame:CGRectMake(0, -50, GAD_SIZE_320x50.width, 
@@ -85,6 +87,7 @@
 	request.testing = YES;
 	_bannerView.delegate = self;
 	[_bannerView loadRequest:request];	
+	
 }
 
 - (void) updateData {
@@ -104,11 +107,14 @@
 #pragma mark Banner Delegate
 - (void)adViewDidReceiveAd:(GADBannerView *)view{
 	NSLog(@"receive ad");
-	[UIView beginAnimations:@"BannerSlide" context:nil];
-	_bannerView.frame = CGRectMake(0, 0, GAD_SIZE_320x50.width, 
+	if (!_bannerVisible){
+		[UIView beginAnimations:@"BannerSlide" context:nil];
+		_bannerView.frame = CGRectMake(0, 0, GAD_SIZE_320x50.width, 
 								   GAD_SIZE_320x50.height);
-	self.tableView.tableHeaderView = _bannerView;
-	[UIView commitAnimations];
+		self.tableView.tableHeaderView = _bannerView;
+		[UIView commitAnimations];
+		_bannerVisible = TRUE;
+	}
 	
 }
 

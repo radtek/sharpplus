@@ -12,6 +12,7 @@
 @interface SearchViewController : TTTableViewController <UISearchBarDelegate, GADBannerViewDelegate>{
 	UIView* _headerView;
 	GADBannerView* _bannerView;
+	BOOL _bannerVisible;
 }
 
 @property (retain, nonatomic) IBOutlet UIView* headerView;

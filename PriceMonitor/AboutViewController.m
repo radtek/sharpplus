@@ -26,7 +26,7 @@
 -(IBAction)btnClicked:(id)sender{
 	//navigate to monitor tab
 	TTNavigator* navigator = [TTNavigator navigator];
-	[navigator openURLAction:[TTURLAction actionWithURLPath:@"http://www.flashavconverter.com"]];
+	[navigator openURLAction:[TTURLAction actionWithURLPath:@"http://www.monitor4price.com"]];
 	
 }
 

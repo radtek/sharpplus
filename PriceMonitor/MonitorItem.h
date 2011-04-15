@@ -18,11 +18,11 @@ typedef enum {
 } MonitorCondition;
 
 typedef enum{
-	TimeHalfDay,
-	TimeDay,
-	TimeTwoDay,
-	TimeThreeDay,
-	TimeWeek,
+	TimeHalfDay = 12,
+	TimeDay = 24,
+	TimeTwoDay = 48,
+	TimeThreeDay = 72,
+	TimeWeek = 168,
 	TimeDefault = TimeHalfDay
 } MonitorTime;
 
