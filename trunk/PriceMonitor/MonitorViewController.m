@@ -91,7 +91,7 @@
 }
 
 - (void) updateData {
-  MonitorList* list = [MonitorList monitorList];
+	MonitorList* list = [MonitorList monitorList];
 	[list loadFromDb];
 	[self loadMonitorList];	
 	[self.tableView reloadData];

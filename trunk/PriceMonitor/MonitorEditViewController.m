@@ -61,7 +61,7 @@
 		default:
 			break;
 	}
-	self.item.checkTime = [NSDate date];
+	self.item.checkTime =[NSDate date];
 	//save to db
 	[self.item saveToDb:self.action];
 	

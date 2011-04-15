@@ -78,4 +78,28 @@
 	[alert show];	
 }
 
++ (NSDate*)getLocalDateFromGregorianDate:(NSDate*)srcDate{
+	NSCalendar* calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+	NSDateComponents *components = [[NSCalendar currentCalendar] 
+									components:NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit
+									fromDate:srcDate];
+	
+	NSLog(@"%d-%d-%d", [components year], [components month], [components day]);
+	
+	NSDateComponents *newComps = [[NSDateComponents alloc] init];
+	
+	[newComps setYear:[components year]];
+	[newComps setMonth:[components month]];
+	[newComps setDay:[components day]];
+	[newComps setHour:[components hour]];
+	[newComps setMinute:[components minute]];
+	[newComps setSecond:[components second]];
+	
+	NSDate *date = [calendar dateFromComponents:newComps];
+	[calendar release];
+	[newComps release];
+	return date;
+}
+
+
 @end
