@@ -22,7 +22,7 @@
 		[[[UIBarButtonItem alloc] initWithTitle:@"クリア" style:UIBarButtonItemStyleBordered
 										 target:self
 										 action:@selector(clearAll:)] autorelease];
-		//self.variableHeightRows = YES; 
+		self.variableHeightRows = YES; 
 	}
 	
 	return self;
@@ -54,7 +54,8 @@
 	NSMutableArray* items = [[[NSMutableArray alloc] init] autorelease];
 	for (NSInteger i=0; i< [list.itemArray count]; i++) {
 		NSString* item = [list.itemArray objectAtIndex:i];
-		TTTableTextItem* tableItem = [TTTableTextItem itemWithText:item];
+		TTTableLongTextItem* tableItem = [TTTableLongTextItem itemWithText:item];
+//		TTTableTextItem* tableItem = [TTTableTextItem itemWithText:item];
 //		MonitorTableItem* tableItem = [MonitorTableItem initItemWithMonitor:item url:url];
 		[items addObject:tableItem];
 	}
