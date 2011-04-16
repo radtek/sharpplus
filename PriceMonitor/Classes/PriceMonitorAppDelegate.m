@@ -145,6 +145,7 @@
 		[navigator openURLAction:[TTURLAction actionWithURLPath:@"tt://tabbar"]];
 		//[navigator openURLAction:[TTURLAction actionWithURLPath:@"tt://compareItem?action=new&itemId=K1235"]];
 	}	
+	return TRUE;
 }
 
 
