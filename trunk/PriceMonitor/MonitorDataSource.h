@@ -7,10 +7,11 @@
 //
 
 #import "Three20/Three20.h"
+#import "MBProgressHUD.h"
 
 
 @interface MonitorDataSource : TTSectionedDataSource {
-
+	MBProgressHUD* HUD;
 }
 
 @end
