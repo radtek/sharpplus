@@ -67,6 +67,7 @@ payImg3=_payImg3, area=_area, comment=_comment;
 		self.area = [aDecoder decodeObjectForKey:@"area"];
 		self.comment = [aDecoder decodeObjectForKey:@"comment"];
 	}
+	return self;
 }
 
 -(void)encodeWithCoder:(NSCoder *)aCoder{

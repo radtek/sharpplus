@@ -18,7 +18,7 @@
 	forRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	if (editingStyle == UITableViewCellEditingStyleDelete){
-		id object = [[self.items objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+		//id object = [[self.items objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
 		//[self.model didDeleteObject:object atIndexPath:indexPath];
 		
 		//delete monitor from db and monitor list

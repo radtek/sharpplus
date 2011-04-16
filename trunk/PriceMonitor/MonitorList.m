@@ -137,7 +137,7 @@ static MonitorList *sharedMonitorList = nil;
 	return [[self.itemArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
 }
 
--(MonitorItem*)deleteMonitorItem:(NSIndexPath*)indexPath{
+-(void)deleteMonitorItem:(NSIndexPath*)indexPath{
 	MonitorItem* item= [[self.itemArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
 	[item delete];
 	//remove from monitor list

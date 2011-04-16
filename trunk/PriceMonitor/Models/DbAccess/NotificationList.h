@@ -13,7 +13,6 @@
 	NSMutableArray* itemArray;
 }
 
-@property (nonatomic, retain) NSMutableArray* sectionArray;
 @property (nonatomic, retain) NSMutableArray* itemArray;
 
 + (NotificationList *)notificationList;
