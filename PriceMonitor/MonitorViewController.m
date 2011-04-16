@@ -41,11 +41,32 @@
 	[self.tableView setEditing:!self.tableView.editing animated:YES];
 }
 
--(IBAction)updatePrice:(id)sender{
-	//[self.tableView setEditing:!self.tableView.editing animated:YES];
+- (void)updatePriceTask {
+    // Do something usefull in here instead of sleeping ...
 	PriceMonitorAppDelegate* delegate = (PriceMonitorAppDelegate*)[[UIApplication sharedApplication] delegate];
 	delegate.updateMonitor = true;
 	[self updateData];
+    // Labels can be changed during the execution
+    //HUD.detailsLabelText = @"Something";
+    //sleep(3);
+}
+
+-(IBAction)updatePrice:(id)sender{
+	//[self.tableView setEditing:!self.tableView.editing animated:YES];
+	//
+	// The hud will dispable all input on the view (use the higest view possible in the view hierarchy)
+    HUD = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
+	
+    // Add HUD to screen
+    [self.navigationController.view addSubview:HUD];
+	
+    // Regisete for HUD callbacks so we can remove it from the window at the right time
+    HUD.delegate = self;
+	
+    HUD.labelText = @"更新中...";
+	
+    // Show the HUD while the provided method executes in a new thread
+    [HUD showWhileExecuting:@selector(updatePriceTask) onTarget:self withObject:nil animated:YES];
 }
 
 - (void) loadMonitorList {
@@ -128,5 +149,15 @@ didFailToReceiveAdWithError:(GADRequestError *)error{
 	[_bannerView release];
 	[super dealloc];
 }
+
+#pragma mark -
+#pragma mark MBProgressHUDDelegate methods
+
+- (void)hudWasHidden {
+    // Remove HUD from screen when the HUD was hidded
+    [HUD removeFromSuperview];
+    [HUD release];
+}
+
 @end
 

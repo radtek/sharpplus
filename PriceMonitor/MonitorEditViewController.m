@@ -24,6 +24,17 @@
 	[self dismissModalViewControllerAnimated:YES];
 }
 
+- (void)updateTask{
+	//save to db
+	[self.item saveToDb:self.action];
+	
+	//[Utils showAlert:@"更新" msg:@"データが更新されました"];
+	[self dismissModalViewControllerAnimated:YES];
+	
+	if (_compareView.action==0)
+		[_compareView setEditAction];
+}
+
 - (void) updateItem{
 	//input value check
 	if ([Utils isEmptyString:self.edtCategory.text]){
@@ -62,14 +73,20 @@
 			break;
 	}
 	self.item.checkTime =[NSDate date];
-	//save to db
-	[self.item saveToDb:self.action];
 	
-	[Utils showAlert:@"更新" msg:@"データが更新されました"];
-	[self dismissModalViewControllerAnimated:YES];
+    HUD = [[MBProgressHUD alloc] initWithView:self.view.window];
 	
-	if (_compareView.action==0)
-		[_compareView setEditAction];
+    // Add HUD to screen
+    [self.view.window addSubview:HUD];
+	
+    // Regisete for HUD callbacks so we can remove it from the window at the right time
+    HUD.delegate = self;
+	
+    HUD.labelText = @"更新中...";
+	
+    // Show the HUD while the provided method executes in a new thread
+    [HUD showWhileExecuting:@selector(updateTask) onTarget:self withObject:nil animated:YES];
+	
 }
 
 - (id)initWithAction:(NSString*)action query:(NSDictionary*)query  {
@@ -155,5 +172,15 @@
 	[segTime release];
 	[super dealloc];
 }
+
+#pragma mark -
+#pragma mark MBProgressHUDDelegate methods
+
+- (void)hudWasHidden {
+    // Remove HUD from screen when the HUD was hidded
+    [HUD removeFromSuperview];
+    [HUD release];
+}
+
 
 @end

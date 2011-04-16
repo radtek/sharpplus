@@ -9,8 +9,9 @@
 #import <Three20/Three20.h>
 #import "MonitorItem.h"
 #import "CompareViewController.h"
+#import "MBProgressHUD.h"
 
-@interface MonitorEditViewController : TTViewController {
+@interface MonitorEditViewController : TTViewController<MBProgressHUDDelegate> {
 	IBOutlet UILabel* lblName;
 	IBOutlet UITextField* edtCategory;
 	IBOutlet UISegmentedControl* segCondition;
@@ -24,6 +25,8 @@
 	NSString* category;
 	
 	CompareViewController* _compareView;
+	
+	MBProgressHUD* HUD;
 }
 
 @property (retain, nonatomic) UILabel* lblName;
