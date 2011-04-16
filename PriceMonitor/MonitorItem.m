@@ -10,6 +10,7 @@
 #import "PersistenceManager.h"
 
 #import "PriceMonitorAppDelegate.h"
+#import "Utils.h"
 
 
 @implementation MonitorItem
@@ -102,7 +103,7 @@
 	//Monitor Current Price
 	[self setCCKField:nodeData field:@"field_curr_price" value:[NSString stringWithFormat:@"%d", self.currPrice]];
 	//Monitor Check Time
-	[self setCCKField:nodeData field:@"field_check_time" value:@"now"];
+	[self setCCKField:nodeData field:@"field_check_time" value:[Utils getCurrentDateString]];
 	//Monitor Device Token
 	[self setCCKField:nodeData field:@"field_device_token" value:[delegate deviceToken]];
 	

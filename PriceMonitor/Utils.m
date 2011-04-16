@@ -101,5 +101,19 @@
 	return date;
 }
 
++ (NSString*)getCurrentDateString{
+	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+	[formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+	
+	//Optionally for time zone converstions
+	[formatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+	NSCalendar* calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+	[formatter setCalendar:calendar];
+	
+	NSString *stringFromDate = [formatter stringFromDate:[NSDate date]];
+	[calendar release];
+	return stringFromDate;
+}
+
 
 @end
