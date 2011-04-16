@@ -27,5 +27,6 @@
 + (BOOL)isEmptyString:(NSString*)str;
 + (void)showAlert:(NSString*)title msg:(NSString*)msg;
 + (NSDate*)getLocalDateFromGregorianDate:(NSDate*)srcDate;
++ (NSString*)getCurrentDateString;
 
 @end
