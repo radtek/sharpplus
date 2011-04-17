@@ -3,12 +3,6 @@
 <plist version="1.0">
 <dict>
 	<key>get-task-allow</key>
-	<true/>
-	<key>aps-environment</key>
-	<string>development</string>
-	<key>keychain-access-groups</key>
-	<array>
-		<string>H8HV9T7XQK.com.price.monitor</string>
-	</array>
+	<false/>
 </dict>
 </plist>
