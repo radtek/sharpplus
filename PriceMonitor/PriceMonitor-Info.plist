@@ -26,11 +26,5 @@
 	<true/>
 	<key>NSMainNibFile</key>
 	<string>MainWindow</string>
-	<key>PROVISIONING_PROFILE_ALLOW</key>
-	<string>NO</string>
-	<key>PROVISIONING_PROFILE_REQUIRED</key>
-	<string>NO</string>
-	<key>signerIdentity</key>
-	<string>Apple iPhone OS Application Signing</string>
 </dict>
 </plist>
