@@ -466,6 +466,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\vdbesort.c"
+				>
+			</File>
+			<File
 				RelativePath=".\vdbetrace.c"
 				>
 			</File>
