@@ -2661,23 +2661,19 @@ Index *sqlite3CreateIndex(
   nName = sqlite3Strlen30(zName);
   nCol = pList->nExpr;
   pIndex = sqlite3DbMallocZero(db, 
-      ROUND8(sizeof(Index)) +              /* Index structure  */
-      ROUND8(sizeof(tRowcnt)*(nCol+1)) +   /* Index.aiRowEst   */
-      sizeof(char *)*nCol +                /* Index.azColl     */
-      sizeof(int)*nCol +                   /* Index.aiColumn   */
-      sizeof(u8)*nCol +                    /* Index.aSortOrder */
-      nName + 1 +                          /* Index.zName      */
-      nExtra                               /* Collation sequence names */
+      sizeof(Index) +              /* Index structure  */
+      sizeof(tRowcnt)*(nCol+1) +   /* Index.aiRowEst   */
+      sizeof(int)*nCol +           /* Index.aiColumn   */
+      sizeof(char *)*nCol +        /* Index.azColl     */
+      sizeof(u8)*nCol +            /* Index.aSortOrder */
+      nName + 1 +                  /* Index.zName      */
+      nExtra                       /* Collation sequence names */
   );
   if( db->mallocFailed ){
     goto exit_create_index;
   }
-  zExtra = (char*)pIndex;
-  pIndex->aiRowEst = (tRowcnt*)&zExtra[ROUND8(sizeof(Index))];
-  pIndex->azColl = (char**)
-     ((char*)pIndex->aiRowEst + ROUND8(sizeof(tRowcnt)*nCol+1));
-  assert( EIGHT_BYTE_ALIGNMENT(pIndex->aiRowEst) );
-  assert( EIGHT_BYTE_ALIGNMENT(pIndex->azColl) );
+  pIndex->aiRowEst = (tRowcnt*)(&pIndex[1]);
+  pIndex->azColl = (char**)(&pIndex->aiRowEst[nCol+1]);
   pIndex->aiColumn = (int *)(&pIndex->azColl[nCol]);
   pIndex->aSortOrder = (u8 *)(&pIndex->aiColumn[nCol]);
   pIndex->zName = (char *)(&pIndex->aSortOrder[nCol]);

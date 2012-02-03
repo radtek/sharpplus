@@ -712,7 +712,6 @@ static void fts3Appendf(
     char *z;
     va_start(ap, zFormat);
     z = sqlite3_vmprintf(zFormat, ap);
-    va_end(ap);
     if( z && *pz ){
       char *z2 = sqlite3_mprintf("%s%s", *pz, z);
       sqlite3_free(z);

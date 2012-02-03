@@ -19,6 +19,12 @@
 #include "vdbeInt.h"
 
 /*
+** Call sqlite3VdbeMemExpandBlob() on the supplied value (type Mem*)
+** P if required.
+*/
+#define expandBlob(P) (((P)->flags&MEM_Zero)?sqlite3VdbeMemExpandBlob(P):0)
+
+/*
 ** If pMem is an object with a valid string representation, this routine
 ** ensures the internal encoding for the string representation is
 ** 'desiredEnc', one of SQLITE_UTF8, SQLITE_UTF16LE or SQLITE_UTF16BE.
@@ -117,7 +123,7 @@ int sqlite3VdbeMemMakeWriteable(Mem *pMem){
   int f;
   assert( pMem->db==0 || sqlite3_mutex_held(pMem->db->mutex) );
   assert( (pMem->flags&MEM_RowSet)==0 );
-  ExpandBlob(pMem);
+  expandBlob(pMem);
   f = pMem->flags;
   if( (f&(MEM_Str|MEM_Blob)) && pMem->z!=pMem->zMalloc ){
     if( sqlite3VdbeMemGrow(pMem, pMem->n + 2, 1) ){
@@ -286,7 +292,7 @@ void sqlite3VdbeMemReleaseExternal(Mem *p){
 ** (Mem.type==SQLITE_TEXT).
 */
 void sqlite3VdbeMemRelease(Mem *p){
-  VdbeMemRelease(p);
+  MemReleaseExt(p);
   sqlite3DbFree(p->db, p->zMalloc);
   p->z = 0;
   p->zMalloc = 0;
@@ -582,7 +588,7 @@ int sqlite3VdbeMemTooBig(Mem *p){
 ** This is used for testing and debugging only - to make sure shallow
 ** copies are not misused.
 */
-void sqlite3VdbeMemAboutToChange(Vdbe *pVdbe, Mem *pMem){
+void sqlite3VdbeMemPrepareToChange(Vdbe *pVdbe, Mem *pMem){
   int i;
   Mem *pX;
   for(i=1, pX=&pVdbe->aMem[1]; i<=pVdbe->nMem; i++, pX++){
@@ -608,7 +614,7 @@ void sqlite3VdbeMemAboutToChange(Vdbe *pVdbe, Mem *pMem){
 */
 void sqlite3VdbeMemShallowCopy(Mem *pTo, const Mem *pFrom, int srcType){
   assert( (pFrom->flags & MEM_RowSet)==0 );
-  VdbeMemRelease(pTo);
+  MemReleaseExt(pTo);
   memcpy(pTo, pFrom, MEMCELLSIZE);
   pTo->xDel = 0;
   if( (pFrom->flags&MEM_Static)==0 ){
@@ -626,7 +632,7 @@ int sqlite3VdbeMemCopy(Mem *pTo, const Mem *pFrom){
   int rc = SQLITE_OK;
 
   assert( (pFrom->flags & MEM_RowSet)==0 );
-  VdbeMemRelease(pTo);
+  MemReleaseExt(pTo);
   memcpy(pTo, pFrom, MEMCELLSIZE);
   pTo->flags &= ~MEM_Dyn;
 
@@ -954,7 +960,7 @@ const void *sqlite3ValueText(sqlite3_value* pVal, u8 enc){
   }
   assert( (MEM_Blob>>3) == MEM_Str );
   pVal->flags |= (pVal->flags & MEM_Blob)>>3;
-  ExpandBlob(pVal);
+  expandBlob(pVal);
   if( pVal->flags&MEM_Str ){
     sqlite3VdbeChangeEncoding(pVal, enc & ~SQLITE_UTF16_ALIGNED);
     if( (enc & SQLITE_UTF16_ALIGNED)!=0 && 1==(1&SQLITE_PTR_TO_INT(pVal->z)) ){
@@ -963,7 +969,7 @@ const void *sqlite3ValueText(sqlite3_value* pVal, u8 enc){
         return 0;
       }
     }
-    sqlite3VdbeMemNulTerminate(pVal); /* IMP: R-31275-44060 */
+    sqlite3VdbeMemNulTerminate(pVal); /* IMP: R-59893-45467 */
   }else{
     assert( (pVal->flags&MEM_Blob)==0 );
     sqlite3VdbeMemStringify(pVal, enc);
