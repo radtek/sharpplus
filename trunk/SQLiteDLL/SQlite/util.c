@@ -331,7 +331,7 @@ int sqlite3AtoF(const char *z, double *pResult, int length, u8 enc){
     }
     /* copy digits to exponent */
     while( z<zEnd && sqlite3Isdigit(*z) ){
-      e = e*10 + (*z - '0');
+      e = e<10000 ? (e*10 + (*z - '0')) : 10000;
       z+=incr;
       eValid = 1;
     }
@@ -381,6 +381,12 @@ do_atof_calc:
         }else{
           result = s * scale;
           result *= 1.0e+308;
+        }
+      }else if( e>=342 ){
+        if( esign<0 ){
+          result = 0.0*s;
+        }else{
+          result = 1e308*1e308*s;  /* Infinity */
         }
       }else{
         /* 1.0e+22 is the largest power of 10 than can be 
@@ -1163,18 +1169,17 @@ int sqlite3AbsInt32(int x){
 **     test.db-journal    =>   test.nal
 **     test.db-wal        =>   test.wal
 **     test.db-shm        =>   test.shm
+**     test.db-mj7f3319fa =>   test.9fa
 */
 void sqlite3FileSuffix3(const char *zBaseFilename, char *z){
 #if SQLITE_ENABLE_8_3_NAMES<2
-  const char *zOk;
-  zOk = sqlite3_uri_parameter(zBaseFilename, "8_3_names");
-  if( zOk && sqlite3GetBoolean(zOk) )
+  if( sqlite3_uri_boolean(zBaseFilename, "8_3_names", 0) )
 #endif
   {
     int i, sz;
     sz = sqlite3Strlen30(z);
     for(i=sz-1; i>0 && z[i]!='/' && z[i]!='.'; i--){}
-    if( z[i]=='.' && ALWAYS(sz>i+4) ) memcpy(&z[i+1], &z[sz-3], 4);
+    if( z[i]=='.' && ALWAYS(sz>i+4) ) memmove(&z[i+1], &z[sz-3], 4);
   }
 }
 #endif

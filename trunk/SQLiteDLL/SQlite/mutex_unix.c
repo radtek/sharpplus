@@ -99,7 +99,7 @@ static int pthreadMutexEnd(void){ return SQLITE_OK; }
 ** <li>  SQLITE_MUTEX_STATIC_MEM2
 ** <li>  SQLITE_MUTEX_STATIC_PRNG
 ** <li>  SQLITE_MUTEX_STATIC_LRU
-** <li>  SQLITE_MUTEX_STATIC_LRU2
+** <li>  SQLITE_MUTEX_STATIC_PMEM
 ** </ul>
 **
 ** The first two constants cause sqlite3_mutex_alloc() to create
@@ -348,4 +348,4 @@ sqlite3_mutex_methods const *sqlite3DefaultMutex(void){
   return &sMutex;
 }
 
-#endif /* SQLITE_MUTEX_PTHREAD */
+#endif /* SQLITE_MUTEX_PTHREADS */
