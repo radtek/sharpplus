@@ -110,6 +110,8 @@ void sql_type_test() {
 		BOOST_CHECK(typ==sst_DropTrigger);
 		typ=SqliteParserHelper::GetSqlType("drop index t1 ");
 		BOOST_CHECK(typ==sst_DropIndex);
+		typ=SqliteParserHelper::GetSqlType("Insert Into [AddressTable] ([Note]) Values(X'48616E64793A20303137322D3435382D35382D3135')");
+		BOOST_CHECK(typ==sst_Insert);
 		typ=SqliteParserHelper::GetSqlType("vacuum ");
 		BOOST_CHECK(typ==sst_Vacuum);
 		typ=SqliteParserHelper::GetSqlType("alter table t1 rename to t2 ");
