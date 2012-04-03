@@ -340,7 +340,7 @@ RefToken SqliteLexer::nextToken()
 					mBITOR(true);
 					theRetToken=_returnToken;
 				}
-				else if ((LA(1) == 0x58 /* 'X' */  || LA(1) == 0x78 /* 'x' */ ) && (LA(2) == 0x22 /* '\"' */  || LA(2) == 0x27 /* '\'' */ )) {
+				else if ((LA(1) == 0x58 /* 'X' */  || LA(1) == 0x78 /* 'x' */ ) && (LA(2) == 0x27 /* '\'' */ )) {
 					mBLOB(true);
 					theRetToken=_returnToken;
 				}
@@ -1478,22 +1478,7 @@ void SqliteLexer::mBLOB(bool _createToken) {
 	}
 	}
 	{
-	switch ( LA(1)) {
-	case 0x27 /* '\'' */ :
-	{
-		match(L'\'' /* charlit */ );
-		break;
-	}
-	case 0x22 /* '\"' */ :
-	{
-		match(L'\"' /* charlit */ );
-		break;
-	}
-	default:
-	{
-		throw NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());
-	}
-	}
+	match(L'\'' /* charlit */ );
 	}
 	{ // ( ... )+
 	int _cnt84=0;
@@ -1542,6 +1527,9 @@ void SqliteLexer::mBLOB(bool _createToken) {
 	}
 	_loop84:;
 	}  // ( ... )+
+	{
+	match(L'\'' /* charlit */ );
+	}
 	if ( _createToken && _token==nullToken && _ttype!=Token::SKIP ) {
 	   _token = makeToken(_ttype);
 	   _token->setText(text.substr(_begin, text.length()-_begin));
@@ -1583,11 +1571,11 @@ void SqliteLexer::mID_2(bool _createToken) {
 				mSIMPLE_LETTER(false);
 			}
 		else {
-			goto _loop87;
+			goto _loop88;
 		}
 		}
 	}
-	_loop87:;
+	_loop88:;
 	} // ( ... )*
 	_ttype = testLiteralsTable(ID);
 	if ( _createToken && _token==nullToken && _ttype!=Token::SKIP ) {
