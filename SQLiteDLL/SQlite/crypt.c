@@ -299,13 +299,13 @@ void sqlite3CodecGetKey(sqlite3 *db, int nDb, void **ppKey, int *pnKeyLen)
 }
 
 // We do not attach this key to the temp store, only the main database.
-int sqlite3_key(sqlite3 *db, const unsigned char *pKey, int nKeySize)
+SQLITE_API int sqlite3_key(sqlite3 *db, const unsigned char *pKey, int nKeySize)
 {
   return sqlite3CodecAttach(db, 0, pKey, nKeySize);
 }
 
 // Changes the encryption key for an existing database.
-int sqlite3_rekey(sqlite3 *db, const unsigned char *pKey, int nKeySize)
+SQLITE_API int sqlite3_rekey(sqlite3 *db, const unsigned char *pKey, int nKeySize)
 {
   Btree *pbt = db->aDb[0].pBt;
   Pager *p = sqlite3BtreePager(pbt);
@@ -339,6 +339,8 @@ int sqlite3_rekey(sqlite3 *db, const unsigned char *pKey, int nKeySize)
     pBlock->hWriteKey = hKey;
   }
 
+  sqlite3_mutex_enter(db->mutex);
+
   // Start a transaction
   rc = sqlite3BtreeBeginTrans(pbt, 1);
 
@@ -349,10 +351,12 @@ int sqlite3_rekey(sqlite3 *db, const unsigned char *pKey, int nKeySize)
     Pgno nSkip = PAGER_MJ_PGNO(p);
     DbPage *pPage;
     Pgno n;
+    int count;
 
-    sqlite3PagerPagecount(p, &nPage);
+    sqlite3PagerPagecount(p, &count);
+    nPage = (Pgno)count;
 
-    for(n = 1; rc == SQLITE_OK && n <= nPage; n ++)
+    for(n = 1; n <= nPage; n ++)
     {
       if (n == nSkip) continue;
       rc = sqlite3PagerGet(p, n, &pPage);
@@ -373,7 +377,7 @@ int sqlite3_rekey(sqlite3 *db, const unsigned char *pKey, int nKeySize)
   // If we failed, rollback
   if (rc)
   {
-    sqlite3BtreeRollback(pbt);
+    sqlite3BtreeRollback(pbt, SQLITE_OK);
   }
 
   // If we succeeded, destroy any previous read key this database used
@@ -403,6 +407,8 @@ int sqlite3_rekey(sqlite3 *db, const unsigned char *pKey, int nKeySize)
   {
     sqlite3PagerSetCodec(p, NULL, NULL, NULL, NULL);
   }
+
+  sqlite3_mutex_leave(db->mutex);
 
   return rc;
 }
