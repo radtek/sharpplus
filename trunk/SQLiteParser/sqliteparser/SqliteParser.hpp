@@ -2,7 +2,7 @@
 #define INC_SqliteParser_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.7 (20060906): "Sqlite.g" -> "SqliteParser.hpp"$ */
+/* $ANTLR 2.7.5 (20050201): "sqlite.g" -> "SqliteParser.hpp"$ */
 #include <antlr/TokenStream.hpp>
 #include <antlr/TokenBuffer.hpp>
 #include "SqliteTokenTypes.hpp"
@@ -167,8 +167,8 @@ public:
 	public: CreateViewStruct  create_view_stmt();
 	public: CreateTriggerStruct  create_trigger_stmt();
 	public: CreateIndexStruct  create_index_stmt();
-	public: void temp();
 	public: void ifnotexists();
+	public: void temp();
 	public: void table_column_stmt(
 		CreateTableStruct& tStruct
 	);

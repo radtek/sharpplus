@@ -1,4 +1,4 @@
-// $ANTLR 2.7.7 (20060906): Sqlite.g -> SqliteLexTokenTypes.txt$
+// $ANTLR 2.7.5 (20050201): sqlite.g -> SqliteLexTokenTypes.txt$
 SqliteLex    // output token vocab name
 SQL2RW_abort="abort"=30
 SQL2RW_add="add"=31

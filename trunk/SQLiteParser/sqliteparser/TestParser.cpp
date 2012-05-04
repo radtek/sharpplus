@@ -279,6 +279,9 @@ void sql_type_test() {
 		BOOST_CHECK(tVirtual.szTableName=="abc.tt" && tVirtual.szModule=="fts1" && tVirtual.szParameters=="(abc,cccd)");
 
 
+		tVirtual=SqliteParserHelper::ParseCreateVirtualTable("create virtual table if not exists abc.tt using fts1 (abc,cccd)");
+		BOOST_CHECK(tVirtual.szTableName=="abc.tt" && tVirtual.szModule=="fts1" && tVirtual.szParameters=="(abc,cccd)");
+
 		//New Test Default Value
 
 		tblStruct=SqliteParserHelper::ParseCreateTable("create table t1(a default -1, b default (a>b), c default ((select a from b))"

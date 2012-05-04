@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.7 (20060906): "Sqlite.g" -> "SqliteParser.cpp"$ */
+/* $ANTLR 2.7.5 (20050201): "sqlite.g" -> "SqliteParser.cpp"$ */
 
 	#include "StdAfx.h"
 
@@ -861,11 +861,11 @@ string  SqliteParser::select_stmt() {
 			}
 		}
 		else {
-			goto _loop383;
+			goto _loop384;
 		}
 		
 	}
-	_loop383:;
+	_loop384:;
 	} // ( ... )*
 	if ( inputState->guessing==0 ) {
 		
@@ -1281,11 +1281,11 @@ void SqliteParser::itemlist() {
 			}
 		}
 		else {
-			goto _loop443;
+			goto _loop444;
 		}
 		
 	}
-	_loop443:;
+	_loop444:;
 	} // ( ... )*
 	itemlist_AST = currentAST.root;
 	returnAST = itemlist_AST;
@@ -1452,11 +1452,11 @@ void SqliteParser::setlist() {
 			}
 		}
 		else {
-			goto _loop446;
+			goto _loop447;
 		}
 		
 	}
-	_loop446:;
+	_loop447:;
 	} // ( ... )*
 	setlist_AST = currentAST.root;
 	returnAST = setlist_AST;
@@ -2305,11 +2305,11 @@ void SqliteParser::expr() {
 			}
 		}
 		else {
-			goto _loop218;
+			goto _loop219;
 		}
 		
 	}
-	_loop218:;
+	_loop219:;
 	} // ( ... )*
 	if ( inputState->guessing==0 ) {
 		
@@ -2491,6 +2491,20 @@ CreateVirtualTableStruct  SqliteParser::create_virtual_table_stmt() {
 	}
 	match(SQL2RW_table);
 	{
+	if ((LA(1) == SQL2RW_if) && (LA(2) == SQL2RW_not)) {
+		ifnotexists();
+		if (inputState->guessing==0) {
+			astFactory->addASTChild( currentAST, returnAST );
+		}
+	}
+	else if ((_tokenSet_4.member(LA(1))) && (LA(2) == SQL2RW_using || LA(2) == DOT)) {
+	}
+	else {
+		throw NoViableAltException(LT(1), getFilename());
+	}
+	
+	}
+	{
 	if ((_tokenSet_4.member(LA(1))) && (LA(2) == DOT)) {
 		dbnm();
 		if (inputState->guessing==0) {
@@ -2550,11 +2564,11 @@ CreateVirtualTableStruct  SqliteParser::create_virtual_table_stmt() {
 			matchNot(SEMI);
 		}
 		else {
-			goto _loop152;
+			goto _loop153;
 		}
 		
 	}
-	_loop152:;
+	_loop153:;
 	} // ( ... )*
 	if ( inputState->guessing==0 ) {
 		create_virtual_table_stmt_AST = RefAST(currentAST.root);
@@ -2987,11 +3001,11 @@ CreateIndexStruct  SqliteParser::create_index_stmt() {
 			}
 		}
 		else {
-			goto _loop305;
+			goto _loop306;
 		}
 		
 	}
-	_loop305:;
+	_loop306:;
 	} // ( ... )*
 	RefAST tmp86_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
@@ -3023,57 +3037,27 @@ CreateIndexStruct  SqliteParser::create_index_stmt() {
 	return iStruct;
 }
 
-void SqliteParser::temp() {
-	returnAST = nullAST;
-	ASTPair currentAST;
-	RefAST temp_AST = nullAST;
-	
-	if ((LA(1) == SQL2RW_temp)) {
-		RefAST tmp87_AST = nullAST;
-		if ( inputState->guessing == 0 ) {
-			tmp87_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp87_AST);
-		}
-		match(SQL2RW_temp);
-		temp_AST = currentAST.root;
-	}
-	else if ((LA(1) == SQL2RW_temporary)) {
-		RefAST tmp88_AST = nullAST;
-		if ( inputState->guessing == 0 ) {
-			tmp88_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp88_AST);
-		}
-		match(SQL2RW_temporary);
-		temp_AST = currentAST.root;
-	}
-	else {
-		throw NoViableAltException(LT(1), getFilename());
-	}
-	
-	returnAST = temp_AST;
-}
-
 void SqliteParser::ifnotexists() {
 	returnAST = nullAST;
 	ASTPair currentAST;
 	RefAST ifnotexists_AST = nullAST;
 	
+	RefAST tmp87_AST = nullAST;
+	if ( inputState->guessing == 0 ) {
+		tmp87_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp87_AST);
+	}
+	match(SQL2RW_if);
+	RefAST tmp88_AST = nullAST;
+	if ( inputState->guessing == 0 ) {
+		tmp88_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp88_AST);
+	}
+	match(SQL2RW_not);
 	RefAST tmp89_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
 		tmp89_AST = astFactory->create(LT(1));
 		astFactory->addASTChild(currentAST, tmp89_AST);
-	}
-	match(SQL2RW_if);
-	RefAST tmp90_AST = nullAST;
-	if ( inputState->guessing == 0 ) {
-		tmp90_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp90_AST);
-	}
-	match(SQL2RW_not);
-	RefAST tmp91_AST = nullAST;
-	if ( inputState->guessing == 0 ) {
-		tmp91_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp91_AST);
 	}
 	match(SQL2RW_exists);
 	if ( inputState->guessing==0 ) {
@@ -3089,6 +3073,36 @@ void SqliteParser::ifnotexists() {
 	}
 	ifnotexists_AST = currentAST.root;
 	returnAST = ifnotexists_AST;
+}
+
+void SqliteParser::temp() {
+	returnAST = nullAST;
+	ASTPair currentAST;
+	RefAST temp_AST = nullAST;
+	
+	if ((LA(1) == SQL2RW_temp)) {
+		RefAST tmp90_AST = nullAST;
+		if ( inputState->guessing == 0 ) {
+			tmp90_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp90_AST);
+		}
+		match(SQL2RW_temp);
+		temp_AST = currentAST.root;
+	}
+	else if ((LA(1) == SQL2RW_temporary)) {
+		RefAST tmp91_AST = nullAST;
+		if ( inputState->guessing == 0 ) {
+			tmp91_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp91_AST);
+		}
+		match(SQL2RW_temporary);
+		temp_AST = currentAST.root;
+	}
+	else {
+		throw NoViableAltException(LT(1), getFilename());
+	}
+	
+	returnAST = temp_AST;
 }
 
 void SqliteParser::table_column_stmt(
@@ -3118,11 +3132,11 @@ void SqliteParser::table_column_stmt(
 			}
 		}
 		else {
-			goto _loop178;
+			goto _loop179;
 		}
 		
 	}
-	_loop178:;
+	_loop179:;
 	} // ( ... )*
 	{ // ( ... )*
 	for (;;) {
@@ -3134,11 +3148,11 @@ void SqliteParser::table_column_stmt(
 			}
 		}
 		else {
-			goto _loop180;
+			goto _loop181;
 		}
 		
 	}
-	_loop180:;
+	_loop181:;
 	} // ( ... )*
 	RefAST tmp95_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
@@ -3228,11 +3242,11 @@ string  SqliteParser::create_ifnot_table_stmt() {
 			matchNot(SEMI);
 		}
 		else {
-			goto _loop161;
+			goto _loop162;
 		}
 		
 	}
-	_loop161:;
+	_loop162:;
 	} // ( ... )*
 	if ( inputState->guessing==0 ) {
 		
@@ -3804,11 +3818,11 @@ string  SqliteParser::create_ifnot_index_stmt() {
 			}
 		}
 		else {
-			goto _loop174;
+			goto _loop175;
 		}
 		
 	}
-	_loop174:;
+	_loop175:;
 	} // ( ... )*
 	RefAST tmp120_AST = nullAST;
 	if ( inputState->guessing == 0 ) {
@@ -3981,11 +3995,11 @@ void SqliteParser::column_def(
 			}
 		}
 		else {
-			goto _loop184;
+			goto _loop185;
 		}
 		
 	}
-	_loop184:;
+	_loop185:;
 	} // ( ... )*
 	if ( inputState->guessing==0 ) {
 		column_def_AST = RefAST(currentAST.root);
@@ -4733,10 +4747,10 @@ void SqliteParser::column_constraint(
 		break;
 	}
 	default:
-		bool synPredMatched193 = false;
+		bool synPredMatched194 = false;
 		if (((LA(1) == SQL2RW_deferrable || LA(1) == SQL2RW_not) && (_tokenSet_21.member(LA(2))))) {
-			int _m193 = mark();
-			synPredMatched193 = true;
+			int _m194 = mark();
+			synPredMatched194 = true;
 			inputState->guessing++;
 			try {
 				{
@@ -4744,12 +4758,12 @@ void SqliteParser::column_constraint(
 				}
 			}
 			catch (RecognitionException& pe) {
-				synPredMatched193 = false;
+				synPredMatched194 = false;
 			}
-			rewind(_m193);
+			rewind(_m194);
 			inputState->guessing--;
 		}
-		if ( synPredMatched193 ) {
+		if ( synPredMatched194 ) {
 			defer_subclause();
 			if (inputState->guessing==0) {
 				astFactory->addASTChild( currentAST, returnAST );
@@ -4813,7 +4827,7 @@ void SqliteParser::type_name() {
 	RefAST type_name_AST = nullAST;
 	
 	{ // ( ... )+
-	int _cnt348=0;
+	int _cnt349=0;
 	for (;;) {
 		if ((_tokenSet_13.member(LA(1)))) {
 			ids();
@@ -4822,12 +4836,12 @@ void SqliteParser::type_name() {
 			}
 		}
 		else {
-			if ( _cnt348>=1 ) { goto _loop348; } else {throw NoViableAltException(LT(1), getFilename());}
+			if ( _cnt349>=1 ) { goto _loop349; } else {throw NoViableAltException(LT(1), getFilename());}
 		}
 		
-		_cnt348++;
+		_cnt349++;
 	}
-	_loop348:;
+	_loop349:;
 	}  // ( ... )+
 	type_name_AST = currentAST.root;
 	returnAST = type_name_AST;
@@ -4990,7 +5004,7 @@ void SqliteParser::refargs() {
 	RefAST refargs_AST = nullAST;
 	
 	{ // ( ... )+
-	int _cnt366=0;
+	int _cnt367=0;
 	for (;;) {
 		if ((LA(1) == SQL2RW_match || LA(1) == SQL2RW_on)) {
 			refarg();
@@ -4999,12 +5013,12 @@ void SqliteParser::refargs() {
 			}
 		}
 		else {
-			if ( _cnt366>=1 ) { goto _loop366; } else {throw NoViableAltException(LT(1), getFilename());}
+			if ( _cnt367>=1 ) { goto _loop367; } else {throw NoViableAltException(LT(1), getFilename());}
 		}
 		
-		_cnt366++;
+		_cnt367++;
 	}
-	_loop366:;
+	_loop367:;
 	}  // ( ... )+
 	refargs_AST = currentAST.root;
 	returnAST = refargs_AST;
@@ -5354,11 +5368,11 @@ void SqliteParser::idxlist(
 			}
 		}
 		else {
-			goto _loop263;
+			goto _loop264;
 		}
 		
 	}
-	_loop263:;
+	_loop264:;
 	} // ( ... )*
 	idxlist_AST = currentAST.root;
 	returnAST = idxlist_AST;
@@ -5633,10 +5647,10 @@ void SqliteParser::binary_op() {
 		break;
 	}
 	default:
-		bool synPredMatched253 = false;
+		bool synPredMatched254 = false;
 		if (((LA(1) == SQL2RW_glob || LA(1) == SQL2RW_like || LA(1) == SQL2RW_match || LA(1) == SQL2RW_not || LA(1) == SQL2RW_regexp) && (_tokenSet_10.member(LA(2))))) {
-			int _m253 = mark();
-			synPredMatched253 = true;
+			int _m254 = mark();
+			synPredMatched254 = true;
 			inputState->guessing++;
 			try {
 				{
@@ -5644,12 +5658,12 @@ void SqliteParser::binary_op() {
 				}
 			}
 			catch (RecognitionException& pe) {
-				synPredMatched253 = false;
+				synPredMatched254 = false;
 			}
-			rewind(_m253);
+			rewind(_m254);
 			inputState->guessing--;
 		}
-		if ( synPredMatched253 ) {
+		if ( synPredMatched254 ) {
 			likeop();
 			if (inputState->guessing==0) {
 				astFactory->addASTChild( currentAST, returnAST );
@@ -5657,10 +5671,10 @@ void SqliteParser::binary_op() {
 			binary_op_AST = currentAST.root;
 		}
 		else {
-			bool synPredMatched255 = false;
+			bool synPredMatched256 = false;
 			if (((LA(1) == SQL2RW_between || LA(1) == SQL2RW_not) && (_tokenSet_12.member(LA(2))))) {
-				int _m255 = mark();
-				synPredMatched255 = true;
+				int _m256 = mark();
+				synPredMatched256 = true;
 				inputState->guessing++;
 				try {
 					{
@@ -5668,12 +5682,12 @@ void SqliteParser::binary_op() {
 					}
 				}
 				catch (RecognitionException& pe) {
-					synPredMatched255 = false;
+					synPredMatched256 = false;
 				}
-				rewind(_m255);
+				rewind(_m256);
 				inputState->guessing--;
 			}
-			if ( synPredMatched255 ) {
+			if ( synPredMatched256 ) {
 				between_op();
 				if (inputState->guessing==0) {
 					astFactory->addASTChild( currentAST, returnAST );
@@ -5750,10 +5764,10 @@ void SqliteParser::sub_expression() {
 	ASTPair currentAST;
 	RefAST sub_expression_AST = nullAST;
 	
-	bool synPredMatched224 = false;
+	bool synPredMatched225 = false;
 	if (((LA(1) == SQL2RW_cast) && (LA(2) == LP))) {
-		int _m224 = mark();
-		synPredMatched224 = true;
+		int _m225 = mark();
+		synPredMatched225 = true;
 		inputState->guessing++;
 		try {
 			{
@@ -5761,12 +5775,12 @@ void SqliteParser::sub_expression() {
 			}
 		}
 		catch (RecognitionException& pe) {
-			synPredMatched224 = false;
+			synPredMatched225 = false;
 		}
-		rewind(_m224);
+		rewind(_m225);
 		inputState->guessing--;
 	}
-	if ( synPredMatched224 ) {
+	if ( synPredMatched225 ) {
 		cast_function();
 		if (inputState->guessing==0) {
 			astFactory->addASTChild( currentAST, returnAST );
@@ -5774,10 +5788,10 @@ void SqliteParser::sub_expression() {
 		sub_expression_AST = currentAST.root;
 	}
 	else {
-		bool synPredMatched226 = false;
+		bool synPredMatched227 = false;
 		if (((LA(1) == SQL2RW_raise) && (LA(2) == LP))) {
-			int _m226 = mark();
-			synPredMatched226 = true;
+			int _m227 = mark();
+			synPredMatched227 = true;
 			inputState->guessing++;
 			try {
 				{
@@ -5786,12 +5800,12 @@ void SqliteParser::sub_expression() {
 				}
 			}
 			catch (RecognitionException& pe) {
-				synPredMatched226 = false;
+				synPredMatched227 = false;
 			}
-			rewind(_m226);
+			rewind(_m227);
 			inputState->guessing--;
 		}
-		if ( synPredMatched226 ) {
+		if ( synPredMatched227 ) {
 			RefAST tmp185_AST = nullAST;
 			if ( inputState->guessing == 0 ) {
 				tmp185_AST = astFactory->create(LT(1));
@@ -5843,10 +5857,10 @@ void SqliteParser::sub_expression() {
 			sub_expression_AST = currentAST.root;
 		}
 		else {
-			bool synPredMatched229 = false;
+			bool synPredMatched230 = false;
 			if (((_tokenSet_6.member(LA(1))) && (LA(2) == LP))) {
-				int _m229 = mark();
-				synPredMatched229 = true;
+				int _m230 = mark();
+				synPredMatched230 = true;
 				inputState->guessing++;
 				try {
 					{
@@ -5854,12 +5868,12 @@ void SqliteParser::sub_expression() {
 					}
 				}
 				catch (RecognitionException& pe) {
-					synPredMatched229 = false;
+					synPredMatched230 = false;
 				}
-				rewind(_m229);
+				rewind(_m230);
 				inputState->guessing--;
 			}
-			if ( synPredMatched229 ) {
+			if ( synPredMatched230 ) {
 				function();
 				if (inputState->guessing==0) {
 					astFactory->addASTChild( currentAST, returnAST );
@@ -6071,10 +6085,10 @@ void SqliteParser::in_stmt() {
 	RefAST in_stmt_AST = nullAST;
 	
 	{
-	bool synPredMatched234 = false;
+	bool synPredMatched235 = false;
 	if (((LA(1) == SQL2RW_in || LA(1) == SQL2RW_not) && (LA(2) == SQL2RW_in || LA(2) == LP))) {
-		int _m234 = mark();
-		synPredMatched234 = true;
+		int _m235 = mark();
+		synPredMatched235 = true;
 		inputState->guessing++;
 		try {
 			{
@@ -6083,12 +6097,12 @@ void SqliteParser::in_stmt() {
 			}
 		}
 		catch (RecognitionException& pe) {
-			synPredMatched234 = false;
+			synPredMatched235 = false;
 		}
-		rewind(_m234);
+		rewind(_m235);
 		inputState->guessing--;
 	}
-	if ( synPredMatched234 ) {
+	if ( synPredMatched235 ) {
 		in_op();
 		if (inputState->guessing==0) {
 			astFactory->addASTChild( currentAST, returnAST );
@@ -6522,11 +6536,11 @@ void SqliteParser::exprlist() {
 			}
 		}
 		else {
-			goto _loop258;
+			goto _loop259;
 		}
 		
 	}
-	_loop258:;
+	_loop259:;
 	} // ( ... )*
 	exprlist_AST = currentAST.root;
 	returnAST = exprlist_AST;
@@ -6627,7 +6641,7 @@ void SqliteParser::case_exprlist() {
 	RefAST case_exprlist_AST = nullAST;
 	
 	{ // ( ... )+
-	int _cnt376=0;
+	int _cnt377=0;
 	for (;;) {
 		if ((LA(1) == SQL2RW_when)) {
 			RefAST tmp229_AST = nullAST;
@@ -6652,12 +6666,12 @@ void SqliteParser::case_exprlist() {
 			}
 		}
 		else {
-			if ( _cnt376>=1 ) { goto _loop376; } else {throw NoViableAltException(LT(1), getFilename());}
+			if ( _cnt377>=1 ) { goto _loop377; } else {throw NoViableAltException(LT(1), getFilename());}
 		}
 		
-		_cnt376++;
+		_cnt377++;
 	}
-	_loop376:;
+	_loop377:;
 	}  // ( ... )+
 	case_exprlist_AST = currentAST.root;
 	returnAST = case_exprlist_AST;
@@ -6855,7 +6869,7 @@ void SqliteParser::trigger_cmd_list() {
 	RefAST trigger_cmd_list_AST = nullAST;
 	
 	{ // ( ... )+
-	int _cnt284=0;
+	int _cnt285=0;
 	for (;;) {
 		if ((LA(1) == SQL2RW_delete || LA(1) == SQL2RW_insert || LA(1) == SQL2RW_replace || LA(1) == SQL2RW_select || LA(1) == SQL2RW_update)) {
 			trigger_cmd();
@@ -6870,12 +6884,12 @@ void SqliteParser::trigger_cmd_list() {
 			match(SEMI);
 		}
 		else {
-			if ( _cnt284>=1 ) { goto _loop284; } else {throw NoViableAltException(LT(1), getFilename());}
+			if ( _cnt285>=1 ) { goto _loop285; } else {throw NoViableAltException(LT(1), getFilename());}
 		}
 		
-		_cnt284++;
+		_cnt285++;
 	}
-	_loop284:;
+	_loop285:;
 	}  // ( ... )+
 	trigger_cmd_list_AST = currentAST.root;
 	returnAST = trigger_cmd_list_AST;
@@ -7387,11 +7401,11 @@ void SqliteParser::column_list(
 			}
 		}
 		else {
-			goto _loop298;
+			goto _loop299;
 		}
 		
 	}
-	_loop298:;
+	_loop299:;
 	} // ( ... )*
 	column_list_AST = currentAST.root;
 	returnAST = column_list_AST;
@@ -9033,11 +9047,11 @@ void SqliteParser::selcollist() {
 			}
 		}
 		else {
-			goto _loop394;
+			goto _loop395;
 		}
 		
 	}
-	_loop394:;
+	_loop395:;
 	} // ( ... )*
 	selcollist_AST = currentAST.root;
 	returnAST = selcollist_AST;
@@ -9191,10 +9205,10 @@ void SqliteParser::sclp() {
 	ASTPair currentAST;
 	RefAST sclp_AST = nullAST;
 	
-	bool synPredMatched397 = false;
+	bool synPredMatched398 = false;
 	if (((_tokenSet_4.member(LA(1))) && (LA(2) == DOT))) {
-		int _m397 = mark();
-		synPredMatched397 = true;
+		int _m398 = mark();
+		synPredMatched398 = true;
 		inputState->guessing++;
 		try {
 			{
@@ -9204,12 +9218,12 @@ void SqliteParser::sclp() {
 			}
 		}
 		catch (RecognitionException& pe) {
-			synPredMatched397 = false;
+			synPredMatched398 = false;
 		}
-		rewind(_m397);
+		rewind(_m398);
 		inputState->guessing--;
 	}
-	if ( synPredMatched397 ) {
+	if ( synPredMatched398 ) {
 		nm();
 		if (inputState->guessing==0) {
 			astFactory->addASTChild( currentAST, returnAST );
@@ -9382,11 +9396,11 @@ void SqliteParser::seltablist() {
 			}
 		}
 		else {
-			goto _loop406;
+			goto _loop407;
 		}
 		
 	}
-	_loop406:;
+	_loop407:;
 	} // ( ... )*
 	seltablist_AST = currentAST.root;
 	returnAST = seltablist_AST;
@@ -9551,10 +9565,10 @@ void SqliteParser::joinop() {
 		joinop_AST = currentAST.root;
 	}
 	else {
-		bool synPredMatched418 = false;
+		bool synPredMatched419 = false;
 		if (((LA(1) == SQL2RW_cross || LA(1) == SQL2RW_full || LA(1) == SQL2RW_inner || LA(1) == SQL2RW_left || LA(1) == SQL2RW_natural || LA(1) == SQL2RW_outer || LA(1) == SQL2RW_right) && (_tokenSet_4.member(LA(2))))) {
-			int _m418 = mark();
-			synPredMatched418 = true;
+			int _m419 = mark();
+			synPredMatched419 = true;
 			inputState->guessing++;
 			try {
 				{
@@ -9564,12 +9578,12 @@ void SqliteParser::joinop() {
 				}
 			}
 			catch (RecognitionException& pe) {
-				synPredMatched418 = false;
+				synPredMatched419 = false;
 			}
-			rewind(_m418);
+			rewind(_m419);
 			inputState->guessing--;
 		}
-		if ( synPredMatched418 ) {
+		if ( synPredMatched419 ) {
 			join_kw();
 			if (inputState->guessing==0) {
 				astFactory->addASTChild( currentAST, returnAST );
@@ -9736,11 +9750,11 @@ void SqliteParser::inscollist() {
 			}
 		}
 		else {
-			goto _loop423;
+			goto _loop424;
 		}
 		
 	}
-	_loop423:;
+	_loop424:;
 	} // ( ... )*
 	inscollist_AST = currentAST.root;
 	returnAST = inscollist_AST;
@@ -9770,11 +9784,11 @@ void SqliteParser::sortlist() {
 			}
 		}
 		else {
-			goto _loop433;
+			goto _loop434;
 		}
 		
 	}
-	_loop433:;
+	_loop434:;
 	} // ( ... )*
 	sortlist_AST = currentAST.root;
 	returnAST = sortlist_AST;
@@ -9858,11 +9872,11 @@ void SqliteParser::carglist() {
 			}
 		}
 		else {
-			goto _loop456;
+			goto _loop457;
 		}
 		
 	}
-	_loop456:;
+	_loop457:;
 	} // ( ... )*
 	carglist_AST = currentAST.root;
 	returnAST = carglist_AST;
