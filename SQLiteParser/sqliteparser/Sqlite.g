@@ -854,7 +854,7 @@ create_virtual_table_stmt returns [CreateVirtualTableStruct tStruct]
    string szDbnm;   
 }
 :
-    "create" "virtual" "table" (dName:dbnm {tStruct.szTableName=#dName->getText()+".";})?
+    "create" "virtual" "table" (ifnotexists)? (dName:dbnm {tStruct.szTableName=#dName->getText()+".";})?
     tName:nm {tStruct.szTableName=tStruct.szTableName+#tName->getText();}
     "using" mName:nm 
     {tStruct.szModule=#mName->getText();}
