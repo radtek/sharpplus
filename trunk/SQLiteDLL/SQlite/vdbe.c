@@ -2575,6 +2575,11 @@ case OP_NotNull: {            /* same as TK_NOTNULL, jump, in1 */
 ** then the cache of the cursor is reset prior to extracting the column.
 ** The first OP_Column against a pseudo-table after the value of the content
 ** register has changed should have this bit set.
+**
+** If the OPFLAG_LENGTHARG and OPFLAG_TYPEOFARG bits are set on P5 when
+** the result is guaranteed to only be used as the argument of a length()
+** or typeof() function, respectively.  The loading of large blobs can be
+** skipped for length() and all content loading can be skipped for typeof().
 */
 case OP_Column: {
 #if 0  /* local variables moved into u.an */
@@ -2717,7 +2722,7 @@ case OP_Column: {
         u.an.pC->aRow = 0;
       }
     }
-    /* The following assert is true in all cases accept when
+    /* The following assert is true in all cases except when
     ** the database file has been corrupted externally.
     **    assert( u.an.zRec!=0 || u.an.avail>=u.an.payloadSize || u.an.avail>=9 ); */
     u.an.szHdr = getVarint32((u8*)u.an.zData, u.an.offset);
@@ -2792,11 +2797,11 @@ case OP_Column: {
           break;
         }
       }else{
-        /* If u.an.i is less that u.an.nField, then there are less fields in this
+        /* If u.an.i is less that u.an.nField, then there are fewer fields in this
         ** record than SetNumColumns indicated there are columns in the
         ** table. Set the u.an.offset for any extra columns not present in
-        ** the record to 0. This tells code below to store a NULL
-        ** instead of deserializing a value from the record.
+        ** the record to 0. This tells code below to store the default value
+        ** for the column instead of deserializing a value from the record.
         */
         u.an.aOffset[u.an.i] = 0;
       }
@@ -2826,17 +2831,32 @@ case OP_Column: {
   if( u.an.aOffset[u.an.p2] ){
     assert( rc==SQLITE_OK );
     if( u.an.zRec ){
+      /* This is the common case where the whole row fits on a single page */
       VdbeMemRelease(u.an.pDest);
       sqlite3VdbeSerialGet((u8 *)&u.an.zRec[u.an.aOffset[u.an.p2]], u.an.aType[u.an.p2], u.an.pDest);
     }else{
-      u.an.len = sqlite3VdbeSerialTypeLen(u.an.aType[u.an.p2]);
-      sqlite3VdbeMemMove(&u.an.sMem, u.an.pDest);
-      rc = sqlite3VdbeMemFromBtree(u.an.pCrsr, u.an.aOffset[u.an.p2], u.an.len, u.an.pC->isIndex, &u.an.sMem);
-      if( rc!=SQLITE_OK ){
-        goto op_column_out;
+      /* This branch happens only when the row overflows onto multiple pages */
+      u.an.t = u.an.aType[u.an.p2];
+      if( (pOp->p5 & (OPFLAG_LENGTHARG|OPFLAG_TYPEOFARG))!=0
+       && ((u.an.t>=12 && (u.an.t&1)==0) || (pOp->p5 & OPFLAG_TYPEOFARG)!=0)
+      ){
+        /* Content is irrelevant for the typeof() function and for
+        ** the length(X) function if X is a blob.  So we might as well use
+        ** bogus content rather than reading content from disk.  NULL works
+        ** for text and blob and whatever is in the u.an.payloadSize64 variable
+        ** will work for everything else. */
+        u.an.zData = u.an.t<12 ? (char*)&u.an.payloadSize64 : 0;
+      }else{
+        u.an.len = sqlite3VdbeSerialTypeLen(u.an.t);
+        sqlite3VdbeMemMove(&u.an.sMem, u.an.pDest);
+        rc = sqlite3VdbeMemFromBtree(u.an.pCrsr, u.an.aOffset[u.an.p2], u.an.len,  u.an.pC->isIndex,
+                                     &u.an.sMem);
+        if( rc!=SQLITE_OK ){
+          goto op_column_out;
+        }
+        u.an.zData = u.an.sMem.z;
       }
-      u.an.zData = u.an.sMem.z;
-      sqlite3VdbeSerialGet((u8*)u.an.zData, u.an.aType[u.an.p2], u.an.pDest);
+      sqlite3VdbeSerialGet((u8*)u.an.zData, u.an.t, u.an.pDest);
     }
     u.an.pDest->enc = encoding;
   }else{
@@ -3172,8 +3192,10 @@ case OP_Savepoint: {
         rc = p->rc;
       }else{
         u.ar.iSavepoint = db->nSavepoint - u.ar.iSavepoint - 1;
-        for(u.ar.ii=0; u.ar.ii<db->nDb; u.ar.ii++){
-          sqlite3BtreeTripAllCursors(db->aDb[u.ar.ii].pBt, SQLITE_ABORT);
+        if( u.ar.p1==SAVEPOINT_ROLLBACK ){
+          for(u.ar.ii=0; u.ar.ii<db->nDb; u.ar.ii++){
+            sqlite3BtreeTripAllCursors(db->aDb[u.ar.ii].pBt, SQLITE_ABORT);
+          }
         }
         for(u.ar.ii=0; u.ar.ii<db->nDb; u.ar.ii++){
           rc = sqlite3BtreeSavepoint(db->aDb[u.ar.ii].pBt, u.ar.p1, u.ar.iSavepoint);
